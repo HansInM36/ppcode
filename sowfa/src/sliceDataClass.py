@@ -14,7 +14,9 @@ class Slice:
         self.data = sliceData # sliceData is the extracted data by sliceDataExt.py
         self.axis = axis_ # x:0, y:1, z:2
         self.wash()
-        self.axisValue = self.data
+        self.tSeq = self.data['time']
+        self.tNum = self.tSeq.size
+        self.pNum = self.data['pNo'].size
 
     ''' functions '''
     def get_wakeData(self, sliceData): # function for reassigning
@@ -46,6 +48,31 @@ class Slice:
             for i in range(tNum):
                 tmp.append(np.delete(self.data[vector][i], delInd, axis=0))
             self.data[vector] = np.array(tmp)
+
+
+    def p_nearest(self, p_coor):
+        coor_org = np.copy(self.data['point'][:])
+        coor_org[:,0] = coor_org[:,0] - p_coor[0]
+        coor_org[:,1] = coor_org[:,1] - p_coor[1]
+        coor_org[:,2] = coor_org[:,2] - p_coor[2]
+        d2 = [sum(np.power(coor_org[i,:],2)) for i in range(self.pNum)]
+        d2 = np.array(d2)
+        d2_min = np.min(d2)
+        pNearest = np.where(d2 == d2_min)[0]
+        return int(pNearest), np.sqrt(d2_min)
+
+
+    def pITP_Nz(self, p_coor, varName, method_='nearest'):
+        """ interpolate to get the time series of a certain point """
+        coor_org = np.copy(self.data['point'][:,0:2])
+        vSeq = []
+        for tInd in range(self.tNum):
+            print(tInd)
+            var = self.data[varName][tInd,:]
+            v = griddata(coor_org, var, p_coor, method=method_)
+            vSeq.append(v)
+        vSeq = np.array(vSeq)
+        return vSeq
 
 
     def meshITP_Ny(self,x_axis,z_axis,varArray,method_='cubic'): # interpolate the original wake data and project it onto a structral mesh

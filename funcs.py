@@ -1,5 +1,7 @@
 import numpy as np
 from numpy import fft
+import scipy.signal
+
 
 def window_weight(seq, method_='bell'):
     seqNum = seq.size
@@ -48,37 +50,91 @@ def corr(x, y0, y1, norm_=True):
 #         vSeq = vSeq / np.var(y)
 #     return (xSeq, vSeq)
 
-def ESD_k(x, y):
-    seqNum = x.size
-    L = x[-1] - x[0]
-    DFT2 = np.power(abs(np.fft.fft(y)),2)
-    if seqNum%2 == 0:
-        ESD = 2*DFT2[0:int(seqNum/2)]
+def PSD_k(x, ks):
+    L = x.size
+    X = np.fft.fft(x) / L # divide by y.size to calculate power spectral density
+    S = abs(np.conjugate(X) * X)
+    if L%2 == 0:
+        S = 2*S[0:int(L/2)]
     else:
-        ESD = 2*DFT2[0:int(seqNum/2)+1]
-        ESD[-1] = ESD[-1]/2
-    ESD_num = ESD.size
-    lambda_min = L / (ESD_num-1)
-    k_max = 2*np.pi / lambda_min
-    kSeq = np.linspace(0, k_max, ESD_num)
-    delta_k = k_max / ESD_num
-    ESD = ESD / delta_k
-    return (kSeq, ESD)
+        S = 2*S[0:int(seqNum/2)+1]
+        S[-1] = S[-1]/2
+    k = np.linspace(0, ks, L)
+    k = k[0:S.size]
+    delta_k = k[-1] / (k.size-1)
+    S = S / delta_k
+    return (k, S)
+
+def ESD_k(x, ks):
+    L = x.size
+    X = np.fft.fft(x)
+    S = abs(np.conjugate(X) * X) / L
+    if L%2 == 0:
+        S = 2*S[0:int(L/2)]
+    else:
+        S = 2*S[0:int(seqNum/2)+1]
+        S[-1] = S[-1]/2
+    k = np.linspace(0, ks, L)
+    k = k[0:S.size]
+    delta_k = k[-1] / (k.size-1)
+    S = S / delta_k
+    return (k, S)
 
 
-def ESD_omega(x, y):
-    seqNum = x.size
-    tL = x[-1] - x[0]
-    DFT2 = np.power(abs(np.fft.fft(y)),2)
-    if seqNum%2 == 0:
-        ESD = 2*DFT2[0:int(seqNum/2)]
+def PSD_f(x, fs):
+    L = x.size
+    X = np.fft.fft(x) / x.size # divide by y.size to calculate power spectral density
+    S = abs(np.conjugate(X) * X)
+    if L%2 == 0:
+        S = 2*S[0:int(L/2)]
     else:
-        ESD = 2*DFT2[0:int(seqNum/2)+1]
-        ESD[-1] = ESD[-1]/2
-    ESD_num = ESD.size
-    T_min = tL / (ESD_num-1)
-    omega_max = 2*np.pi / T_min
-    omegaSeq = np.linspace(0, omega_max, ESD_num)
-    delta_omega = omega_max / ESD_num
-    ESD = ESD / delta_omega
-    return (omegaSeq, ESD)
+        S = 2*S[0:int(seqNum/2)+1]
+        S[-1] = S[-1]/2
+    f = np.linspace(0, fs, L)
+    f = f[0:S.size]
+    delta_f = f[-1] / (f.size-1)
+    S = S / delta_f
+    return (f, S)
+
+def ESD_f(x, fs): # self-defined energy spectral density function
+    L = x.size
+    X = np.fft.fft(x)
+    S = abs(np.conjugate(X) * X) / L
+    if L%2 == 0:
+        S = 2*S[0:int(L/2)]
+    else:
+        S = 2*S[0:int(seqNum/2)+1]
+        S[-1] = S[-1]/2
+    f = np.linspace(0, fs, L)
+    f = f[0:S.size]
+    delta_f = f[-1] / (f.size-1)
+    S = S / delta_f
+    return (f, S)
+
+# def ESD_f(x, fs): # energy spectral density function using scipy.signal.csd()
+#     f, S = scipy.signal.csd(x, x, fs, nperseg=None, noverlap=None)
+#     return (f, S)
+
+
+
+def coherence(data1, data2, fs, max_freq=None):
+
+    freq, Pxx = scipy.signal.csd(data1, data1, fs, nperseg=None, noverlap=None)
+    freq, Pxy = scipy.signal.csd(data1, data2, fs, nperseg=None, noverlap=None)
+    freq, Pyy = scipy.signal.csd(data2, data2, fs, nperseg=None, noverlap=None)
+    freq = np.squeeze(freq).ravel()
+
+    if max_freq is not None:
+        index = np.where(freq<=max_freq)
+        freq  = freq[index]
+        Pxx   = Pxx[index]
+        Pyy   = Pyy[index]
+        Pxy   = Pxy[index]
+
+    Rxy    = Pxy.real
+    Qxy    = Pxy.imag
+    coh    = abs(np.array(Pxy) * np.array(np.conj(Pxy))) / (np.array(Pxx) * np.array(Pyy))
+    co_coh = np.real(Pxy / np.sqrt(np.array(Pxx) * np.array(Pyy)))
+    phase  = np.arctan2(Qxy,Rxy)
+
+    return (freq, coh, phase)
