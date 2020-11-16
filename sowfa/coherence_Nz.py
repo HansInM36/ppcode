@@ -8,6 +8,7 @@ from numpy import fft
 from scipy.interpolate import interp1d
 import sliceDataClass as sdc
 from funcs import *
+from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
 
@@ -23,7 +24,7 @@ var = 'U'
 varD = 0 # u:0, v:1, w:2
 varName = 'coherence'
 varUnit = ''
-varName_save = 'uu_coherence'
+varName_save = 'uu_coh'
 
 readDir = ppDir + '/data/'
 readName = sliceList[0]
@@ -39,6 +40,8 @@ t_delta = 2.0
 t_num = int((t_end - t_start) / t_delta + 1)
 t_seq = np.linspace(t_start, t_end, t_num)
 
+def fitting_func(x, a, alpha):
+    return a * np.exp(- alpha * x)
 
 for slice in sliceList:
 
@@ -52,7 +55,8 @@ for slice in sliceList:
     H = slc.N_location # height of this plane
 
     # ptCoorList = [np.array([980, 1000, H]), np.array([1000, 1000, H]), np.array([1020, 1000, H]), np.array([1000, 980, H]), np.array([1000, 1020, H])]
-    ptCoorList = [np.array([900, 1000, H]), np.array([1000, 1000, H]), np.array([1100, 1000, H]), np.array([1000, 900, H]), np.array([1000, 1100, H])]
+    # ptCoorList = [np.array([900, 1000, H]), np.array([1000, 1000, H]), np.array([1100, 1000, H]), np.array([1000, 900, H]), np.array([1000, 1100, H])]
+    ptCoorList = [np.array([700, 1000, H]), np.array([800, 1000, H]), np.array([900, 1000, H]), np.array([1000, 1000, H]), np.array([1100, 1000, H]), np.array([1200, 1000, H])]
     ptNum = len(ptCoorList)
     ptIDList = []
     dList = []
@@ -70,26 +74,33 @@ for slice in sliceList:
         v_seq = v_seq
         v_seq_list.append(v_seq)
 
-    freq, coh, phase = coherence(v_seq_list[1], v_seq_list[1], 0.5)
+    freq, coh, phase = coherence(v_seq_list[0], v_seq_list[0], 0.5)
     freq0, coh0, phase = coherence(v_seq_list[0], v_seq_list[1], 0.5)
     freq1, coh1, phase = coherence(v_seq_list[0], v_seq_list[2], 0.5)
-    freq2, coh2, phase = coherence(v_seq_list[3], v_seq_list[1], 0.5)
-    freq3, coh3, phase = coherence(v_seq_list[3], v_seq_list[4], 0.5)
+    freq2, coh2, phase = coherence(v_seq_list[0], v_seq_list[3], 0.5)
+    freq3, coh3, phase = coherence(v_seq_list[0], v_seq_list[4], 0.5)
+    freq4, coh4, phase = coherence(v_seq_list[0], v_seq_list[5], 0.5)
 
 
     # plot
     fig, ax = plt.subplots(figsize=(6,6))
-    colors = plt.cm.jet(np.linspace(0,1,4))
+    colors = plt.cm.jet(np.linspace(0,1,5))
 
     # for zInd in range(zNum):
     #     f_ = plotDataList[zInd][0] / (2*np.pi) # convert from omega to frequency
     #     ESD_ = plotDataList[zInd][1] * 2*np.pi
     #     plt.loglog(f_, ESD_, label='h = ' + str(int(HList[zInd])) + 'm', linewidth=1.0, color=colors[zInd])
     # -5/3 law
-    plt.plot(freq0, coh0, label='coh01', linewidth=1.0, color=colors[0])
-    plt.plot(freq1, coh1, label='coh02', linewidth=1.0, color=colors[1])
-    plt.plot(freq2, coh2, label='coh31', linewidth=1.0, color=colors[2])
-    plt.plot(freq3, coh3, label='coh34', linewidth=1.0, color=colors[3])
+    # plt.plot(freq0, coh0, label='coh01', linewidth=1.0, color=colors[0])
+    # plt.plot(freq1, coh1, label='coh02', linewidth=1.0, color=colors[1])
+    # plt.plot(freq2, coh2, label='coh03', linewidth=1.0, color=colors[2])
+    plt.plot(freq3, coh3, label='coh04', linewidth=1.0, color=colors[3])
+    # plt.plot(freq4, coh4, label='coh05', linewidth=1.0, color=colors[4])
+    ind_in, ind_out = 0, 77
+    popt, pcov = curve_fit(fitting_func, freq3[ind_in:ind_out], coh3[ind_in:ind_out])
+    plt.plot(freq0[ind_in:ind_out], fitting_func(freq0[ind_in:ind_out], *popt), 'k-',
+         label='a=%5.3f, alpha=%5.3f' % tuple(popt))
+
     plt.xlabel('f (1/s)')
     plt.ylabel(varName)
     xaxis_min = 0
@@ -98,10 +109,10 @@ for slice in sliceList:
     yaxis_max = 1
     plt.ylim(yaxis_min, yaxis_max)
     plt.xlim(xaxis_min, xaxis_max)
-    plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+    plt.legend(bbox_to_anchor=(0.5,0.9), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
     plt.grid()
-    plt.title('')
+    plt.title('z = ' + str(H) + ', dx = 400')
     fig.tight_layout() # adjust the layout
-    saveName = varName_save + '_' + str(H) + '.png'
+    saveName = varName_save + '_dx400_' + str(H) + '.png'
     plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
-    # plt.show()
+    plt.show()
