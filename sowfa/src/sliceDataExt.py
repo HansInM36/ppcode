@@ -9,7 +9,7 @@ import pickle
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 jobName = 'pcr_NBL_U10'
-ppDir = '/scratch/sowfadata/pp/' + jobName + '/data'
+ppDir = '/scratch/sowfadata/pp/' + jobName
 
 sliceGroup = 'slices_1'
 
@@ -112,7 +112,7 @@ for slice in sliceList:
 
 
     ''' save sliceData into a binary file with pickle '''
-    f = open(ppDir + '/' + slice, 'wb')
+    f = open(ppDir + '/data/' + slice, 'wb')
     pickle.dump(sliceData, f)
     f.close()
 

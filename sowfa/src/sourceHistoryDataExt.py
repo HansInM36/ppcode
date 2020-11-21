@@ -1,38 +1,28 @@
 import os
 import numpy as np
-import pickle
 
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 jobName = 'pcr_NBL'
 ppDir = '/scratch/sowfadata/pp/' + jobName + '/data'
 
-aveData = {}
+sourceHistoryData = {}
 
 # more than one time folder will be created if we run the case by several times
-startTimeList = os.listdir(prjDir + '/' + jobName + '/postProcessing/averaging/.')
+startTimeList = os.listdir(prjDir + '/' + jobName + '/postProcessing/SourceHistory/.')
 startTimeList.sort(key=float)
 
-# get names of all variables
-varList = os.listdir(prjDir + '/' + jobName + '/postProcessing/averaging/' + startTimeList[0] + '/.')
-aveData['variables'] = varList
-
-
-file = open(prjDir + '/' + jobName + '/postProcessing/averaging/' + startTimeList[0] + '/' + 'hLevelsCell', 'r')
-data_org = [i.strip().split() for i in file.readlines()][0]
-file.close()
-hArray = np.array([i for i in data_org]).astype('float')
-aveData['H'] = hArray
+varList = ['SourceUXHistory', 'SourceUYHistory', 'SourceUZHistory', 'SourceTHistory']
 
 # collect time sequences in all time folder and concatenate them into one single array
 tmp = []
 last_t_end = 0
 t_start_list = {} # records the index of start time of every startTime folder (to avoid duplicated time steps)
 for startTime in startTimeList:
-    file = open(prjDir + '/' + jobName + '/postProcessing/averaging/' + startTime + '/' + varList[0], 'r')
+    file = open(prjDir + '/' + jobName + '/postProcessing/SourceHistory/' + startTime + '/' + varList[0], 'r')
     data_org = [i.strip().split() for i in file.readlines()]
     file.close()
-    tmpp = [np.float(row[0]) for row in data_org]
+    tmpp = [np.float(row[0]) for row in data_org[1:]]
     if last_t_end <= 0:
         tmp = tmp + tmpp
         last_t_end = tmp[-1]
@@ -49,22 +39,21 @@ for startTime in startTimeList:
     t_start_list[startTime] = ind_
 
 timeArray = np.array(tmp).astype('float')
-aveData['time'] = timeArray
+sourceHistoryData['time'] = timeArray
 
 
 for var in varList:
     tmp = []
     for startTime in startTimeList:
-        file = open(prjDir + '/' + jobName + '/postProcessing/averaging/' + startTime + '/' + var, 'r')
+        file = open(prjDir + '/' + jobName + '/postProcessing/SourceHistory/' + startTime + '/' + var, 'r')
         data_org = [i.strip().split() for i in file.readlines()]
         file.close()
-        tmpp = [row[2:] for row in data_org]
+        tmpp = [row[2:] for row in data_org[1:]]
         tmp = tmp + tmpp[t_start_list[startTime]:]
     varArray = np.array(tmp).astype('float')
-    aveData[var] = varArray
-
+    sourceHistoryData[var] = varArray
 
 # save horizontally averaged data into a binary file with pickle
-f = open(ppDir + '/' + 'aveData', 'wb')
-pickle.dump(aveData, f)
+f = open(ppDir + '/' + 'sourceHistoryData', 'wb')
+pickle.dump(sourceHistoryData, f)
 f.close()

@@ -1,4 +1,5 @@
 import sys
+sys.path.append('/scratch/ppcode')
 sys.path.append('/scratch/ppcode/sowfa/src')
 import imp
 import numpy as np
@@ -9,7 +10,7 @@ import matplotlib.pyplot as plt
 
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
-jobName = 'pcr_NBL_U10'
+jobName = 'pcr_NBL'
 ppDir = '/scratch/sowfadata/pp/' + jobName
 
 var = 'Tw_mean'
@@ -17,6 +18,8 @@ var = 'Tw_mean'
 varName = r"$\overline{\theta'w'}$"
 varName_save = 'tempw_flux'
 varUnit = r'$K \cdot m/s$'
+
+hubH = 90.0
 
 fr = open(ppDir + '/data/' + 'aveData', 'rb')
 aveData = pickle.load(fr)
@@ -46,7 +49,7 @@ varplotList = []
 for tplot in tplotList:
     varplot = np.zeros(zNum)
     for zind in range(zNum):
-        f = interp1d(tSeq, varSeq[:,zind], kind='cubic')
+        f = interp1d(tSeq, varSeq[:,zind], kind='cubic', fill_value='extrapolate')
         tplotSeq = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
         varplot[zind] = f(tplotSeq).mean()
     varplotList.append(varplot)
@@ -57,14 +60,14 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=102, ls='--', c='black')
+plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
-xaxis_min = -0.004
+xaxis_min = -0.001
 xaxis_max = 0.001
-xaxis_d = 0.001
+xaxis_d = 0.0004
 yaxis_min = 0
-yaxis_max = 800.0
+yaxis_max = 1000.0
 yaxis_d = 100.0
 plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
 plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)

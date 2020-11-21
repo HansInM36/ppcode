@@ -1,22 +1,29 @@
 import sys
+sys.path.append('/scratch/ppcode')
 sys.path.append('/scratch/ppcode/sowfa/src')
 import imp
 import numpy as np
 import pickle
 from scipy.interpolate import interp1d
+import funcs
 import matplotlib.pyplot as plt
 
 
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
-jobName = 'pcr_NBL_U10'
+jobName = 'pcr_NBL'
 ppDir = '/scratch/sowfadata/pp/' + jobName
 
-var = 'uw_mean'
+# coordinate transmation
+O = (0,0,0)
+alpha = 30.0
 
-varName = r"$\overline{u'w'}$"
-varName_save = 'uw_flux'
+varName = r"$\overline{v'w'}$"
+varD = 1 # 0:uw, 1:vw, 2:ww
+varName_save = 'vw_flux'
 varUnit = r'$m^2/s^2$'
+
+hubH = 90.0
 
 fr = open(ppDir + '/data/' + 'aveData', 'rb')
 aveData = pickle.load(fr)
@@ -29,7 +36,17 @@ tSeq = aveData['time']
 tNum = tSeq.size
 tDelta = tSeq[1] - tSeq[0]
 
-varSeq = aveData[var]
+uwSeq = aveData['uw_mean']
+vwSeq = aveData['vw_mean']
+wwSeq = aveData['ww_mean']
+
+varSeq = np.zeros((tNum,zNum))
+
+for zInd in range(zNum):
+    tmp = np.concatenate((uwSeq[:,zInd].reshape(tNum,1), vwSeq[:,zInd].reshape(tNum,1)), axis=1)
+    tmp = np.concatenate((tmp, wwSeq[:,zInd].reshape(tNum,1)), axis=1)
+    tmp_ = funcs.trs(tmp,O,alpha)
+    varSeq[:,zInd] = tmp_[:,varD]
 
 ### plot
 ave_itv = 3600.0 # by default, the averaging interval is 3600s
@@ -46,7 +63,7 @@ varplotList = []
 for tplot in tplotList:
     varplot = np.zeros(zNum)
     for zind in range(zNum):
-        f = interp1d(tSeq, varSeq[:,zind], kind='cubic')
+        f = interp1d(tSeq, varSeq[:,zind], kind='cubic', fill_value='extrapolate')
         tplotSeq = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
         varplot[zind] = f(tplotSeq).mean()
     varplotList.append(varplot)
@@ -57,14 +74,14 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=102, ls='--', c='black')
+plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
-xaxis_min = -0.1
-xaxis_max = 0.02
-xaxis_d = 0.02
+xaxis_min = -0.02
+xaxis_max = 0.04
+xaxis_d = 0.01
 yaxis_min = 0
-yaxis_max = 800.0
+yaxis_max = 1000.0
 yaxis_d = 100.0
 plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
 plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
