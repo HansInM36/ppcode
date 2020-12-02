@@ -17,7 +17,7 @@ ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
 # coordinate transmation
 O = (0,0,0)
-alpha = 30.0
+alpha = 30.0 # rotate the coordinate system to alpha
 
 # names and dimensions for variable
 varName = 'u'

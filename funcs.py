@@ -9,19 +9,19 @@ def trs(M,O,alpha):
     O: new origin
     alpha: rotation degree (counter clockwise)
     '''
+    """ notice: for vectors like velocity, etc., the change of origin shouldn't make sense, so O should be set to (0,0,0) """
     # O = (431.6, 343.9, 0)
     # alpha = 15.52
     alpha = 2*np.pi/360 * alpha
     trsM = np.array([[np.cos(alpha), -np.sin(alpha), 0], [np.sin(alpha), np.cos(alpha), 0], [0, 0, 1]])
 
-    M_ = np.dot(M, trsM)
+    M_ = np.copy(M)
 
-    # M_ = zeros(shape(M))
-    # M_[:,0] = M[:,0].reshape(M_[:,0].shape) - O[0]
-    # M_[:,1] = M[:,1].reshape(M_[:,1].shape) - O[1]
-    # M_[:,2] = M[:,2].reshape(M_[:,2].shape) - O[2]
-    # M_[:,0:3] = dot(M_[:,0:3], trsM)
-    # M_[:,3:6] = dot(M[:,3:6], trsM)
+    rNum = M_.shape[0]
+    for r in range(rNum):
+        M_[r] = M_[r] - O
+
+    M_ = np.dot(M_, trsM)
     return M_
 
 def window_weight(seq, method_='bell'):
