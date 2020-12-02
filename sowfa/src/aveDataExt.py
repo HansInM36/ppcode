@@ -4,21 +4,24 @@ import pickle
 
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
-jobName = 'pcr_NBL'
-ppDir = '/scratch/sowfadata/pp/' + jobName + '/data'
+prjName = 'deepwind'
+jobName = 'gs20'
+
+jobDir = prjDir + '/' + prjName + '/' + jobName
+ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
 aveData = {}
 
 # more than one time folder will be created if we run the case by several times
-startTimeList = os.listdir(prjDir + '/' + jobName + '/postProcessing/averaging/.')
+startTimeList = os.listdir(jobDir + '/postProcessing/averaging/.')
 startTimeList.sort(key=float)
 
 # get names of all variables
-varList = os.listdir(prjDir + '/' + jobName + '/postProcessing/averaging/' + startTimeList[0] + '/.')
+varList = os.listdir(jobDir + '/postProcessing/averaging/' + startTimeList[0] + '/.')
 aveData['variables'] = varList
 
 
-file = open(prjDir + '/' + jobName + '/postProcessing/averaging/' + startTimeList[0] + '/' + 'hLevelsCell', 'r')
+file = open(jobDir + '/postProcessing/averaging/' + startTimeList[0] + '/' + 'hLevelsCell', 'r')
 data_org = [i.strip().split() for i in file.readlines()][0]
 file.close()
 hArray = np.array([i for i in data_org]).astype('float')
@@ -29,7 +32,7 @@ tmp = []
 last_t_end = 0
 t_start_list = {} # records the index of start time of every startTime folder (to avoid duplicated time steps)
 for startTime in startTimeList:
-    file = open(prjDir + '/' + jobName + '/postProcessing/averaging/' + startTime + '/' + varList[0], 'r')
+    file = open(jobDir + '/postProcessing/averaging/' + startTime + '/' + varList[0], 'r')
     data_org = [i.strip().split() for i in file.readlines()]
     file.close()
     tmpp = [np.float(row[0]) for row in data_org]
@@ -55,7 +58,7 @@ aveData['time'] = timeArray
 for var in varList:
     tmp = []
     for startTime in startTimeList:
-        file = open(prjDir + '/' + jobName + '/postProcessing/averaging/' + startTime + '/' + var, 'r')
+        file = open(jobDir + '/postProcessing/averaging/' + startTime + '/' + var, 'r')
         data_org = [i.strip().split() for i in file.readlines()]
         file.close()
         tmpp = [row[2:] for row in data_org]
@@ -65,6 +68,6 @@ for var in varList:
 
 
 # save horizontally averaged data into a binary file with pickle
-f = open(ppDir + '/' + 'aveData', 'wb')
+f = open(ppDir + '/data/' + 'aveData', 'wb')
 pickle.dump(aveData, f)
 f.close()

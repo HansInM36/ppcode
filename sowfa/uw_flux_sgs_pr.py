@@ -5,52 +5,56 @@ import imp
 import numpy as np
 import pickle
 from scipy.interpolate import interp1d
+import funcs
 import matplotlib.pyplot as plt
 
 
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
-jobName = 'pcr_NBL'
-ppDir = '/scratch/sowfadata/pp/' + jobName + '/data'
-
-varname = r'$TI_u$'
-varunit = '%'
-varName_save = 'TIu'
-
-hubH = 90.0
+prjName = 'deepwind'
+jobName = 'gs20'
+ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
 # coordinate transmation
 O = (0,0,0)
 alpha = 30.0
 
-alpha = np.pi/180 * alpha
+varName = r"$\overline{u''w''}$"
+varD = 0 # 0:uw, 1:vw, 2:ww
+varName_save = 'uw_flux_sgs'
+varUnit = r'$m^2/s^2$'
 
-fr = open(ppDir + '/' + 'aveData', 'rb')
+hubH = 90.0
+
+fr = open(ppDir + '/data/' + 'aveData', 'rb')
 aveData = pickle.load(fr)
 fr.close()
 
 zSeq = aveData['H']
+zNum = zSeq.size
 
 tSeq = aveData['time']
 tNum = tSeq.size
 tDelta = tSeq[1] - tSeq[0]
 
-uuSeq = aveData['uu_mean']
-vvSeq = aveData['vv_mean']
-uvSeq = aveData['uv_mean']
-uSeq = aveData['U_mean']
-vSeq = aveData['V_mean']
+R13Seq = aveData['R13_mean']
+R23Seq = aveData['R23_mean']
+R33Seq = aveData['R33_mean']
 
-varianceSeq = uuSeq*np.power(np.cos(alpha),2) + uvSeq*np.cos(alpha)*np.sin(alpha) + vvSeq*np.power(np.sin(alpha),2)
-umeanSeq = uSeq*np.cos(alpha) + vSeq*np.sin(alpha)
-varSeq = 100 * np.power(varianceSeq ,0.5) / umeanSeq
+varSeq = np.zeros((tNum,zNum))
+
+for zInd in range(zNum):
+    tmp = np.concatenate((R13Seq[:,zInd].reshape(tNum,1), R23Seq[:,zInd].reshape(tNum,1)), axis=1)
+    tmp = np.concatenate((tmp, R33Seq[:,zInd].reshape(tNum,1)), axis=1)
+    tmp_ = funcs.trs(tmp,O,alpha)
+    varSeq[:,zInd] = tmp_[:,varD]
 
 ### plot
 ave_itv = 3600.0 # by default, the averaging interval is 3600s
 
-tplot_start = 3600.0*8
-tplot_end = 432000.0
-tplot_delta = 3600.0*8
+tplot_start = 3600.0*6
+tplot_end = 3600.0*6*20
+tplot_delta = 3600.0*6
 
 tplotNum = int((tplot_end - tplot_start)/tplot_delta+1)
 tplotList = list(np.linspace(tplot_start, tplot_end, tplotNum))
@@ -58,11 +62,12 @@ tplotList = list(np.linspace(tplot_start, tplot_end, tplotNum))
 varplotList = []
 for tplot in tplotList:
     varplot = np.zeros(zNum)
-    for zInd in range(zNum):
-        f = interp1d(tSeq, varSeq[:,zInd], kind='cubic', fill_value='extrapolate')
+    for zind in range(zNum):
+        f = interp1d(tSeq, varSeq[:,zind], kind='cubic', fill_value='extrapolate')
         tplotSeq = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
-        varplot[zInd] = f(tplotSeq).mean()
+        varplot[zind] = f(tplotSeq).mean()
     varplotList.append(varplot)
+
 
 fig, ax = plt.subplots(figsize=(6,6))
 colors = plt.cm.jet(np.linspace(0,1,tplotNum))
@@ -70,11 +75,11 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
 plt.axhline(y=hubH, ls='--', c='black')
-plt.xlabel(varname + ' (' + varunit + ')')
+plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
-xaxis_min = 0
-xaxis_max = 12
-xaxis_d = 2
+xaxis_min = -0.08
+xaxis_max = 0.02
+xaxis_d = 0.02
 yaxis_min = 0
 yaxis_max = 1000.0
 yaxis_d = 100.0
@@ -86,7 +91,6 @@ plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is th
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveDir = '/scratch/sowfadata/pp/' + jobName + '/'
 saveName = varName_save + '_pr.png'
-plt.savefig(saveDir + saveName)
+plt.savefig(ppDir + '/' + saveName)
 plt.show()

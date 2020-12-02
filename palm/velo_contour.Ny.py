@@ -7,13 +7,13 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_NBL_U10'
-suffix = '_gs20'
+jobName  = 'cnp'
+suffix = '_timevaring'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
 maskid = 'M02'
 
-cycle_no_list = ['.005'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.009'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 varName = 'u'
@@ -69,7 +69,7 @@ fig.set_figwidth(8)
 fig.set_figheight(6)
 
 cbreso = 100 # resolution of colorbar
-vMin, vMax, vDelta = (-1.4, 1.2, 0.2)
+vMin, vMax, vDelta = (-2, 2, 0.2)
 levels = np.linspace(vMin, vMax, cbreso + 1)
 
 for i in range(yNum):
@@ -104,7 +104,7 @@ cbar.set_label(varName + ' (m/s)', fontsize=12)
 cbar.ax.tick_params(labelsize=12)
 fig.suptitle('t = ' + str(np.round(tSeq[tInd],2)) + 's')
 saveName = varName + '_contour_' + str(tSeq[tInd]) + '_' + str(int(ySeq[0])) + '.png'
-plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
+# plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
 plt.show()
 
 

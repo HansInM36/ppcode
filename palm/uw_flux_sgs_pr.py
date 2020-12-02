@@ -16,12 +16,10 @@ ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 cycle_no_list = ['.000','.001'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
-var = 'w*u*'
-varName = r"$\overline{u'w'}$"
-varName_save = 'uw_flux'
+var = 'w"u"'
+varName = r"$\overline{u''w''}$"
+varName_save = 'uw_flux_sgs'
 varUnit = r'$m^2/s^2$'
-
-hubH = 90.0
 
 # read the output data of all cycle_no_list
 nc_file_list = []
@@ -72,10 +70,10 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=hubH, ls='--', c='black')
+# plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
-xaxis_min = -0.1
+xaxis_min = -0.08
 xaxis_max = 0.02
 xaxis_d = 0.02
 yaxis_min = 0

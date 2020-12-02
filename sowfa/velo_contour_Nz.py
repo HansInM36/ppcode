@@ -9,8 +9,9 @@ import matplotlib.pyplot as plt
 
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
-jobName = 'pcr_NBL_U10'
-ppDir = '/scratch/sowfadata/pp/' + jobName
+prjName = 'deepwind'
+jobName = 'gs20'
+ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
 sliceList = ['Nz0', 'Nz1', 'Nz2', 'Nz3', 'Nz4', 'Nz5', 'Nz6', 'Nz7',]
 sliceNum = len(sliceList)

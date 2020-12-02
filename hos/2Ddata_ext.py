@@ -5,7 +5,7 @@ import pickle
 
 prjdir = "/scratch/HOSdata/JOBS/"
 prjname = "regular"
-jobname = "ka03"
+jobname = "ka01"
 suffix = ""
 
 file = prjdir + prjname + '/' + jobname + '/' + "Results" + suffix + '/' + "3d.dat"

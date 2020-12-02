@@ -9,7 +9,7 @@ import pickle
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
-jobName = 'gs20'
+jobName = 'pcr_NBL_sourceFixed'
 jobDir = prjDir + '/' + prjName + '/' + jobName
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
@@ -25,8 +25,13 @@ vectorList = ['U']
 timestrList = os.listdir(jobDir + '/postProcessing/' + sliceGroup + '/' + '.')
 timestrList.sort(key=float)
 
+# data is too huge, so we only take the first 2400 time steps
+timestrList = timestrList[:2400]
+
 timeList = [np.float(i) for i in timestrList]
 timeArray = np.array(timeList)
+
+
 
 # ### another way to read file
 # file = open(jobDir + '/postProcessing/' + sliceGroup + '/' + time + '/' + varName + '_' + slice + '.vtk', 'r')
@@ -83,8 +88,9 @@ for slice in sliceList:
     sliceData['scalars'] = scalarList
     # ---------- get scalar array ---------- #
     for scalar in scalarList:
-        scalarArray = []
+        sliceData[scalar] = []
         for time in timestrList:
+            print('Processing scalar: ' + scalar + ', ' + time)
             reader = vtk.vtkPolyDataReader()
             reader.SetFileName(jobDir + '/postProcessing/' + sliceGroup + '/' + time + '/' + scalar + '_' + slice + '.vtk')
             # reader.ReadAllVectorsOn()
@@ -93,16 +99,15 @@ for slice in sliceList:
             reader.Update()
             polyData = reader.GetOutput()
             pointData = polyData.GetPointData()
-            scalarArray.append(vtk_to_numpy(pointData.GetScalars(scalar)))
-        scalarArray = np.array(scalarArray)
-        sliceData[scalar] = scalarArray
-        del scalarArray
+            sliceData[scalar].append(vtk_to_numpy(pointData.GetScalars(scalar)))
+        sliceData[scalar] = np.array(sliceData[scalar])
 
     sliceData['vectors'] = vectorList
     # ---------- get vector array ---------- #
     for vector in vectorList:
-        vectorArray = []
+        sliceData[vector] = []
         for time in timestrList:
+            print('Processing vector: ' + vector + ', ' + time)
             reader = vtk.vtkPolyDataReader()
             reader.SetFileName(jobDir + '/postProcessing/' + sliceGroup + '/' + time + '/' + vector + '_' + slice + '.vtk')
             reader.ReadAllVectorsOn()
@@ -111,11 +116,8 @@ for slice in sliceList:
             reader.Update()
             polyData = reader.GetOutput()
             pointData = polyData.GetPointData()
-            vectorArray.append(vtk_to_numpy(pointData.GetVectors(vector)))
-        vectorArray = np.array(vectorArray)
-        sliceData[vector] = vectorArray
-        del vectorArray
-
+            sliceData[vector].append(vtk_to_numpy(pointData.GetVectors(vector)))
+        sliceData[vector] = np.array(sliceData[vector])
 
     ''' save sliceData into a binary file with pickle '''
     f = open(ppDir + '/data/' + slice, 'wb')

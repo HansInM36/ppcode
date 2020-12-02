@@ -6,17 +6,18 @@ sys.path.append('/scratch/ppcode')
 import numpy as np
 from netCDF4 import Dataset
 from scipy.interpolate import interp1d
-from funcs import *
+from scipy.optimize import curve_fit
+import funcs
 import matplotlib.pyplot as plt
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_NBL_U10'
-suffix = '_gs20'
+jobName  = 'deepwind'
+suffix = '_0'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
 maskid = 'M01'
 
-cycle_no_list = ['.005'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.002'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 var = 'u'
@@ -51,6 +52,7 @@ yNum = ySeq.size
 xName = list(nc_file_list[0].variables[var].dimensions)[3] # the height name string
 xSeq = np.array(nc_file_list[0].variables[xName][:], dtype=type(nc_file_list[0].variables[xName])) # array of height levels
 xSeq = xSeq.astype(float)
+dx = xSeq[1] - xSeq[0]
 xNum = xSeq.size
 
 # concatenate arraies of all cycle_no_list along the first dimension (axis=0), i.e. time
@@ -62,57 +64,70 @@ varSeq = varSeq.astype(float)
 t_start = 432000.0
 t_end = 435600.0
 t_delta = 2.0
+fs = 1/t_delta
 t_num = int((t_end - t_start) / t_delta + 1)
 t_seq = np.linspace(t_start, t_end, t_num)
 
+segNum = 128
 
-zInd = 0
-for zInd in range(zNum):
-    # ptCoorList = [(49,50),(50,50),(51,50),(50,49),(50,51)]
-    ptCoorList = [(45,50),(50,50),(55,50),(50,45),(50,55)]
-    ptNum = len(ptCoorList)
+zInd = 5
 
-    v_seq_list = []
+xInds = (25, 30)
+yInds = (25, 25)
 
-    for pt in range(ptNum):
-        vSeq = varSeq[:,zInd,ptCoorList[pt][1],ptCoorList[pt][0]]
-        f = interp1d(tSeq, vSeq, fill_value='extrapolate')
-        v_seq = f(t_seq)
-        v_seq = v_seq
-        v_seq_list.append(v_seq)
+dx = xSeq[xInds[1]] - xSeq[xInds[0]]
+dy = ySeq[yInds[1]] - ySeq[yInds[0]]
+p0 = '(' + str(xSeq[xInds[0]]) + ', ' + str(ySeq[yInds[0]]) + ', ' + str(zSeq[zInd]) + ')'
+p1 = '(' + str(xSeq[xInds[1]]) + ', ' + str(ySeq[yInds[1]]) + ', ' + str(zSeq[zInd]) + ')'
 
-    freq, coh, phase = coherence(v_seq_list[1], v_seq_list[1], 0.5)
-    freq0, coh0, phase = coherence(v_seq_list[0], v_seq_list[1], 0.5)
-    freq1, coh1, phase = coherence(v_seq_list[0], v_seq_list[2], 0.5)
-    freq2, coh2, phase = coherence(v_seq_list[3], v_seq_list[1], 0.5)
-    freq3, coh3, phase = coherence(v_seq_list[3], v_seq_list[4], 0.5)
+u0 = varSeq[:,zInd,yInds[0],xInds[0]]
+u1 = varSeq[:,zInd,yInds[1],xInds[1]]
+
+# time interpolation
+method_ = 'linear' # 'linear' or 'cubic'
+f0 = interp1d(tSeq, u0, kind=method_, fill_value='extrapolate')
+f1 = interp1d(tSeq, u1, kind=method_, fill_value='extrapolate')
+u0 = f0(t_seq)
+u1 = f1(t_seq)
+
+# calculate coherence and phase
+freq, coh, phase_ = funcs.coherence(u0, u1, fs, segNum)
+
+def fitting_func(x, a, alpha):
+    return a * np.exp(- alpha * x)
 
 
-    # plot
-    fig, ax = plt.subplots(figsize=(6,6))
-    colors = plt.cm.jet(np.linspace(0,1,4))
+f_out = 0.15
+tmp = abs(freq - f_out)
+ind_in, ind_out = 1, np.where(tmp == tmp.min())[0][0]
 
-    # for zInd in range(zNum):
-    #     f_ = plotDataList[zInd][0] / (2*np.pi) # convert from omega to frequency
-    #     ESD_ = plotDataList[zInd][1] * 2*np.pi
-    #     plt.loglog(f_, ESD_, label='h = ' + str(int(HList[zInd])) + 'm', linewidth=1.0, color=colors[zInd])
-    # -5/3 law
-    plt.plot(freq0, coh0, label='coh01', linewidth=1.0, color=colors[0])
-    plt.plot(freq1, coh1, label='coh02', linewidth=1.0, color=colors[1])
-    plt.plot(freq2, coh2, label='coh31', linewidth=1.0, color=colors[2])
-    plt.plot(freq3, coh3, label='coh34', linewidth=1.0, color=colors[3])
-    plt.xlabel('f (1/s)')
-    plt.ylabel(varName)
-    xaxis_min = 0
-    xaxis_max = 0.25
-    yaxis_min = 0
-    yaxis_max = 1
-    plt.ylim(yaxis_min, yaxis_max)
-    plt.xlim(xaxis_min, xaxis_max)
-    plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
-    plt.grid()
-    plt.title('')
-    fig.tight_layout() # adjust the layout
-    saveName = varName_save + '_' + str(zSeq[zInd]) + '.png'
-    plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
-    # plt.show()
+
+fig, ax = plt.subplots(figsize=(6,6))
+ax.plot(freq, coh, linestyle=':', marker='o', markersize=3, color='k')
+popt, pcov = curve_fit(fitting_func, freq[ind_in:ind_out], coh[ind_in:ind_out], bounds=(0, [1, 999]))
+ax.plot(freq[0:ind_out], fitting_func(freq[0:ind_out], *popt), linestyle='-', color='k',
+     label='a=%5.3f, alpha=%5.3f' % tuple(popt))
+# plt.axvline(x=22.1/100/np.pi, ls='--', c='black')
+# plt.axvline(x=2*22.1/100/np.pi, ls='--', c='black')
+# plt.axvline(x=3*22.1/100/np.pi, ls='--', c='black')
+plt.xlabel('f (1/s)')
+plt.ylabel('Coherence')
+# xaxis_min = 5
+# xaxis_max = 10
+# xaxis_d = 0.5
+yaxis_min = 0
+yaxis_max = 1.0
+yaxis_d = 0.1
+plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
+# plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
+# plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
+plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
+ax.text(0.0, 1.02, 'dx = ' + str(dx) + 'm', transform=ax.transAxes, fontsize=12)
+ax.text(0.8, 1.02, 'h = ' + str(int(zSeq[zInd])) + 'm', transform=ax.transAxes, fontsize=12)
+plt.legend(bbox_to_anchor=(0.5,0.8), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+plt.grid()
+plt.title('')
+fig.tight_layout() # adjust the layout
+saveName = varName_save + '_' + str(int(zSeq[zInd])) + '_pr.png'
+# plt.savefig(ppDir + '/' + saveName)
+plt.show()

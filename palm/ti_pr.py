@@ -9,36 +9,44 @@ import matplotlib.pyplot as plt
 from matplotlib import colors, ticker, cm
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_NBL_U10'
-suffix = '_gs20'
+jobName  = 'deepwind'
+suffix = '_0'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
-cycle_no_list = ['.000', '.001', '.002', '.004', '.005'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.000','.001'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 varName = r'$TI_u$'
-var1Name = 'u'
-var2Name = 'u*2'
 varUnit = '%'
 varName_save = 'TI_u'
+
+hubH = 90.0
 
 # read the output data of all cycle_no_list
 nc_file_list = []
 tSeq_list = []
-var1Seq_list = []
-var2Seq_list = []
+uSeq_list = []
+uuSeq_list = []
+vSeq_list = []
+vvSeq_list = []
+wSeq_list = []
+wwSeq_list = []
 for i in range(cycle_num):
     input_file = prjDir + '/' + jobName + suffix + "/OUTPUT/" + jobName + suffix + "_pr" + cycle_no_list[i] + ".nc"
     nc_file_list.append(Dataset(input_file, "r", format="NETCDF4"))
     tSeq_list.append(np.array(nc_file_list[i].variables['time'][:], dtype=type(nc_file_list[i].variables['time'])))
-    var1Seq_list.append(np.array(nc_file_list[i].variables[var1Name][:], dtype=type(nc_file_list[i].variables[var1Name])))
-    var2Seq_list.append(np.array(nc_file_list[i].variables[var2Name][:], dtype=type(nc_file_list[i].variables[var2Name])))
+    uSeq_list.append(np.array(nc_file_list[i].variables['u'][:], dtype=type(nc_file_list[i].variables['u'])))
+    uuSeq_list.append(np.array(nc_file_list[i].variables['u*2'][:], dtype=type(nc_file_list[i].variables['u*2'])))
+    vSeq_list.append(np.array(nc_file_list[i].variables['v'][:], dtype=type(nc_file_list[i].variables['v'])))
+    vvSeq_list.append(np.array(nc_file_list[i].variables['v*2'][:], dtype=type(nc_file_list[i].variables['v*2'])))
+    wSeq_list.append(np.array(nc_file_list[i].variables['w'][:], dtype=type(nc_file_list[i].variables['w'])))
+    wwSeq_list.append(np.array(nc_file_list[i].variables['w*2'][:], dtype=type(nc_file_list[i].variables['w*2'])))
 
 # print(list(nc_file_list[0].dimensions)) #list all dimensions
 # print(list(nc_file_list[0].variables)) #list all the variables
 # print(list(nc_file_list[0].variables['zu'].dimensions)) #list dimensions of a specified variable
 
-height = list(nc_file_list[0].variables[var1Name].dimensions)[1] # the height name string
+height = list(nc_file_list[0].variables['u'].dimensions)[1] # the height name string
 zSeq = np.array(nc_file_list[0].variables[height][:], dtype=type(nc_file_list[0].variables[height])) # array of height levels
 zSeq = zSeq.astype(float)
 zNum = zSeq.size
@@ -46,33 +54,34 @@ zNum = zSeq.size
 # concatenate arraies of all cycle_no_list along the first dimension (axis=0), i.e. time
 tSeq = np.concatenate([tSeq_list[i] for i in range(cycle_num)], axis=0)
 tSeq = tSeq.astype(float)
-var1Seq = np.concatenate([var1Seq_list[i] for i in range(cycle_num)], axis=0)
-var1Seq = var1Seq.astype(float)
-var2Seq = np.concatenate([var2Seq_list[i] for i in range(cycle_num)], axis=0)
-var2Seq = var2Seq.astype(float)
-
-varSeq = 100 * np.power(var2Seq[2:,1:],0.5) / var1Seq[2:,1:] # somehow negative var2 values appear in the first two time steps; TI(z=0) should be specified to 0
-
-tSeq = tSeq[2:]
-tNum = tSeq.size
-zSeq = zSeq[1:]
-zNum = zSeq.size
-
-tNum = np.shape(tSeq)[0]
+uSeq = np.concatenate([uSeq_list[i] for i in range(cycle_num)], axis=0)
+uSeq = uSeq.astype(float)
+uuSeq = np.concatenate([uuSeq_list[i] for i in range(cycle_num)], axis=0)
+uuSeq = uuSeq.astype(float)
+vSeq = np.concatenate([vSeq_list[i] for i in range(cycle_num)], axis=0)
+vSeq = vSeq.astype(float)
+vvSeq = np.concatenate([vvSeq_list[i] for i in range(cycle_num)], axis=0)
+vvSeq = vvSeq.astype(float)
+wSeq = np.concatenate([wSeq_list[i] for i in range(cycle_num)], axis=0)
+wSeq = wSeq.astype(float)
+wwSeq = np.concatenate([wwSeq_list[i] for i in range(cycle_num)], axis=0)
+wwSeq = wwSeq.astype(float)
 
 ### plot
-tplot_start = 3600.0*8
-tplot_end = 432000.0
-tplot_delta = 3600.0*8
+varSeq = 100 * np.power(uuSeq[2:,1:], 0.5) / uSeq[2:,1:] # somehow negative var2 values appear in the first two time steps; TI(z=0) should be specified to 0
+
+tplot_start = 3600.0*6
+tplot_end = 3600.0*6*20
+tplot_delta = 3600.0*6
 
 tplotNum = int((tplot_end - tplot_start)/tplot_delta+1)
 tplotList = list(np.linspace(tplot_start, tplot_end, tplotNum))
 
 varplotList = []
 for tplot in tplotList:
-    varplot = np.zeros(zNum)
-    for zInd in range(zNum):
-        f = interp1d(tSeq, varSeq[:,zInd], kind='cubic')
+    varplot = np.zeros(zNum-1)
+    for zInd in range(zNum-1):
+        f = interp1d(tSeq[2:], varSeq[:,zInd], kind='cubic', fill_value="extrapolate")
         varplot[zInd] = f(tplot)
     varplotList.append(varplot)
 
@@ -81,15 +90,15 @@ fig, ax = plt.subplots(figsize=(6,6))
 colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
-    plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=102, ls='--', c='black')
+    plt.plot(varplotList[i], zSeq[1:], label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
+plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
 xaxis_min = 0
-xaxis_max = 10.0
-xaxis_d = 2.0
+xaxis_max = 12
+xaxis_d = 2
 yaxis_min = 0
-yaxis_max = 800.0
+yaxis_max = 1000.0
 yaxis_d = 100.0
 plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
 plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
@@ -100,5 +109,57 @@ plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
 saveName = varName_save + '_pr.png'
+plt.savefig(ppDir + '/' + saveName)
+plt.show()
+
+
+
+### TI in 3 dimensions at certain timestep
+TIuSeq = 100 * np.power(uuSeq[2:,1:], 0.5) / uSeq[2:,1:] # somehow negative var2 values appear in the first two time steps; TI(z=0) should be specified to 0
+TIvSeq = 100 * np.power(vvSeq[2:,1:], 0.5) / uSeq[2:,1:]
+TIwSeq = 100 * np.power(wwSeq[2:,1:], 0.5) / uSeq[2:,1:]
+
+tplot = 432000.0
+
+TIuplot = np.zeros(zNum-1)
+TIvplot = np.zeros(zNum-1)
+TIwplot = np.zeros(zNum-1)
+for zInd in range(zNum-1):
+    f = interp1d(tSeq[2:], TIuSeq[:,zInd], kind='cubic', fill_value='extrapolate')
+    # tplotSeq = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
+    TIuplot[zInd] = f(tplot)
+
+    f = interp1d(tSeq[2:], TIvSeq[:,zInd], kind='cubic', fill_value='extrapolate')
+    # tplotSeq = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
+    TIvplot[zInd] = f(tplot)
+
+    f = interp1d(tSeq[2:], TIwSeq[:,zInd], kind='cubic', fill_value='extrapolate')
+    # tplotSeq = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
+    TIwplot[zInd] = f(tplot)
+
+
+
+fig, ax = plt.subplots(figsize=(6,6))
+plt.plot(TIuplot, zSeq[1:], label='TIu', linewidth=1.0, color='r')
+plt.plot(TIvplot, zSeq[1:], label='TIv', linewidth=1.0, color='b')
+plt.plot(TIwplot, zSeq[1:], label='TIw', linewidth=1.0, color='g')
+plt.axhline(y=hubH, ls='--', c='black')
+plt.xlabel('TI' + ' (' + varUnit + ')')
+plt.ylabel('z (m)')
+xaxis_min = 0
+xaxis_max = 12
+xaxis_d = 2
+yaxis_min = 0
+yaxis_max = 1000.0
+yaxis_d = 100.0
+plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
+plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
+plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
+plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
+plt.legend(bbox_to_anchor=(0.8,0.9), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+plt.grid()
+plt.title('')
+fig.tight_layout() # adjust the layout
+saveName = 'TI_uvw' + '_pr.png'
 plt.savefig(ppDir + '/' + saveName)
 plt.show()

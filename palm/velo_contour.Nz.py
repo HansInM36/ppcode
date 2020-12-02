@@ -7,13 +7,13 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_NBL_U10'
-suffix = '_gs20'
+jobName  = 'cnp'
+suffix = '_sin'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
 maskid = 'M01'
 
-cycle_no_list = ['.005'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.003'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 varName = 'u'
@@ -50,6 +50,7 @@ xSeq = xSeq.astype(float)
 # concatenate arraies of all cycle_no_list along the first dimension (axis=0), i.e. time
 tSeq = np.concatenate([tSeq_list[i] for i in range(cycle_num)], axis=0)
 tSeq = tSeq.astype(float)
+tNum = tSeq.size
 varSeq = np.concatenate([varSeq_list[i] for i in range(cycle_num)], axis=0)
 varSeq = varSeq.astype(float)
 
@@ -94,23 +95,44 @@ cbar.set_label(varName + ' (m/s)', fontsize=12)
 cbar.ax.tick_params(labelsize=12)
 fig.suptitle('t = ' + str(np.round(tSeq[tInd],2)) + 's')
 saveName = varName + '_contour_' + str(tSeq[tInd]) + '_' + str(int(zSeq[0])) + '_etc' + '.png'
-plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
+# plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
 plt.show()
 
 
-# ### single plot
-# sliceInd = 2
-# fig, axs = plt.subplots(figsize=(8,8), constrained_layout=True)
-# cbreso = 100 # resolution of colorbar
-# x_ = plotDataList[sliceInd][0]
-# y_ = plotDataList[sliceInd][1]
-# v_ = plotDataList[sliceInd][2]
-# CS = axs.contourf(x_, y_, v_ - v_.mean(), cbreso, cmap='jet')
-# cbar = plt.colorbar(CS, ax=axs, shrink=1.0)
-# cbar.ax.set_ylabel(varNameDict[varD] + ' (m/s)', fontsize=12)
-# plt.ylabel('y (m)')
-# plt.xlabel('x (m)')
-# plt.title('t = ' + str(tSeq[tInd]) + 's')
-# saveName = varNameDict[varD] + '_contour_' + str(tSeq[tInd]) + '_' + sliceList[sliceInd] + '.png'
-# plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
-# plt.show()
+
+
+
+zInd = 0
+
+plotDataList = []
+HList = []
+
+for tInd in range(tNum):
+    HList.append(zSeq[zInd])
+    plotDataList.append((xSeq, ySeq, varSeq[tInd,zInd]))
+
+
+### single plot
+vMin, vMax, vDelta = (-0.1, 0.2, 0.02)
+levels = np.linspace(vMin, vMax, cbreso + 1)
+
+for tInd in range(60):
+    fig, axs = plt.subplots(figsize=(8,8), constrained_layout=False)
+    cbreso = 100 # resolution of colorbar
+    x_ = plotDataList[tInd][0]
+    y_ = plotDataList[tInd][1]
+    v_ = plotDataList[tInd][2]
+    CS = axs.contourf(x_, y_, v_ - v_.mean(), cbreso, levels=levels, cmap='jet', vmin=vMin, vmax=vMax)
+    cbartickList = np.linspace(vMin, vMax, int((vMax-vMin)/vDelta)+1)
+    cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
+    axs.text(0.8, 1.01, 't = ' + str(np.round(tSeq[tInd],2)) + 's', transform=axs.transAxes, fontsize=12)
+    cbar.ax.set_ylabel(r"$u'$" + ' (m/s)', fontsize=12)
+    plt.ylabel('y (m)')
+    plt.xlabel('x (m)')
+    plt.title('h = ' + str(int(HList[zInd])) + 'm')
+    # saveName = varNameDict[varD] + '_contour_' + str(tSeq[tInd]) + '_' + sliceList[zInd] + '.png'
+    saveName = "%.4d" % tInd + '.png'
+    # plt.savefig(ppDir + '/animation/' + saveName, bbox_inches='tight')
+    plt.savefig(ppDir + '/animation/' + saveName)
+    # plt.show()
+    plt.close()

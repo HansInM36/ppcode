@@ -9,15 +9,17 @@ import matplotlib.pyplot as plt
 from matplotlib import colors, ticker, cm
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_NBL_U10'
-suffix = '_gs20'
+jobName  = 'deepwind'
+suffix = '_0'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
-cycle_no_list = ['.000', '.001', '.002', '.004', '.005'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.000','.001'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 varName = 'theta'
 varUnit = 'K'
+
+hubH = 90.0
 
 # read the output data of all cycle_no_list
 nc_file_list = []
@@ -47,9 +49,14 @@ varSeq = varSeq.astype(float)
 tNum = np.shape(tSeq)[0]
 
 ### plot
-tplot_start = 3600.0*8
-tplot_end = 432000.0
-tplot_delta = 3600.0*8
+# tplot_start = 3600.0*8
+# tplot_end = 432000.0
+# tplot_delta = 3600.0*8
+
+
+tplot_start = 3600.0*6
+tplot_end = 3600.0*6*20
+tplot_delta = 3600.0*6
 
 tplotNum = int((tplot_end - tplot_start)/tplot_delta+1)
 tplotList = list(np.linspace(tplot_start, tplot_end, tplotNum))
@@ -68,14 +75,14 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=102, ls='--', c='black')
+plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
-xaxis_min = 276.0
-xaxis_max = 286.0
+xaxis_min = 298.0
+xaxis_max = 310.0
 xaxis_d = 2.0
 yaxis_min = 0
-yaxis_max = 800.0
+yaxis_max = 1000.0
 yaxis_d = 100.0
 plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
 plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)

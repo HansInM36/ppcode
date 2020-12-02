@@ -11,8 +11,9 @@ import matplotlib.pyplot as plt
 
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
-jobName = 'pcr_NBL'
-ppDir = '/scratch/sowfadata/pp/' + jobName
+prjName = 'deepwind'
+jobName = 'gs20'
+ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
 var = 'T_mean'
 
@@ -37,12 +38,10 @@ varSeq = aveData[var]
 
 ### plot
 ave_itv = 3600.0 # by default, the averaging interval is 3600s
-# ind_back_num = np.floor(ave_itv / tDelta)
-
-tplot_start = 3600.0*8 # must larger than ave_itv
-tplot_end = 432000.0
-tplot_delta = 3600.0*8
-
+                 # ind_back_num = np.floor(ave_itv / tDelta)
+tplot_start = 3600.0*6 # must larger than ave_itv
+tplot_end = 3600.0*6*20
+tplot_delta = 3600.0*6
 tplotNum = int((tplot_end - tplot_start)/tplot_delta+1)
 tplotList = list(np.linspace(tplot_start, tplot_end, tplotNum))
 
@@ -55,14 +54,6 @@ for tplot in tplotList:
         varplot[zInd] = f(tplotSeq).mean()
     varplotList.append(varplot)
 
-# varplotList = []
-# for tplot in tplotList:
-#     tind_start =  np.where(tSeq==(tplot-ave_itv))[0][0]
-#     tind_plot = np.where(tSeq==tplot)[0][0]
-#     tindList = list(range(tind_start,tind_plot + 1,1))
-#     tindNum = len(tindList)
-#     varplot = np.mean(varSeq[tind_start:tind_plot+1], axis=0)
-#     varplotList.append(varplot)
 
 fig, ax = plt.subplots(figsize=(6,6))
 colors = plt.cm.jet(np.linspace(0,1,tplotNum))
