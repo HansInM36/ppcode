@@ -17,3 +17,6 @@ xSeq = np.array(data.variables['x'][:]).astype(float)
 
 etaSeq = np.array(data.variables['eta'][:,:,:]).astype(float)
 phiSeq = np.array(data.variables['phi'][:,:,:]).astype(float)
+
+tt = etaSeq[0,0,:]
+print(np.fft.fft(tt))

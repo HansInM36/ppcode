@@ -15,7 +15,7 @@ prjName = 'deepwind'
 jobName = 'gs20'
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
-varname = r'$TI_u$'
+varname = r'$\mathrm{TI_u}$'
 varunit = '%'
 varName_save = 'TI_u'
 
@@ -97,7 +97,7 @@ plt.show()
 
 ### TI in 3 dimensions at certain timestep
 ave_itv = 3600.0
-tplot = 432000.0
+tplot = 72000.0
 
 uvarianceSeq = uuSeq*np.power(np.cos(alpha),2) + 2*uvSeq*np.cos(alpha)*np.sin(alpha) + vvSeq*np.power(np.sin(alpha),2)
 vvarianceSeq = uuSeq*np.power(np.sin(alpha),2) + 2*uvSeq*np.sin(alpha)*np.cos(alpha) + vvSeq*np.power(np.cos(alpha),2)
@@ -128,7 +128,7 @@ fig, ax = plt.subplots(figsize=(6,6))
 plt.plot(TIuplot, zSeq, label='TIu', linewidth=1.0, color='r')
 plt.plot(TIvplot, zSeq, label='TIv', linewidth=1.0, color='b')
 plt.plot(TIwplot, zSeq, label='TIw', linewidth=1.0, color='g')
-plt.axhline(y=hubH, ls='--', c='black')
+# plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel('TI' + ' (' + varunit + ')')
 plt.ylabel('z (m)')
 xaxis_min = 0
@@ -137,8 +137,8 @@ xaxis_d = 2
 yaxis_min = 0
 yaxis_max = 1000.0
 yaxis_d = 100.0
-plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
+plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
 plt.legend(bbox_to_anchor=(0.8,0.9), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend

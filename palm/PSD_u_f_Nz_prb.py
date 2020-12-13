@@ -6,7 +6,8 @@ sys.path.append('/scratch/ppcode')
 import numpy as np
 from netCDF4 import Dataset
 from scipy.interpolate import interp1d
-import funcs
+import scipy.signal
+from funcs import *
 import matplotlib.pyplot as plt
 
 prjDir = '/scratch/palmdata/JOBS'
@@ -19,10 +20,10 @@ maskid = 'M03'
 cycle_no_list = ['.002','.003','.004'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
-var = 'u'
-varName = r'$\mathrm{\rho_{uu}}$'
-varUnit = ''
-varName_save = 'uu_corr'
+var = 'v'
+varName = r'$\mathrm{S_v}$'
+varUnit = r'$\mathrm{m^2/s}$'
+varName_save = 'Sv'
 
 
 # read the output data of all cycle_no_list
@@ -56,25 +57,28 @@ xNum = xSeq.size
 # concatenate arraies of all cycle_no_list along the first dimension (axis=0), i.e. time
 tSeq = np.concatenate([tSeq_list[i] for i in range(cycle_num)], axis=0)
 tSeq = tSeq.astype(float)
+tNum = tSeq.size
 varSeq = np.concatenate([varSeq_list[i] for i in range(cycle_num)], axis=0)
 varSeq = varSeq.astype(float)
 
 t_start = 432000.0
 t_end = 434400.0
 t_delta = 0.1
+fs = 1/t_delta
 t_num = int((t_end - t_start) / t_delta + 1)
 t_seq = np.linspace(t_start, t_end, t_num)
 
+segNum = 1200
 
 plotDataList = []
 HList = []
 
-for zInd in range(1,zNum): # if zSeq[0] = 0, the data should not be used
+for zInd in range(zNum):
     HList.append(zSeq[zInd])
 
     pNum = int(xNum*yNum)
 
-    autocorr_list = []
+    PSD_list = []
     for yInd in range(yNum):
         for xInd in range(xNum):
             vSeq = varSeq[:,zInd,yInd,xInd]
@@ -82,39 +86,49 @@ for zInd in range(1,zNum): # if zSeq[0] = 0, the data should not be used
             f = interp1d(tSeq, vSeq, fill_value='extrapolate')
             v_seq = f(t_seq)
             # detrend
-            v_seq = funcs.detrend(t_seq, v_seq)
-            tau_seq, tmp = funcs.corr(t_seq, v_seq, v_seq)
-            autocorr_list.append(tmp)
-    autocorr_seq = np.average(np.array(autocorr_list), axis=0)
-    plotDataList.append((tau_seq, autocorr_seq))
+            deg_ = 1
+            polyFunc = np.poly1d(np.polyfit(t_seq, v_seq, deg=deg_))
+            tmp = v_seq - polyFunc(t_seq)
+            tmp = tmp - tmp.mean()
+            # bell tapering
+            tmp = window_weight(tmp)
+            # FFT
+            # omega_seq, tmp = PSD_omega(t_seq,tmp)
+            f_seq, tmp = scipy.signal.csd(tmp, tmp, fs, nperseg=segNum, noverlap=None)
+            PSD_list.append(tmp)
+    PSD_seq = np.average(np.array(PSD_list), axis=0)
+    plotDataList.append((f_seq, PSD_seq))
 
 
-# plot
-
+# plot PSD_u_f
 fig, ax = plt.subplots(figsize=(6,6))
-colors = plt.cm.jet(np.linspace(0,1,9))
+zList = [1,2,3,4,5,6,7,8,9]
+zlen = len(zList)
+colors = plt.cm.jet(np.linspace(0,1,zlen))
+# colors = plt.cm.jet(np.linspace(0,1,zNum))
 
-for i in range(9):
-    zInd = i+1
-    tau_ = plotDataList[zInd][0] # convert from omega to frequency
-    autocorr_ = plotDataList[zInd][1]
-    plt.plot(tau_, autocorr_, label='h = ' + str(int(HList[zInd])) + 'm', linewidth=1.0, color=colors[i])
-plt.xlabel(r'$\mathrm{\tau}$ (s)')
-plt.ylabel(varName)
-xaxis_min = 0.0
-xaxis_max = 1200.0
-xaxis_d = 200.0
-yaxis_min = -0.8
-yaxis_max = 1.0
-yaxis_d = 0.2
-plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
-plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
+# for zInd in range(zNum):
+for i in range(zlen):
+    zInd = zList[i]
+    f_ = plotDataList[zInd][0]
+    PSD_ = plotDataList[zInd][1]
+    plt.loglog(f_, PSD_, label='h = ' + str(int(HList[zInd])) + 'm', linewidth=1.0, color=colors[i])
+# -5/3 law
+f_ = np.linspace(1e-2,1e0,100)
+plt.loglog(f_, 1e-1*np.power(f_, -5/3), label='-5/3 law', linewidth=2.0, color='k')
+
+plt.xlabel('f (1/s)')
+plt.ylabel(varName + ' (' + varUnit + ')')
+xaxis_min = 1e-3
+xaxis_max = 5 # f_seq.max()
+yaxis_min = 1e-14
+yaxis_max = 1e2
+plt.ylim(yaxis_min, yaxis_max)
+plt.xlim(xaxis_min, xaxis_max)
 plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = varName_save + '.png'
-# plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
+saveName = varName_save + '_PSD_f_prb' + '.png'
+plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
 plt.show()

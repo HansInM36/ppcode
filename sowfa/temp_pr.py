@@ -17,7 +17,8 @@ ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
 var = 'T_mean'
 
-varName = 'T'
+varName = r"$\mathrm{\overline{\theta}}$"
+varName_save = 'theta'
 varUnit = 'K'
 
 hubH = 90.0
@@ -49,7 +50,7 @@ varplotList = []
 for tplot in tplotList:
     varplot = np.zeros(zNum)
     for zInd in range(zNum):
-        f = interp1d(tSeq, varSeq[:,zInd], kind='cubic', fill_value='extrapolate')
+        f = interp1d(tSeq, varSeq[:,zInd], kind='linear', fill_value='extrapolate')
         tplotSeq = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
         varplot[zInd] = f(tplotSeq).mean()
     varplotList.append(varplot)
@@ -60,7 +61,7 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=hubH, ls='--', c='black')
+# plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
 xaxis_min = 298.0
@@ -77,6 +78,6 @@ plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is th
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = varName + '_pr.png'
+saveName = varName_save + '_pr.png'
 plt.savefig(ppDir + '/' + saveName)
 plt.show()

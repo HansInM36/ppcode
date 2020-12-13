@@ -25,13 +25,13 @@ O = (0,0,0)
 alpha = 30.0 # rotate the coordinate system to alpha
 
 var = 'U'
-varD = 0 # u:0, v:1, w:2
-varName = r'$\mathrm{S_u^x}$'
+varD = 1 # u:0, v:1, w:2
+varName = r'$\mathrm{S_v^y}$'
 varUnit = r'$\mathrm{m^3/s^2}$'
-varName_save = 'Su_x'
+varName_save = 'Sv_y'
 
-x_delta = 20
-k = 2*np.pi/x_delta
+y_delta = 20
+k = 2*np.pi/y_delta
 
 readDir = ppDir + '/data/'
 readName = sliceList[0]
@@ -62,16 +62,16 @@ for slice in sliceList:
     tmp = funcs.trs(tmp,O,alpha)
 
     slcData = slc.meshITP_Nz((0,2000,100), (0,2000,100), tmp[:,varD], method_='linear')
-    xSeq = slcData[0]
-    xNum = slcData[0].size
+    ySeq = slcData[1]
     yNum = slcData[1].size
+    xNum = slcData[0].size
 
     PSD_list = []
-    for yInd in range(yNum):
+    for xInd in range(xNum):
         # detrend by deg_ order plynomial fit
         deg_ = 1
-        polyFunc = np.poly1d(np.polyfit(xSeq, slcData[2][yInd], deg=deg_))
-        tmp = slcData[2][yInd] - polyFunc(xSeq)
+        polyFunc = np.poly1d(np.polyfit(ySeq, slcData[2][xInd], deg=deg_))
+        tmp = slcData[2][xInd] - polyFunc(ySeq)
         tmp = tmp - tmp.mean()
         # bell tapering
         tmp = funcs.window_weight(tmp)

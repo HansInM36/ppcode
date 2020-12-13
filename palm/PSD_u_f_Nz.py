@@ -15,14 +15,14 @@ jobName  = 'deepwind'
 suffix = '_gs20'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
-maskid = 'M03'
+maskid = 'M01'
 
-cycle_no_list = ['.002'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.002','.003'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 var = 'u'
-varName = 'Su'
-varUnit = r'$m^2/s$'
+varName = r'$\mathrm{S_u}$'
+varUnit = r'$\mathrm{m^2/s}$'
 varName_save = 'Su'
 
 
@@ -33,8 +33,8 @@ varSeq_list = []
 for i in range(cycle_num):
     input_file = prjDir + '/' + jobName + suffix + "/OUTPUT/" + jobName + suffix + "_masked_" + maskid + cycle_no_list[i] + ".nc"
     nc_file_list.append(Dataset(input_file, "r", format="NETCDF4"))
-    tSeq_list.append(np.array(nc_file_list[i].variables['time'][:], dtype=type(nc_file_list[i].variables['time'])))
-    varSeq_list.append(np.array(nc_file_list[i].variables[var][:], dtype=type(nc_file_list[i].variables[var])))
+    tSeq_list.append(np.array(nc_file_list[i].variables['time'][:1000], dtype=type(nc_file_list[i].variables['time'])))
+    varSeq_list.append(np.array(nc_file_list[i].variables[var][:1000], dtype=type(nc_file_list[i].variables[var])))
 
 # print(list(nc_file_list[0].dimensions)) #list all dimensions
 # print(list(nc_file_list[0].variables)) #list all the variables
@@ -62,11 +62,13 @@ varSeq = np.concatenate([varSeq_list[i] for i in range(cycle_num)], axis=0)
 varSeq = varSeq.astype(float)
 
 t_start = 432000.0
-t_end = 435600.0
-t_delta = 2.0
+t_end = 433000.0
+t_delta = 1.0
 fs = 1/t_delta
 t_num = int((t_end - t_start) / t_delta + 1)
 t_seq = np.linspace(t_start, t_end, t_num)
+
+seqNum = 128
 
 plotDataList = []
 HList = []
@@ -100,14 +102,20 @@ for zInd in range(zNum):
 
 # plot
 fig, ax = plt.subplots(figsize=(6,6))
-colors = plt.cm.jet(np.linspace(0,1,zNum))
+zList = [1,2,3,5,6,7,8,9]
+zlen = len(zList)
+colors = plt.cm.jet(np.linspace(0,1,zlen))
+# colors = plt.cm.jet(np.linspace(0,1,zNum))
 
-for zInd in range(zNum):
+# for zInd in range(zNum):
+for i in range(zlen):
+    zInd = zList[i]
     f_ = plotDataList[zInd][0]
     PSD_ = plotDataList[zInd][1]
-    plt.loglog(f_, PSD_, label='h = ' + str(int(HList[zInd])) + 'm', linewidth=1.0, color=colors[zInd])
+    plt.loglog(f_, PSD_, label='h = ' + str(int(HList[zInd])) + 'm', linewidth=1.0, color=colors[i])
 # -5/3 law
-plt.loglog(f_[1:], 1e-2*np.power(f_[1:], -5/3), label='-5/3 law', linewidth=2.0, color='k')
+f_ = np.linspace(1e-2,1e-1,100)
+plt.loglog(f_, 1e-2*np.power(f_, -5/3), label='-5/3 law', linewidth=2.0, color='k')
 
 plt.xlabel('f (1/s)')
 plt.ylabel(varName + ' (' + varUnit + ')')

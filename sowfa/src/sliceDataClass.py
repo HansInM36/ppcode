@@ -49,6 +49,12 @@ class Slice:
                 tmp.append(np.delete(self.data[vector][i], delInd, axis=0))
             self.data[vector] = np.array(tmp)
 
+    def get_ave(self, var):
+        var_av = []
+        for tInd in range(self.tNum):
+            var_av.append(self.data[var][tInd])
+        var_av = np.average(np.array(var_av), axis=0)
+        return var_av
 
     def p_nearest(self, p_coor):
         coor_org = np.copy(self.data['point'][:])

@@ -17,13 +17,13 @@ ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
 maskid = 'M03'
 
-cycle_no_list = ['.002','.003','.004'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.002', '.003', '.004'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 var = 'u'
 varName = 'coherence'
 varUnit = ''
-varName_save = 'uu_coherence'
+varName_save = 'uu_coh_av'
 
 
 # read the output data of all cycle_no_list
@@ -49,7 +49,6 @@ yName = list(nc_file_list[0].variables[var].dimensions)[2] # the height name str
 ySeq = np.array(nc_file_list[0].variables[yName][:], dtype=type(nc_file_list[0].variables[yName])) # array of height levels
 ySeq = ySeq.astype(float)
 yNum = ySeq.size
-# dy = ySeq[1] - ySeq[0]
 xName = list(nc_file_list[0].variables[var].dimensions)[3] # the height name string
 xSeq = np.array(nc_file_list[0].variables[xName][:], dtype=type(nc_file_list[0].variables[xName])) # array of height levels
 xSeq = xSeq.astype(float)
@@ -69,57 +68,47 @@ fs = 1/t_delta
 t_num = int((t_end - t_start) / t_delta + 1)
 t_seq = np.linspace(t_start, t_end, t_num)
 
-
-
 segNum = 1200
 
+# choose height
 zInd = 3
+yInd = 0
+dInd = 5
 
-xInds = (8, 10)
-yInds = (0, 0)
+coh = []
+co_coh = []
+phase = []
 
-p0_coor = (xSeq[xInds[0]], ySeq[yInds[0]], zSeq[zInd])
-p1_coor = (xSeq[xInds[1]], ySeq[yInds[1]], zSeq[zInd])
+for p0_id in range(0, xNum - dInd):
 
-dx = xSeq[xInds[1]] - xSeq[xInds[0]]
-dy = ySeq[yInds[1]] - ySeq[yInds[0]]
-p0 = '(' + str(xSeq[xInds[0]]) + ', ' + str(ySeq[yInds[0]]) + ', ' + str(zSeq[zInd]) + ')'
-p1 = '(' + str(xSeq[xInds[1]]) + ', ' + str(ySeq[yInds[1]]) + ', ' + str(zSeq[zInd]) + ')'
+    xInds = (p0_id, p0_id + dInd)
+    yInds = (yInd, yInd)
 
-u0_ = varSeq[:,zInd,yInds[0],xInds[0]]
-u1_ = varSeq[:,zInd,yInds[1],xInds[1]]
+    dx = xSeq[xInds[1]] - xSeq[xInds[0]]
+    dy = ySeq[yInds[1]] - ySeq[yInds[0]]
+    p0 = '(' + str(xSeq[xInds[0]]) + ', ' + str(ySeq[yInds[0]]) + ', ' + str(zSeq[zInd]) + ')'
+    p1 = '(' + str(xSeq[xInds[1]]) + ', ' + str(ySeq[yInds[1]]) + ', ' + str(zSeq[zInd]) + ')'
 
-# time interpolation
-method_ = 'linear' # 'linear' or 'cubic'
-f0 = interp1d(tSeq, u0_, kind=method_, fill_value='extrapolate')
-f1 = interp1d(tSeq, u1_, kind=method_, fill_value='extrapolate')
-u0 = f0(t_seq)
-u1 = f1(t_seq)
+    u0_ = varSeq[:,zInd,yInds[0],xInds[0]]
+    u1_ = varSeq[:,zInd,yInds[1],xInds[1]]
 
+    # time interpolation
+    method_ = 'linear' # 'linear' or 'cubic'
+    f0 = interp1d(tSeq, u0_, kind=method_, fill_value='extrapolate')
+    f1 = interp1d(tSeq, u1_, kind=method_, fill_value='extrapolate')
+    u0 = f0(t_seq)
+    u1 = f1(t_seq)
 
-# # check time series
-fig, ax = plt.subplots(figsize=(8,4))
-ind0, ind1 = 0, 12000
-ax.plot(t_seq[ind0:ind1] - t_seq[0], u0[ind0:ind1], 'r-', label='p0')
-ax.plot(t_seq[ind0:ind1] - t_seq[0], u1[ind0:ind1], 'b-', label='p1')
-plt.ylim(6, 10)
-plt.xlim(0, 120)
-ax.set_xlabel('t (s)', fontsize=12)
-ax.set_ylabel('u (m/s)', fontsize=12)
-ax.text(0.56, 1.02, 'dx = ' + str(np.round(dx,1)) + 'm' + ', ' + 'h = ' + str(np.round(p0_coor[2])) + 'm', transform=ax.transAxes, fontsize=12)
-plt.grid()
-plt.legend()
-saveName = 'u_ts_120' + '_dx_' + str(np.round(dx,1)) + '_h_' + str(np.round(p0_coor[2])) + '_pr.png'
-plt.savefig(ppDir + '/' + saveName)
-plt.show()
-plt.close()
+    # calculate coherence and phase
+    freq, coh_, co_coh_, phase_ = funcs.coherence(u0, u1, fs, segNum)
 
+    coh.append(coh_)
+    co_coh.append(co_coh_)
+    phase.append(phase_)
 
-# calculate coherence and phase_
-freq, coh, co_coh, phase = funcs.coherence(u0, u1, fs, segNum)
-
-def fitting_func(x, a, alpha):
-    return a * np.exp(- alpha * x)
+coh = np.average(np.array(coh), axis=0)
+co_coh = np.average(np.array(co_coh), axis=0)
+phase = np.average(np.array(phase), axis=0)
 
 
 """ plot coherence """
@@ -209,7 +198,7 @@ axs[1].grid()
 axs[1].set_xlabel('f (1/s)', fontsize=12)
 axs[1].set_ylabel('co-coherence', fontsize=12)
 
-axs[1].set_title('dx = ' + str(np.round(dx,1)) + 'm' + ', ' + 'h = ' + str(np.round(p0_coor[2])) + 'm', fontsize=12)
+axs[1].set_title('dx = ' + str(np.round(dx,1)) + 'm' + ', ' + 'h = ' + str(np.round(zSeq[zInd])) + 'm', fontsize=12)
 
 # phase
 axs[2].plot(freq[1:], phase[1:], linestyle='', marker='o', markersize=3, color='b')
@@ -235,6 +224,6 @@ axs[2].set_xlabel('f (1/s)', fontsize=12)
 axs[2].set_ylabel('phase', fontsize=12)
 
 fig.tight_layout()
-saveName = 'coh_co-coh_phase' + '_dx_' + str(np.round(dx,1)) + '_h_' + str(np.round(p0_coor[2])) + '_pr.png'
+saveName = 'coh_co-coh_phase_av' + '_dx_' + str(np.round(dx,1)) + '_h_' + str(np.round(zSeq[zInd])) + '_pr.png'
 plt.savefig(ppDir + '/' + saveName)
 plt.show()

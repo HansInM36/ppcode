@@ -22,7 +22,7 @@ alpha = 30.0
 varName = "u-component vertical momentum flux"
 varD = 0 # 0:uw, 1:vw, 2:ww
 varName_save = 'cfl_uw_flux'
-varUnit = r'$m^2/s^2$'
+varUnit = r'$\mathrm{m^2/s^2}$'
 
 hubH = 90.0
 
@@ -63,7 +63,7 @@ for zInd in range(zNum):
 
 ### plot
 ave_itv = 3600.0 # by default, the averaging interval is 3600s
-tplot = 432000.0
+tplot = 72000.0
 
 rsvplot = np.zeros(zNum)
 sgsplot = np.zeros(zNum)
@@ -81,7 +81,7 @@ fig, ax = plt.subplots(figsize=(6,6))
 plt.plot(rsvplot[:cflInd], zSeq[:cflInd], label='resolved', linestyle='--', linewidth=1.0, color='r')
 plt.plot(sgsplot[:cflInd], zSeq[:cflInd], label='SGS', linestyle=':', linewidth=1.0, color='b')
 plt.plot(rsvplot[:cflInd]+sgsplot[:cflInd], zSeq[:cflInd], label='total', linestyle='-', linewidth=1.0, color='k')
-plt.axhline(y=hubH, ls='--', c='black')
+# plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
 xaxis_min = -0.1

@@ -1,9 +1,11 @@
 import sys
 sys.path.append('/scratch/ppcode/sowfa/src')
+sys.path.append('/scratch/ppcode')
 import imp
 import numpy as np
 import pickle
 import sliceDataClass as sdc
+import funcs
 import matplotlib.pyplot as plt
 
 
@@ -13,8 +15,12 @@ prjName = 'deepwind'
 jobName = 'gs20'
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
-sliceList = ['Nz0', 'Nz1', 'Nz2', 'Nz3', 'Nz4', 'Nz5', 'Nz6', 'Nz7',]
+sliceList = ['Nz0', 'Nz1', 'Nz2', 'Nz3', 'Nz4', 'Nz5', 'Nz6']
 sliceNum = len(sliceList)
+
+# coordinate transmation
+O = (0,0,0)
+alpha = 30.0
 
 var = 'U'
 varD = 0 # u:0, v:1, w:2
@@ -27,7 +33,7 @@ data_org = pickle.load(fr)
 fr.close()
 slc = sdc.Slice(data_org, 2)
 tSeq = slc.data['time']
-tInd = -1 # index of time step
+tNum = tSeq.size
 
 plotDataList = []
 HList = []
@@ -42,7 +48,13 @@ for slice in sliceList:
     slc = sdc.Slice(data_org, 2)
     H = slc.N_location # height of this plane
     HList.append(H)
-    plotData = slc.meshITP_Nz((0,2000,100), (0,2000,100), slc.data[var][tInd][:,varD], method_='linear')
+
+    var_av = slc.get_ave(var)
+    var_av = funcs.trs(var_av, O, alpha)
+
+    xcoor, ycoor, u_seq = slc.meshITP_Nz((0,2000,100), (0,2000,100), var_av[:,varD], method_='linear')
+
+    plotData = (xcoor, ycoor, u_seq)
     plotDataList.append(plotData)
 
 ### group plot
@@ -91,12 +103,13 @@ cbreso = 100 # resolution of colorbar
 x_ = plotDataList[sliceInd][0]
 y_ = plotDataList[sliceInd][1]
 v_ = plotDataList[sliceInd][2]
-CS = axs.contourf(x_, y_, v_ - v_.mean(), cbreso, cmap='jet')
+# v_ = v_ - v_.mean()
+CS = axs.contourf(x_, y_, v_, cbreso, cmap='jet')
 cbar = plt.colorbar(CS, ax=axs, shrink=1.0)
 cbar.ax.set_ylabel(varNameDict[varD] + ' (m/s)', fontsize=12)
-plt.ylabel('y (m)')
-plt.xlabel('x (m)')
-plt.title('t = ' + str(tSeq[tInd]) + 's')
-saveName = varNameDict[varD] + '_contour_' + str(tSeq[tInd]) + '_' + sliceList[sliceInd] + '.png'
-# plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
+plt.ylabel('y (m)', fontsize=12)
+plt.xlabel('x (m)', fontsize=12)
+plt.text(0.6, 1.02, 'h = ' + str(int(HList[sliceInd])) + 'm', transform=axs.transAxes, fontsize=12)
+saveName = varNameDict[varD] + '_contour_av_' + str(int(HList[sliceInd])) + '.png'
+plt.savefig(ppDir + '/' + saveName, bbox_inches='tight')
 plt.show()

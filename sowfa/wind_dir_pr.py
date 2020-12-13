@@ -9,16 +9,18 @@ import funcs
 import matplotlib.pyplot as plt
 
 
+### inputs
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
-jobName = 'pcr_NBL'
-ppDir = '/scratch/sowfadata/pp/' + jobName
+prjName = 'deepwind'
+jobName = 'gs20'
+ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
 # coordinate transmation
 O = (0,0,0)
 alpha = 30.0
 
-varName = 'Wind Direction'
+varName = 'wind direction'
 varUnit = r'$\degree$'
 varName_save = 'wind_dir'
 
@@ -55,9 +57,9 @@ varSeq = 270 - np.arctan(vSeq_ / uSeq_) * 180/np.pi
 ### plot
 ave_itv = 3600.0 # by default, the averaging interval is 3600s
 
-tplot_start = 3600.0*8
-tplot_end = 432000.0
-tplot_delta = 3600.0*8
+tplot_start = 3600.0*6
+tplot_end = 3600.0*6*20
+tplot_delta = 3600.0*6
 
 tplotNum = int((tplot_end - tplot_start)/tplot_delta+1)
 tplotList = list(np.linspace(tplot_start, tplot_end, tplotNum))
@@ -77,7 +79,7 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=hubH, ls='--', c='black')
+# plt.axhline(y=hubH, ls='--', c='black')
 plt.xlabel(varName + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
 xaxis_min = 265
@@ -86,15 +88,14 @@ xaxis_d = 5
 yaxis_min = 0
 yaxis_max = 1000.0
 yaxis_d = 100.0
-plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
+plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
 plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveDir = '/scratch/sowfadata/pp/' + jobName + '/'
 saveName = varName_save + '_pr.png'
-plt.savefig(saveDir + saveName)
+plt.savefig(ppDir + '/' + saveName)
 plt.show()

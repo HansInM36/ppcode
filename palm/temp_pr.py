@@ -10,13 +10,14 @@ from matplotlib import colors, ticker, cm
 
 prjDir = '/scratch/palmdata/JOBS'
 jobName  = 'deepwind'
-suffix = '_0'
+suffix = '_gs20'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
-cycle_no_list = ['.000','.001'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.000','.001','.002'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 varName = 'theta'
+varName_plot = r'$\mathrm{\overline{\theta}}$'
 varUnit = 'K'
 
 hubH = 90.0
@@ -75,8 +76,8 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=hubH, ls='--', c='black')
-plt.xlabel(varName + ' (' + varUnit + ')')
+# plt.axhline(y=hubH, ls='--', c='black')
+plt.xlabel(varName_plot + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
 xaxis_min = 298.0
 xaxis_max = 310.0
@@ -84,8 +85,8 @@ xaxis_d = 2.0
 yaxis_min = 0
 yaxis_max = 1000.0
 yaxis_d = 100.0
-plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
+plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
 plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend

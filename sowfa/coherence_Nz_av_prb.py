@@ -28,7 +28,7 @@ var = 'U'
 varD = 0 # u:0, v:1, w:2
 varName = 'coherence'
 varUnit = ''
-varName_save = 'uu_coh'
+varName_save = 'uu_coh_av'
 
 
 # read data
@@ -68,62 +68,57 @@ t_seq = np.linspace(t_start, t_end, t_num)
 
 coors = data['coors']
 
+# choose height
 zInd = 2
 
-p0_id = zInd * xNum * yNum + 5
-p1_id = zInd * xNum * yNum + 8
+pInd_start = xNum*yNum*zInd
+pInd_end = xNum*yNum*(zInd+1)
 
-p0_coor = coors[p0_id]
-p1_coor = coors[p1_id]
+dInd = 1
 
-dp = p1_coor - p0_coor
-dp = dp.reshape(1,3)
-dp = funcs.trs(dp,O,alpha)
+coh = []
+co_coh = []
+phase = []
 
+for p0_id in range(pInd_start, pInd_end - dInd):
 
-dx = dp[0,0]
-dy = dp[0,1]
+    p1_id = p0_id + dInd
 
-p0 = '(' + str(np.round(p0_coor[0],1)) + ', ' + str(np.round(p0_coor[1],1)) + ', ' + str(np.round(p0_coor[2],1)) + ')'
-p1 = '(' + str(np.round(p1_coor[0],1)) + ', ' + str(np.round(p1_coor[1],1)) + ', ' + str(np.round(p1_coor[2],1)) + ')'
+    p0_coor = coors[p0_id]
+    p1_coor = coors[p1_id]
 
-
-u0_ = data[var][p0_id][:,varD]
-u1_ = data[var][p1_id][:,varD]
-
-
-# time interpolation
-method_ = 'linear' # 'linear' or 'cubic'
-f0 = interp1d(tSeq, u0_, kind=method_, fill_value='extrapolate')
-f1 = interp1d(tSeq, u1_, kind=method_, fill_value='extrapolate')
-u0 = f0(t_seq)
-u1 = f1(t_seq)
+    dp = p1_coor - p0_coor
+    dp = dp.reshape(1,3)
+    dp = funcs.trs(dp,O,alpha)
 
 
-# # check time series
-fig, ax = plt.subplots(figsize=(8,4))
-ind0, ind1 = 0, 12000
-ax.plot(t_seq[ind0:ind1] - t_seq[0], u0[ind0:ind1], 'r-', label='p0')
-ax.plot(t_seq[ind0:ind1] - t_seq[0], u1[ind0:ind1], 'b-', label='p1')
-plt.ylim(6, 10)
-plt.xlim(0, 120)
-ax.set_xlabel('t (s)', fontsize=12)
-ax.set_ylabel('u (m/s)', fontsize=12)
-ax.text(0.56, 1.02, 'dx = ' + str(np.round(dx,1)) + 'm' + ', ' + 'h = ' + str(np.round(p0_coor[2])) + 'm', transform=ax.transAxes, fontsize=12)
-plt.grid()
-plt.legend()
-saveName = 'u_ts_120' + '_dx_' + str(np.round(dx,1)) + '_h_' + str(np.round(p0_coor[2])) + '_pr.png'
-plt.savefig(ppDir + '/' + saveName)
-plt.show()
-plt.close()
+    dx = dp[0,0]
+    dy = dp[0,1]
 
+    p0 = '(' + str(np.round(p0_coor[0],1)) + ', ' + str(np.round(p0_coor[1],1)) + ', ' + str(np.round(p0_coor[2],1)) + ')'
+    p1 = '(' + str(np.round(p1_coor[0],1)) + ', ' + str(np.round(p1_coor[1],1)) + ', ' + str(np.round(p1_coor[2],1)) + ')'
 
-segNum = 1200
+    u0_ = data[var][p0_id][:,varD]
+    u1_ = data[var][p1_id][:,varD]
 
-# calculate coherence and phase
-freq, coh, co_coh, phase = funcs.coherence(u0, u1, fs, segNum)
+    # time interpolation
+    method_ = 'linear' # 'linear' or 'cubic'
+    f0 = interp1d(tSeq, u0_, kind=method_, fill_value='extrapolate')
+    f1 = interp1d(tSeq, u1_, kind=method_, fill_value='extrapolate')
+    u0 = f0(t_seq)
+    u1 = f1(t_seq)
 
+    # calculate coherence and phase
+    segNum = 1200
+    freq, coh_, co_coh_, phase_ = funcs.coherence(u0, u1, fs, segNum)
 
+    coh.append(coh_)
+    co_coh.append(co_coh_)
+    phase.append(phase_)
+
+coh = np.average(np.array(coh), axis=0)
+co_coh = np.average(np.array(co_coh), axis=0)
+phase = np.average(np.array(phase), axis=0)
 
 
 """ plot coherence and fitting curve """
@@ -134,7 +129,6 @@ f_out = 0.4
 tmp = abs(freq - f_out)
 ind_in, ind_out = 1, np.where(tmp == tmp.min())[0][0]
 
-
 fig, ax = plt.subplots(figsize=(6,6))
 ax.plot(freq[1:], coh[1:], linestyle=':', marker='o', markersize=3, color='k')
 popt, pcov = curve_fit(fitting_func, freq[ind_in:ind_out], coh[ind_in:ind_out], bounds=(0, [1, 100]))
@@ -144,7 +138,7 @@ ax.plot(freq[0:ind_out], fitting_func(freq[0:ind_out], *popt), linestyle='-', co
 plt.xlabel('f (1/s)', fontsize=12)
 plt.ylabel('coherence', fontsize=12)
 xaxis_min = 0
-xaxis_max = 5.0
+xaxis_max = 5
 xaxis_d = 0.5
 yaxis_min = 0
 yaxis_max = 1.0
@@ -233,15 +227,15 @@ fig.set_figwidth(12)
 fig.set_figheight(4)
 
 # coherence
-axs[0].plot(freq[1:], coh[1:], linestyle='', marker='o', markersize=3, color='k')
+axs[0].plot(freq[1:], coh[1:], linestyle='-', marker='o', markersize=3, color='k')
 # popt, pcov = curve_fit(fitting_func, freq[ind_in:ind_out], coh[ind_in:ind_out], bounds=(0, [1, 100]))
 # axs[0].plot(freq[0:ind_out], fitting_func(freq[0:ind_out], *popt), linestyle='-', color='k',
 #      label='a=%5.3f, alpha=%5.3f' % tuple(popt))
 
 axs[0].tick_params(axis='both', which='major', labelsize=10)
 xaxis_min = 0
-xaxis_max = 5.0
-xaxis_d = 0.5
+xaxis_max = 0.5
+xaxis_d = 0.1
 yaxis_min = 0
 yaxis_max = 1.0
 yaxis_d = 0.1
@@ -257,12 +251,12 @@ axs[0].set_ylabel('coherence', fontsize=12)
 # axs[0].legend(bbox_to_anchor=(0.2,0.9), loc=6, borderaxespad=0, fontsize=10)
 
 # co-coherence
-axs[1].plot(freq[1:], co_coh[1:], linestyle='', marker='o', markersize=3, color='r')
+axs[1].plot(freq[1:], co_coh[1:], linestyle='-', marker='o', markersize=3, color='r')
 
 axs[1].tick_params(axis='both', which='major', labelsize=10)
 xaxis_min = 0
-xaxis_max = 5.0
-xaxis_d = 0.5
+xaxis_max = 0.5
+xaxis_d = 0.1
 yaxis_min = -1.0
 yaxis_max = 1.0
 yaxis_d = 0.2
@@ -278,12 +272,12 @@ axs[1].set_ylabel('co-coherence', fontsize=12)
 axs[1].set_title('dx = ' + str(np.round(dx,1)) + 'm' + ', ' + 'h = ' + str(np.round(p0_coor[2])) + 'm', fontsize=12)
 
 # phase
-axs[2].plot(freq[1:], phase[1:], linestyle='', marker='o', markersize=3, color='b')
+axs[2].plot(freq[1:], phase[1:], linestyle='-', marker='o', markersize=3, color='b')
 
 axs[2].tick_params(axis='both', which='major', labelsize=10)
 xaxis_min = 0
-xaxis_max = 5.0
-xaxis_d = 0.5
+xaxis_max = 0.5
+xaxis_d = 0.1
 yaxis_min = -1.0*np.pi
 yaxis_max = 1.0*np.pi
 yaxis_d = np.pi/4
@@ -301,6 +295,6 @@ axs[2].set_xlabel('f (1/s)', fontsize=12)
 axs[2].set_ylabel('phase', fontsize=12)
 
 fig.tight_layout()
-saveName = 'coh_co-coh_phase_f5.0' + '_dx_' + str(np.round(dx,1)) + '_h_' + str(np.round(p0_coor[2])) + '_pr.png'
+saveName = 'coh_co-coh_phase_av_f0.5' + '_dx_' + str(np.round(dx,1)) + '_h_' + str(np.round(p0_coor[2])) + '_pr.png'
 plt.savefig(ppDir + '/' + saveName)
 plt.show()

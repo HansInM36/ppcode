@@ -11,21 +11,27 @@ jobName = 'gs20'
 jobDir = prjDir + '/' + prjName + '/' + jobName
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
-prbgList = os.listdir(jobDir + '/postProcessing/' + '.')
-prbgList = [i for i in prbgList if i[0:5]=='probe']
+list = os.listdir(jobDir + '/postProcessing/' + '.')
+prbgList = [i for i in list if i[0:4]=='prbg']
+prbgList.sort()
 
-
-data = {}
-
-data['prbgNames'] = prbgList
 
 for prbg in prbgList:
+    print('Processing ' + prbg + ' ......')
+
+    prbgData = {}
+
+    # read info of this prbg, i.e (O, alpha, xList, yList, zList)
+    readDir = ppDir + '/data/'
+    readName = prbg + '_info'
+    fr = open(readDir + readName, 'rb')
+    prbgData['info'] = pickle.load(fr)
+    fr.close()
+
 
     startTimeList = os.listdir(jobDir + '/postProcessing/' + prbg + '/.')
     startTimeList.sort(key=float)
 
-
-    prbgData = {}
 
     '''use the file in the first startTime to get basic information for probes'''
 
@@ -78,10 +84,7 @@ for prbg in prbgList:
     prbgData['time'] = np.array(time)
     prbgData['U'] = np.array(U)
 
-    data[prbg] = prbgData
-
-
-''' save probeData into a binary file with pickle '''
-f = open(ppDir + '/data/' + 'probeData', 'wb')
-pickle.dump(data, f)
-f.close()
+    ''' save probeData into a binary file with pickle '''
+    f = open(ppDir + '/data/' + prbg, 'wb')
+    pickle.dump(prbgData, f)
+    f.close()

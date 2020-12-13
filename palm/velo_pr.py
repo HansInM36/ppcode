@@ -14,14 +14,15 @@ from matplotlib import colors, ticker, cm
 # the directory where the wake data locate
 prjDir = '/scratch/palmdata/JOBS'
 jobName  = 'deepwind'
-suffix = '_0'
+suffix = '_gs20'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
-cycle_no_list = ['.000','.001'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.000','.001','.002'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 # names and dimensions for variable
 varName = 'u'
+varName_plot = r'$\mathrm{\overline{u}}$'
 varUnit = 'm/s'
 
 # hub height
@@ -74,7 +75,7 @@ varplotList = []
 for tplot in tplotList:
     varplot = np.zeros(zNum)
     for zind in range(zNum):
-        f = interp1d(tSeq, varSeq[:,zind], kind='cubic')
+        f = interp1d(tSeq, varSeq[:,zind], kind='linear')
         varplot[zind] = f(tplot)
     varplotList.append(varplot)
 
@@ -85,18 +86,18 @@ colors = plt.cm.jet(np.linspace(0,1,tplotNum))
 
 for i in range(tplotNum):
     plt.plot(varplotList[i], zSeq, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.axhline(y=hubH, ls='--', c='black')
+# plt.axhline(y=hubH, ls='--', c='black')
 plt.axhline(y=dampH, ls=':', c='black')
-plt.xlabel(varName + ' (' + varUnit + ')')
+plt.xlabel(varName_plot + ' (' + varUnit + ')')
 plt.ylabel('z (m)')
 xaxis_min = 0
-xaxis_max = 10
-xaxis_d = 2
+xaxis_max = 12.0
+xaxis_d = 2.0
 yaxis_min = 0.0
 yaxis_max = 1000.0
 yaxis_d = 100.0
-plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
+plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
 plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
@@ -110,7 +111,6 @@ plt.show()
 # # interpolate the velocity at hub height
 # f = interp1d(zSeq, varplotList[-1], kind='cubic')
 # varHub = f(hubH)
-
 
 
 
@@ -134,7 +134,7 @@ for i in range(tplotNum):
     v_ = funcs.calc_deriv_1st_FD(dz, f(z_))
     v_ = v_ * kappa * z_ / uStar
     plt.plot(v_, z_, label='t = ' + str(int(tplotList[i])) + 's', linewidth=1.0, color=colors[i])
-plt.xlabel(r"$\phi_m$")
+plt.xlabel(r"$\mathrm{\phi_m}$")
 plt.ylabel('z (m)')
 xaxis_min = -3
 xaxis_max = 5
@@ -142,8 +142,8 @@ xaxis_d = 2
 yaxis_min = 0
 yaxis_max = 200.0
 yaxis_d = 20.0
-plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
+plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
 plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
@@ -158,12 +158,8 @@ plt.show()
 
 
 
-
-
 ### investigate the evolution of averaged velocities at various heights
 # time steps for plotting
-ave_itv = 10.0 # by default, the averaging interval is 3600s
-                 # ind_back_num = np.floor(ave_itv / tDelta)
 tplot_start = 3600.0*1 # must larger than ave_itv
 tplot_end = 3600.0*1*120
 tplot_delta = 3600.0*1
@@ -174,35 +170,38 @@ varplotList = []
 for tplot in tplotList:
     varplot = np.zeros(zNum)
     for zind in range(zNum):
-        f = interp1d(tSeq, varSeq[:,zind], kind='cubic')
+        f = interp1d(tSeq, varSeq[:,zind], kind='linear')
         varplot[zind] = f(tplot)
+        print(f(tplot))
     varplotList.append(varplot)
 
 
-zList = [27.0, 90.0, 153.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
+zList = [20.0, 40.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0]
 zIndNum = len(zList)
 uList = []
 for z in zList:
     u_tmp = []
     for tInd in range(tplotNum):
-        f = interp1d(zSeq, varplotList[tInd], kind='cubic', fill_value='extrapolate')
+        f = interp1d(zSeq, varplotList[tInd], kind='linear', fill_value='extrapolate')
         u_tmp.append(f(z))
     uList.append(u_tmp)
+
 
 fig, ax = plt.subplots(figsize=(6,4))
 colors = plt.cm.jet(np.linspace(0,1,zIndNum))
 for i in range(zIndNum):
+    np.array(uList[i]).mean()
     ax.plot(np.array(tplotList)/3600, uList[i], linewidth=1.0, linestyle='-', marker='', color=colors[i], label='H = ' + str(zList[i]) + 'm')
 ax.set_xlabel('t (h)')
-ax.set_ylabel('u (m/s)')
+ax.set_ylabel(varName_plot + ' (m/s)')
 xaxis_min = 0
 xaxis_max = 120
 xaxis_d = 20
-yaxis_min = 6.0
+yaxis_min = 5.0
 yaxis_max = 10.0
 yaxis_d = 0.5
-plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
+plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
 plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0)
@@ -211,6 +210,3 @@ fig.tight_layout() # adjust the layout
 saveName = 'velo_av_evo.png'
 plt.savefig(ppDir + '/' + saveName)
 plt.show()
-
-
-# (min(uList[i]) + max(uList[i]))/2

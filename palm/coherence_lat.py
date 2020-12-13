@@ -1,96 +1,92 @@
+#!/usr/bin/python3.8
+
+import os
 import sys
-sys.path.append('/scratch/ppcode/sowfa/src')
 sys.path.append('/scratch/ppcode')
-import imp
 import numpy as np
-import pickle
-from numpy import fft
+from netCDF4 import Dataset
 from scipy.interpolate import interp1d
-import sliceDataClass as sdc
-import funcs
 from scipy.optimize import curve_fit
+import funcs
 import matplotlib.pyplot as plt
 
+prjDir = '/scratch/palmdata/JOBS'
+jobName  = 'deepwind'
+suffix = '_gs20'
+ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
-# the directory where the wake data locate
-prjDir = '/scratch/sowfadata/JOBS'
-prjName = 'deepwind'
-jobName = 'gs20'
-ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
+maskid = 'M04'
 
-prbg = 'prbg0'
+cycle_no_list = ['.002','.003','.004'] # "" for initial run, ".001" for first cycle, etc.
+cycle_num = len(cycle_no_list)
 
-# coordinate transmation
-O = (0,0,0)
-alpha = 30.0
-
-var = 'U'
-varD = 0 # u:0, v:1, w:2
+var = 'u'
 varName = 'coherence'
 varUnit = ''
-varName_save = 'uu_coh'
+varName_save = 'uu_coherence'
 
 
-# read data
-readDir = ppDir + '/data/'
-readName = prbg
-fr = open(readDir + readName, 'rb')
-data_org = pickle.load(fr)
-fr.close()
+# read the output data of all cycle_no_list
+nc_file_list = []
+tSeq_list = []
+varSeq_list = []
+for i in range(cycle_num):
+    input_file = prjDir + '/' + jobName + suffix + "/OUTPUT/" + jobName + suffix + "_masked_" + maskid + cycle_no_list[i] + ".nc"
+    nc_file_list.append(Dataset(input_file, "r", format="NETCDF4"))
+    tSeq_list.append(np.array(nc_file_list[i].variables['time'][:], dtype=type(nc_file_list[i].variables['time'])))
+    varSeq_list.append(np.array(nc_file_list[i].variables[var][:], dtype=type(nc_file_list[i].variables[var])))
 
-# coordinate transformation
-prbNum = data_org['coors'].shape[0]
-for p in range(prbNum):
-    tmp = data_org[var][p]
-    data_org[var][p] = funcs.trs(tmp,O,alpha)
+# print(list(nc_file_list[0].dimensions)) #list all dimensions
+# print(list(nc_file_list[0].variables)) #list all the variables
+# print(list(nc_file_list[0].variables['u2'].dimensions)) #list dimensions of a specified variable
 
-# choose the probegroup to be used in plotting
-xSeq = np.array(data_org['info'][2])
-ySeq = np.array(data_org['info'][3])
-zSeq = np.array(data_org['info'][4])
-xNum = xSeq.size
-yNum = ySeq.size
+# extract the values of all dimensions of the var
+zName = list(nc_file_list[0].variables[var].dimensions)[1] # the height name string
+zSeq = np.array(nc_file_list[0].variables[zName][:], dtype=type(nc_file_list[0].variables[zName])) # array of height levels
 zNum = zSeq.size
+zSeq = zSeq.astype(float)
+yName = list(nc_file_list[0].variables[var].dimensions)[2] # the height name string
+ySeq = np.array(nc_file_list[0].variables[yName][:], dtype=type(nc_file_list[0].variables[yName])) # array of height levels
+ySeq = ySeq.astype(float)
+yNum = ySeq.size
+dy = ySeq[1] - ySeq[0]
+xName = list(nc_file_list[0].variables[var].dimensions)[3] # the height name string
+xSeq = np.array(nc_file_list[0].variables[xName][:], dtype=type(nc_file_list[0].variables[xName])) # array of height levels
+xSeq = xSeq.astype(float)
+xNum = xSeq.size
 
-data = data_org
-# del data_org
-
-tSeq = data['time']
-tNum = tSeq.size
+# concatenate arraies of all cycle_no_list along the first dimension (axis=0), i.e. time
+tSeq = np.concatenate([tSeq_list[i] for i in range(cycle_num)], axis=0)
+tSeq = tSeq.astype(float)
+varSeq = np.concatenate([varSeq_list[i] for i in range(cycle_num)], axis=0)
+varSeq = varSeq.astype(float)
 
 t_start = 432000.0
 t_end = 434400.0
 t_delta = 0.1
-fs = 1 / t_delta # sampling frequency
+fs = 1/t_delta
 t_num = int((t_end - t_start) / t_delta + 1)
 t_seq = np.linspace(t_start, t_end, t_num)
 
 
-coors = data['coors']
 
-zInd = 2
+segNum = 1200
 
-p0_id = zInd * xNum * yNum + 5
-p1_id = zInd * xNum * yNum + 8
+zInd = 3
 
-p0_coor = coors[p0_id]
-p1_coor = coors[p1_id]
+xInds = (0, 0)
+yInds = (5, 7)
 
-dp = p1_coor - p0_coor
-dp = dp.reshape(1,3)
-dp = funcs.trs(dp,O,alpha)
+p0_coor = (xSeq[xInds[0]], ySeq[yInds[0]], zSeq[zInd])
+p1_coor = (xSeq[xInds[1]], ySeq[yInds[1]], zSeq[zInd])
 
+dx = xSeq[xInds[1]] - xSeq[xInds[0]]
+dy = ySeq[yInds[1]] - ySeq[yInds[0]]
+p0 = '(' + str(xSeq[xInds[0]]) + ', ' + str(ySeq[yInds[0]]) + ', ' + str(zSeq[zInd]) + ')'
+p1 = '(' + str(xSeq[xInds[1]]) + ', ' + str(ySeq[yInds[1]]) + ', ' + str(zSeq[zInd]) + ')'
 
-dx = dp[0,0]
-dy = dp[0,1]
-
-p0 = '(' + str(np.round(p0_coor[0],1)) + ', ' + str(np.round(p0_coor[1],1)) + ', ' + str(np.round(p0_coor[2],1)) + ')'
-p1 = '(' + str(np.round(p1_coor[0],1)) + ', ' + str(np.round(p1_coor[1],1)) + ', ' + str(np.round(p1_coor[2],1)) + ')'
-
-
-u0_ = data[var][p0_id][:,varD]
-u1_ = data[var][p1_id][:,varD]
-
+u0_ = varSeq[:,zInd,yInds[0],xInds[0]]
+u1_ = varSeq[:,zInd,yInds[1],xInds[1]]
 
 # time interpolation
 method_ = 'linear' # 'linear' or 'cubic'
@@ -118,31 +114,26 @@ plt.show()
 plt.close()
 
 
-segNum = 1200
-
-# calculate coherence and phase
+# calculate coherence and phase_
 freq, coh, co_coh, phase = funcs.coherence(u0, u1, fs, segNum)
 
-
-
-
-""" plot coherence and fitting curve """
 def fitting_func(x, a, alpha):
     return a * np.exp(- alpha * x)
 
-f_out = 0.4
+
+""" plot coherence """
+f_out = 0.15
 tmp = abs(freq - f_out)
 ind_in, ind_out = 1, np.where(tmp == tmp.min())[0][0]
 
-
 fig, ax = plt.subplots(figsize=(6,6))
-ax.plot(freq[1:], coh[1:], linestyle=':', marker='o', markersize=3, color='k')
+ax.plot(freq, coh, linestyle='', marker='x', markersize=3, color='k')
 popt, pcov = curve_fit(fitting_func, freq[ind_in:ind_out], coh[ind_in:ind_out], bounds=(0, [1, 100]))
 ax.plot(freq[0:ind_out], fitting_func(freq[0:ind_out], *popt), linestyle='-', color='k',
      label='a=%5.3f, alpha=%5.3f' % tuple(popt))
 
 plt.xlabel('f (1/s)', fontsize=12)
-plt.ylabel('coherence', fontsize=12)
+plt.ylabel('Coherence', fontsize=12)
 xaxis_min = 0
 xaxis_max = 5.0
 xaxis_d = 0.5
@@ -151,75 +142,17 @@ yaxis_max = 1.0
 yaxis_d = 0.1
 plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
 plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-# plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=10)
+plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=10)
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=10)
-ax.text(0.0, 1.02, 'fs = ' + str(fs) + 'Hz' + ', ' 'nperseg = ' + str(segNum), transform=ax.transAxes, fontsize=12)
-# ax.text(0.0, 1.02, 'dx = ' + str(np.round(dx,1)) + 'm', transform=ax.transAxes, fontsize=12)
-ax.text(0.56, 1.02, 'dx = ' + str(np.round(dx,1)) + 'm' + ', ' + 'h = ' + str(np.round(p0_coor[2])) + 'm', transform=ax.transAxes, fontsize=12)
-plt.legend(bbox_to_anchor=(0.5,0.9), loc=6, borderaxespad=0, fontsize=10) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+ax.text(0.0, 1.02, 'dx = ' + str(dx) + 'm', transform=ax.transAxes, fontsize=12)
+ax.text(0.8, 1.02, 'h = ' + str(int(zSeq[zInd])) + 'm', transform=ax.transAxes, fontsize=12)
+plt.legend(bbox_to_anchor=(0.5,0.8), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-# saveName = varName_save + '_' + str(int(H)) + '_pr.png'
+saveName = varName_save + '_' + str(int(zSeq[zInd])) + '_pr.png'
 # plt.savefig(ppDir + '/' + saveName)
 plt.show()
-#
-#
-#
-# """ plot co-coherence """
-# fig, ax = plt.subplots(figsize=(6,6))
-# ax.plot(freq[1:], co_coh[1:], linestyle='-', marker='o', markersize=3, color='r')
-#
-# plt.xlabel('f (1/s)', fontsize=12)
-# plt.ylabel('co-coherence', fontsize=12)
-# xaxis_min = 0
-# xaxis_max = 0.5
-# xaxis_d = 0.05
-# yaxis_min = -1.0
-# yaxis_max = 1.0
-# yaxis_d = 0.2
-# plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
-# plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-# plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=10)
-# plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=10)
-# ax.text(0.0, 1.02, 'dx = ' + str(np.round(dx,1)) + 'm', transform=ax.transAxes, fontsize=12)
-# ax.text(0.8, 1.02, 'h = ' + str(np.round(p0_coor[2])) + 'm', transform=ax.transAxes, fontsize=12)
-# # plt.legend(bbox_to_anchor=(0.5,0.8), loc=6, borderaxespad=0, fontsize=10) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
-# plt.grid()
-# plt.title('')
-# fig.tight_layout() # adjust the layout
-# # saveName = varName_save + '_' + str(int(H)) + '_pr.png'
-# # plt.savefig(ppDir + '/' + saveName)
-# plt.show()
-#
-#
-#
-# """ plot phase """
-# fig, ax = plt.subplots(figsize=(6,6))
-# ax.plot(freq[1:], phase[1:], linestyle='-', marker='o', markersize=3, color='b')
-#
-# plt.xlabel('f (1/s)', fontsize=12)
-# plt.ylabel('phase', fontsize=12)
-# xaxis_min = 0
-# xaxis_max = 0.5
-# xaxis_d = 0.05
-# yaxis_min = -1.0*np.pi
-# yaxis_max = 1.0*np.pi
-# yaxis_d = np.pi/4
-# plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
-# plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-# plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=10)
-# plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=10)
-# ax.text(0.0, 1.02, 'dx = ' + str(np.round(dx,1)) + 'm', transform=ax.transAxes, fontsize=12)
-# ax.text(0.8, 1.02, 'h = ' + str(np.round(p0_coor[2])) + 'm', transform=ax.transAxes, fontsize=12)
-# # plt.legend(bbox_to_anchor=(0.5,0.8), loc=6, borderaxespad=0, fontsize=10) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
-# plt.grid()
-# plt.title('')
-# fig.tight_layout() # adjust the layout
-# # saveName = varName_save + '_' + str(int(H)) + '_pr.png'
-# # plt.savefig(ppDir + '/' + saveName)
-# plt.show()
-
 
 
 """ plot coherence, co-coherence, phase in one figure """
@@ -301,6 +234,6 @@ axs[2].set_xlabel('f (1/s)', fontsize=12)
 axs[2].set_ylabel('phase', fontsize=12)
 
 fig.tight_layout()
-saveName = 'coh_co-coh_phase_f5.0' + '_dx_' + str(np.round(dx,1)) + '_h_' + str(np.round(p0_coor[2])) + '_pr.png'
-plt.savefig(ppDir + '/' + saveName)
+# saveName = 'coh_co-coh_phase' + '_dy_' + str(np.round(dy,1)) + '_h_' + str(np.round(p0_coor[2])) + '_pr.png'
+# plt.savefig(ppDir + '/' + saveName)
 plt.show()
