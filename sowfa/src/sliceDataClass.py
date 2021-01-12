@@ -37,17 +37,19 @@ class Slice:
 
         tNum = self.data['time'].size
 
-        for scalar in self.data['scalars']:
-            tmp = []
-            for i in range(tNum):
-                tmp.append(np.delete(self.data[scalar][i], delInd, axis=0))
-            self.data[scalar] = np.array(tmp)
+        if 'scalars' in self.data.keys():
+            for scalar in self.data['scalars']:
+                tmp = []
+                for i in range(tNum):
+                    tmp.append(np.delete(self.data[scalar][i], delInd, axis=0))
+                self.data[scalar] = np.array(tmp)
 
-        for vector in self.data['vectors']:
-            tmp = []
-            for i in range(tNum):
-                tmp.append(np.delete(self.data[vector][i], delInd, axis=0))
-            self.data[vector] = np.array(tmp)
+        if 'vectors' in self.data.keys():
+            for vector in self.data['vectors']:
+                tmp = []
+                for i in range(tNum):
+                    tmp.append(np.delete(self.data[vector][i], delInd, axis=0))
+                self.data[vector] = np.array(tmp)
 
     def get_ave(self, var):
         var_av = []
@@ -81,7 +83,7 @@ class Slice:
         return vSeq
 
 
-    def meshITP_Ny(self,x_axis,z_axis,varArray,method_='cubic'): # interpolate the original wake data and project it onto a structral mesh
+    def meshITP_Ny(self,x_axis,z_axis,varArray,alpha,method_='cubic'): # interpolate the original wake data and project it onto a structral mesh
         """ x_axis should be a tuple indicating the min, max value and the number of segments, like x_axis = (-240, 240, 60), and similarly the z_axis """
         pNum_x = x_axis[2] + 1
         pNum_z = z_axis[2] + 1
@@ -90,6 +92,7 @@ class Slice:
         coor_x = range(int(x_axis[0]), int(x_axis[1] + delta_x), int(delta_x))
         coor_z = range(int(z_axis[0]), int(z_axis[1] + delta_z), int(delta_z))
         coors_org = self.data['point'][:,0:3:2]
+        coors_org[:,0] /= np.cos(alpha*np.pi/180) # if the plane is not aligned with x-axis, we have to stretch the x-coors to invoid compression by project
 
         # compute mesh coordinates and corresponding scalar or vector values
         [Xmesh, Zmesh] = np.meshgrid(coor_x, coor_z)

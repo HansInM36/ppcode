@@ -7,7 +7,7 @@ import numpy as np
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
-jobName = 'gs20'
+jobName = 'gs40'
 jobDir = prjDir + '/' + prjName + '/' + jobName
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 

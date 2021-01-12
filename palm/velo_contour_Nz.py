@@ -7,19 +7,22 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'cnp'
-suffix = '_sin'
+jobName  = 'deepwind'
+suffix = '_gs10'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
 maskid = 'M01'
 
-cycle_no_list = ['.003'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.021','.022'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 varName = 'u'
 varUnit = 'm/s'
 
 tInd = -1
+
+xInd_start, xInd_end = 40, 91
+yInd_start, yInd_end = 40, 91
 
 # read the output data of all cycle_no_list
 nc_file_list = []
@@ -29,7 +32,7 @@ for i in range(cycle_num):
     input_file = prjDir + '/' + jobName + suffix + "/OUTPUT/" + jobName + suffix + "_masked_" + maskid + cycle_no_list[i] + ".nc"
     nc_file_list.append(Dataset(input_file, "r", format="NETCDF4"))
     tSeq_list.append(np.array(nc_file_list[i].variables['time'][:], dtype=type(nc_file_list[i].variables['time'])))
-    varSeq_list.append(np.array(nc_file_list[i].variables[varName][:], dtype=type(nc_file_list[i].variables[varName])))
+    varSeq_list.append(np.array(nc_file_list[i].variables[varName][:,:,yInd_start:yInd_end,xInd_start:xInd_end], dtype=type(nc_file_list[i].variables[varName])))
 
 # print(list(nc_file_list[0].dimensions)) #list all dimensions
 # print(list(nc_file_list[0].variables)) #list all the variables
@@ -59,7 +62,7 @@ HList = []
 
 for zInd in range(zNum):
     HList.append(zSeq[zInd])
-    plotDataList.append((xSeq, ySeq, varSeq[tInd,zInd]))
+    plotDataList.append((xSeq[xInd_start:xInd_end], ySeq[yInd_start:yInd_end], varSeq[tInd,zInd]))
 
 ### group plot
 rNum, cNum = (4,2)
@@ -102,23 +105,23 @@ plt.show()
 
 
 
-zInd = 0
+zInd = 2
 
 plotDataList = []
 HList = []
 
 for tInd in range(tNum):
     HList.append(zSeq[zInd])
-    plotDataList.append((xSeq, ySeq, varSeq[tInd,zInd]))
+    plotDataList.append((xSeq[xInd_start:xInd_end], ySeq[yInd_start:yInd_end], varSeq[tInd,zInd]))
 
 
 ### single plot
-vMin, vMax, vDelta = (-0.1, 0.2, 0.02)
+vMin, vMax, vDelta = (-1.8, 1.8, 0.4)
+cbreso = 100 # resolution of colorbar
 levels = np.linspace(vMin, vMax, cbreso + 1)
 
-for tInd in range(60):
+for tInd in range(0,600,10):
     fig, axs = plt.subplots(figsize=(8,8), constrained_layout=False)
-    cbreso = 100 # resolution of colorbar
     x_ = plotDataList[tInd][0]
     y_ = plotDataList[tInd][1]
     v_ = plotDataList[tInd][2]

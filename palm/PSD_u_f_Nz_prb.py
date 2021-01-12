@@ -12,18 +12,18 @@ import matplotlib.pyplot as plt
 
 prjDir = '/scratch/palmdata/JOBS'
 jobName  = 'deepwind'
-suffix = '_gs20'
+suffix = '_gs10'
 ppDir = '/scratch/palmdata/pp/' + jobName + suffix
 
 maskid = 'M03'
 
-cycle_no_list = ['.002','.003','.004'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.021','.022'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
-var = 'v'
-varName = r'$\mathrm{S_v}$'
+var = 'u'
+varName = r'$\mathrm{S_u}$'
 varUnit = r'$\mathrm{m^2/s}$'
-varName_save = 'Sv'
+varName_save = 'Su'
 
 
 # read the output data of all cycle_no_list
@@ -61,14 +61,14 @@ tNum = tSeq.size
 varSeq = np.concatenate([varSeq_list[i] for i in range(cycle_num)], axis=0)
 varSeq = varSeq.astype(float)
 
-t_start = 432000.0
-t_end = 434400.0
+t_start = 288000.0
+t_end = 290400.0
 t_delta = 0.1
 fs = 1/t_delta
 t_num = int((t_end - t_start) / t_delta + 1)
 t_seq = np.linspace(t_start, t_end, t_num)
 
-segNum = 1200
+segNum = 20480
 
 plotDataList = []
 HList = []
@@ -101,8 +101,8 @@ for zInd in range(zNum):
 
 
 # plot PSD_u_f
-fig, ax = plt.subplots(figsize=(6,6))
-zList = [1,2,3,4,5,6,7,8,9]
+fig, ax = plt.subplots(figsize=(8,5))
+zList = [0,1,2,3,4,5,6,7,8,9]
 zlen = len(zList)
 colors = plt.cm.jet(np.linspace(0,1,zlen))
 # colors = plt.cm.jet(np.linspace(0,1,zNum))
@@ -120,8 +120,8 @@ plt.loglog(f_, 1e-1*np.power(f_, -5/3), label='-5/3 law', linewidth=2.0, color='
 plt.xlabel('f (1/s)')
 plt.ylabel(varName + ' (' + varUnit + ')')
 xaxis_min = 1e-3
-xaxis_max = 5 # f_seq.max()
-yaxis_min = 1e-14
+xaxis_max = 1 # f_seq.max()
+yaxis_min = 1e-12
 yaxis_max = 1e2
 plt.ylim(yaxis_min, yaxis_max)
 plt.xlim(xaxis_min, xaxis_max)

@@ -6,13 +6,13 @@ import numpy as np
 from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 
-prjname  = 'cnp'
-suffix = '_half'
+prjname  = 'deepwind'
+suffix = '_gs10'
 jobname = prjname + suffix
 
-maskid = 'M02'
+maskid = 'M01'
 
-cycle_no_list = ['.000'] # "" for initial run, ".001" for first cycle, etc.
+cycle_no_list = ['.021','.022'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
 varname = 'u'

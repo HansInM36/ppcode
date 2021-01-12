@@ -9,17 +9,19 @@ import pickle
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
-jobName = 'pcr_NBL_sourceFixed'
+jobName = 'gs10'
 jobDir = prjDir + '/' + prjName + '/' + jobName
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
 sliceGroup = 'slices'
 
-sliceList = ['Ny0', 'Nz0', 'Nz1', 'Nz2', 'Nz3', 'Nz4', 'Nz5', 'Nz6', 'Nz7']
+#sliceList = ['Ny0', 'Nz0', 'Nz1', 'Nz2', 'Nz3', 'Nz4', 'Nz5', 'Nz6', 'Nz7']
+
+sliceList = ['Nz0']
 
 # slice = 'Ny0'
 # time = '7200'
-scalarList = ['T']
+scalarList = []
 vectorList = ['U']
 
 timestrList = os.listdir(jobDir + '/postProcessing/' + sliceGroup + '/' + '.')
@@ -85,39 +87,41 @@ for slice in sliceList:
     sliceData['point'] = pointArray
     del pointArray
 
-    sliceData['scalars'] = scalarList
-    # ---------- get scalar array ---------- #
-    for scalar in scalarList:
-        sliceData[scalar] = []
-        for time in timestrList:
-            print('Processing scalar: ' + scalar + ', ' + time)
-            reader = vtk.vtkPolyDataReader()
-            reader.SetFileName(jobDir + '/postProcessing/' + sliceGroup + '/' + time + '/' + scalar + '_' + slice + '.vtk')
-            # reader.ReadAllVectorsOn()
-            reader.ReadAllScalarsOn()
-            # reader.ReadAllTensorsOn()
-            reader.Update()
-            polyData = reader.GetOutput()
-            pointData = polyData.GetPointData()
-            sliceData[scalar].append(vtk_to_numpy(pointData.GetScalars(scalar)))
-        sliceData[scalar] = np.array(sliceData[scalar])
+    if len(scalarList) != 0:
+        sliceData['scalars'] = scalarList
+        # ---------- get scalar array ---------- #
+        for scalar in scalarList:
+            sliceData[scalar] = []
+            for time in timestrList:
+                print('Processing scalar: ' + scalar + ', ' + time)
+                reader = vtk.vtkPolyDataReader()
+                reader.SetFileName(jobDir + '/postProcessing/' + sliceGroup + '/' + time + '/' + scalar + '_' + slice + '.vtk')
+                # reader.ReadAllVectorsOn()
+                reader.ReadAllScalarsOn()
+                # reader.ReadAllTensorsOn()
+                reader.Update()
+                polyData = reader.GetOutput()
+                pointData = polyData.GetPointData()
+                sliceData[scalar].append(vtk_to_numpy(pointData.GetScalars(scalar)))
+            sliceData[scalar] = np.array(sliceData[scalar])
 
-    sliceData['vectors'] = vectorList
-    # ---------- get vector array ---------- #
-    for vector in vectorList:
-        sliceData[vector] = []
-        for time in timestrList:
-            print('Processing vector: ' + vector + ', ' + time)
-            reader = vtk.vtkPolyDataReader()
-            reader.SetFileName(jobDir + '/postProcessing/' + sliceGroup + '/' + time + '/' + vector + '_' + slice + '.vtk')
-            reader.ReadAllVectorsOn()
-            # reader.ReadAllScalarsOn()
-            # reader.ReadAllTensorsOn()
-            reader.Update()
-            polyData = reader.GetOutput()
-            pointData = polyData.GetPointData()
-            sliceData[vector].append(vtk_to_numpy(pointData.GetVectors(vector)))
-        sliceData[vector] = np.array(sliceData[vector])
+    if len(vectorList) != 0:
+        sliceData['vectors'] = vectorList
+        # ---------- get vector array ---------- #
+        for vector in vectorList:
+            sliceData[vector] = []
+            for time in timestrList:
+                print('Processing vector: ' + vector + ', ' + time)
+                reader = vtk.vtkPolyDataReader()
+                reader.SetFileName(jobDir + '/postProcessing/' + sliceGroup + '/' + time + '/' + vector + '_' + slice + '.vtk')
+                reader.ReadAllVectorsOn()
+                # reader.ReadAllScalarsOn()
+                # reader.ReadAllTensorsOn()
+                reader.Update()
+                polyData = reader.GetOutput()
+                pointData = polyData.GetPointData()
+                sliceData[vector].append(vtk_to_numpy(pointData.GetVectors(vector)))
+            sliceData[vector] = np.array(sliceData[vector])
 
     ''' save sliceData into a binary file with pickle '''
     f = open(ppDir + '/data/' + slice, 'wb')

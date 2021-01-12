@@ -13,22 +13,22 @@ zList = []
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
-jobName = 'gs20'
+jobName = 'gs10'
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
-prbgName = 'prbg1'
+prbgName = 'prbg2'
 
 # coordinate transformation
-O = (1000, 1000, 0)
+O = (1280, 1280, 0)
 alpha = -30
 
 # input min, max and d for x, y, and z
-xMin, xMax, dx = (1000, 1000, 0)
-yMin, yMax, dy = (500, 1500, 20)
-zMin, zMax, dz = (500, 1500, 20)
+xMin, xMax, dx = (1280, 1280, 0)
+yMin, yMax, dy = (1280, 1280, 0)
+zMin, zMax, dz = (20, 180, 20)
 
 # or directly input the list of x, y, z
-zList = [20.0, 50.0, 100.0, 150.0, 200.0, 300.0, 400.0, 500.0, 600.0]
+zList = list(np.arange(20,200,20)) + [200.0, 400.0, 600.0]
 
 if len(xList) == 0:
     if dx != 0:
@@ -46,7 +46,7 @@ else: J = len(yList)
 
 if len(zList) == 0:
     if dz != 0:
-        K = int((zMax - zMin) / dx + 1)
+        K = int((zMax - zMin) / dz + 1)
         zList = list(np.linspace(zMin, zMax, K))
     else: zList = [zMin]; K = 1
 else: K = len(zList)

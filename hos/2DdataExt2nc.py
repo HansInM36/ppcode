@@ -1,15 +1,16 @@
 ### This script read HOS Post_processing output file VP_card_fitted.dat ###
+import os
+import sys
 import numpy as np
 from netCDF4 import Dataset
 
 
-prjDir = "/scratch/HOSdata/JOBS/"
-prjName = "regular"
-jobName = "ka01"
+prjDir = "/scratch/HOSdata/JOBS"
+jobName = "wind_wave_1"
 suffix = ""
 
 
-file = prjDir + prjName + '/' + jobName + '/' + "Results" + suffix + '/' + "3d.dat"
+file = prjDir + '/' + jobName + '/' + "Results" + suffix + '/' + "3d.dat"
 data_org = [i.strip().split() for i in open(file, encoding='latin1').readlines()]
 
 datalen = len(data_org)
@@ -59,7 +60,9 @@ phiArray = np.array(phiList)
 
 
 ### open a new file for netcdf data
-saveDir = '/scratch/HOSdata/pp/' + prjName + '/' + jobName + '/data/'
+saveDir = '/scratch/HOSdata/pp/' + jobName + '/data/'
+if not os.path.exists(saveDir):
+    os.makedirs(saveDir)
 saveName = "2Ddata_Dict" + suffix + '.nc'
 ncfile = Dataset(saveDir + saveName, mode='w', format='NETCDF4_CLASSIC')
 
@@ -82,7 +85,7 @@ phi.units = 'm^2/s'
 phi.long_name = 'velocity potential'
 
 # title of this file
-ncfile.title='HOS 2D data of eta and phi for case ' + prjName + '_' + jobName
+ncfile.title='HOS 2D data of eta and phi for case ' + jobName
 
 # store data
 time[:] = tSeq

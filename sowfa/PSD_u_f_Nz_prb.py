@@ -27,7 +27,7 @@ var = 'U'
 varD = 2 # u:0, v:1, w:2
 varName = 'Su'
 varUnit = r'$\mathrm{m^2/s}$'
-varName_save = 'Sw'
+varName_save = 'Su'
 
 # read data
 readDir = ppDir + '/data/'
@@ -58,7 +58,7 @@ t_num = int((t_end - t_start) / t_delta + 1)
 t_seq = np.linspace(t_start, t_end, t_num)
 
 
-segNum = 1200
+segNum = 20480
 
 plotDataList = []
 HList = []
@@ -100,7 +100,7 @@ for zInd in range(zNum):
 
 
 # plot
-fig, ax = plt.subplots(figsize=(6,6))
+fig, ax = plt.subplots(figsize=(8,5))
 colors = plt.cm.jet(np.linspace(0,1,zNum))
 
 for zInd in range(zNum):
@@ -115,8 +115,8 @@ plt.loglog(f_, 1e-1*np.power(f_, -5/3), label='-5/3 law', linewidth=2.0, color='
 plt.xlabel('f (1/s)')
 plt.ylabel(varName + ' (' + varUnit + ')')
 xaxis_min = 1e-3
-xaxis_max = 5 # f_seq.max()
-yaxis_min = 1e-14
+xaxis_max = 1 # f_seq.max()
+yaxis_min = 1e-12
 yaxis_max = 1e2
 plt.ylim(yaxis_min, yaxis_max)
 plt.xlim(xaxis_min, xaxis_max)

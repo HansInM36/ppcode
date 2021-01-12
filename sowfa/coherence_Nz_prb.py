@@ -70,8 +70,8 @@ coors = data['coors']
 
 zInd = 2
 
-p0_id = zInd * xNum * yNum + 5
-p1_id = zInd * xNum * yNum + 8
+p0_id = zInd * xNum * yNum + 20
+p1_id = zInd * xNum * yNum + 24
 
 p0_coor = coors[p0_id]
 p1_coor = coors[p1_id]
@@ -98,6 +98,10 @@ f0 = interp1d(tSeq, u0_, kind=method_, fill_value='extrapolate')
 f1 = interp1d(tSeq, u1_, kind=method_, fill_value='extrapolate')
 u0 = f0(t_seq)
 u1 = f1(t_seq)
+
+
+""" group_plot_0 """
+funcs.group_plot_0(t_seq - t_start, fs, u0-u0.mean(), u1-u1.mean())
 
 
 # # check time series

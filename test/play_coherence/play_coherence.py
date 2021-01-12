@@ -45,11 +45,13 @@ P1 = np.power(A1,2) / 2
 # white noise
 n0 = np.random.rand(t_N)
 n1 = np.random.rand(t_N)
-SNR0 = np.var(n0) / np.var(u0)
-SNR1 = np.var(n1) / np.var(u1)
+
 
 u0 = A0*np.cos(phase0) + n0
 u1 = A1*np.cos(phase1) + n1
+
+SNR0 = np.var(u0) / np.var(n0)
+SNR1 = np.var(u1) / np.var(n1)
 
 dphase = (phase1 - phase0) / np.pi
 
@@ -88,6 +90,16 @@ phiSeq = (np.random.rand(fNum) - 0.5) * 2*np.pi
 
 u0 = funcs.fourier_series(tSeq, ASeq, omgSeq, kSeq, x0, phiSeq)
 u1 = funcs.fourier_series(tSeq, ASeq, omgSeq, kSeq, x1, phiSeq)
+
+# white noise
+n0 = np.random.rand(t_N) * 5
+n1 = np.random.rand(t_N) * 5
+
+u0 += n0
+u1 += n1
+
+SNR0 = np.var(u0) / np.var(n0)
+SNR1 = np.var(u1) / np.var(n1)
 
 
 

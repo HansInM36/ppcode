@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import fft
+import scipy.fft
 import scipy.signal
 
 def trs(M,O,alpha):
@@ -47,6 +48,76 @@ def window_weight(seq, method_='bell'):
     else:
         print('error: wrong method')
 
+def FFT2D(v, dx, dy):
+    """ 2d Fourier Transform """
+    """
+    v: 2d array
+    dx, dy: spacing in x (the second dimension) and y (the first dimension) direction
+    """
+    # # this part of code is equivalent to fft2d = scipy.fft.fft2(v)
+    # fft1d = []
+    # for i in range(v.shape[1]):
+    #     tmp = scipy.fft.fft(v[:,i])
+    #     fft1d.append(tmp)
+    # fft1d = np.array(fft1d)
+    #
+    # fft2d = []
+    # for j in range(v.shape[0]):
+    #     tmp = scipy.fft.fft(fft1d[:,j])
+    #     fft2d.append(tmp)
+    # fft2d = np.array(fft2d)
+    Nx = v.shape[1]
+    Ny = v.shape[0]
+    fft2d = scipy.fft.fft2(v)
+
+    kx = scipy.fft.fftfreq(Nx, dx)[:Nx//2]
+    ky = scipy.fft.fftfreq(Ny, dy)[:Ny//2]
+    fft2d = fft2d[:Ny//2, :Nx//2]
+    # kx = np.linspace(0, 1/dx/2, Nx//2)
+    # ky = np.linspace(0, 1/dy/2, Ny//2)
+    return fft2d, kx, ky
+
+def PSD2D(v, dx, dy):
+    """ compute 2d power spectral density function by 2d Fourier Transform """
+    """
+    v: 2d array
+    dx, dy: spacing in x (the second dimension) and y (the first dimension) direction
+    note: not sure if the psd2d /= (dkx * dky) is perfect, may need improvement of scaling
+    """
+    # # this part of code is equivalent to fft2d = scipy.fft.fft2(v)
+    # fft1d = []
+    # for i in range(v.shape[1]):
+    #     tmp = scipy.fft.fft(v[:,i])
+    #     fft1d.append(tmp)
+    # fft1d = np.array(fft1d)
+    #
+    # fft2d = []
+    # for j in range(v.shape[0]):
+    #     tmp = scipy.fft.fft(fft1d[:,j])
+    #     fft2d.append(tmp)
+    # fft2d = np.array(fft2d)
+    Nx = v.shape[1]
+    Ny = v.shape[0]
+    fft2d = scipy.fft.fft2(v)
+
+    psd2d = np.abs(fft2d * np.conj(fft2d)) / np.power(Nx,2) / np.power(Ny,2)
+
+    # fft2d = fft2d[:Ny//2, :Nx//2]
+    kx = scipy.fft.fftfreq(Nx, dx)[:Nx//2]*2*np.pi
+    ky = scipy.fft.fftfreq(Ny, dy)[:Ny//2]*2*np.pi
+    dkx = (kx[-1] - kx[0]) / (Nx//2)
+    dky = (ky[-1] - ky[0]) / (Ny//2)
+
+    # scaling
+    psd2d /= (dkx * dky)
+
+    # fold
+    psd2d = psd2d[:,:Nx//2]
+    psd2d[:,1:] *= 2
+    psd2d = psd2d[:Ny//2,:]
+    psd2d[1:,:] *= 2
+    return psd2d, kx, ky
+
 def corr(x, y0 ,y1, norm_=True): # version wrote by myself
     """ R_{01}(k) = \frac{1}{N-k} \sum_{n=0}^[N-k-1] y0[n]y[n+k], 0 <= k <= N/2 """
     seqNum = x.size
@@ -65,10 +136,10 @@ def corr(x, y0 ,y1, norm_=True): # version wrote by myself
         vSeq = vSeq / np.power(np.var(y0) * np.var(y1),0.5)
     return (xSeq, vSeq)
 
-def autocorr_FFT(x, fs, norm_=True):
+def autocorr_FFT(x, delta, norm_=True):
     x -= x.mean()
     N = x.size
-    tau = np.arange(0, N) * 1/fs
+    tau = np.arange(0, N) * delta
     X = np.fft.fft(x)
     X2 = abs(X*np.conj(X))
     v = np.real(np.fft.ifft(X2)) / N
@@ -78,11 +149,11 @@ def autocorr_FFT(x, fs, norm_=True):
         v = v / np.var(x)
     return (tau, v)
 
-def crosscorr_FFT(x0, x1, fs, norm_=True):
+def crosscorr_FFT(x0, x1, delta, norm_=True):
     x0 -= x0.mean()
     x1 -= x1.mean()
     N = x0.size
-    tau = np.arange(0, N) * 1/fs
+    tau = np.arange(0, N) * delta
     X0 = np.fft.fft(x0)
     X1 = np.fft.fft(x1)
     X01 = X0*np.conj(X1)
@@ -146,7 +217,7 @@ def PSD_f(x, fs):
     if L%2 == 0:
         S = 2*S[0:int(L/2)]
     else:
-        S = 2*S[0:int(seqNum/2)+1]
+        S = 2*S[0:int(L/2)+1]
         S[-1] = S[-1]/2
     f = np.linspace(0, fs, L)
     f = f[0:S.size]
@@ -227,7 +298,7 @@ def calc_deriv_1st_FD(dx,y):
     return dy
 
 
-""" wind spectrum """
+""" wind spectrum (ref. Velocity Spectra and Coherence Estimates in the Marine Atmospheric Boundary Layer) """
 def kaimal_u(f, uz, z, uStar):
     f_ = f*z / uz
     up = 105 * f_ * np.power(uStar,2)
@@ -246,6 +317,13 @@ def kaimal_w(f, uz, z, uStar):
     down = f * np.power(1 + 5.3*f_, 5/3)
     return up/down
 
+def IEC_coh(f, d, uz, L):
+    a, b = 12, 0.12
+    A = np.power(f*d/uz,2)
+    B = np.power(b*d/L,2)
+    coh = np.exp(-a * np.power(A+B,0.5))
+    return coh
+
 def fourier_series(t_, A_, omg_, k_, x_, phi_):
     seq = np.zeros(t_.size)
     for i in range(t_.size):
@@ -254,3 +332,258 @@ def fourier_series(t_, A_, omg_, k_, x_, phi_):
             sum += A_[k] * np.cos(omg_[k]*t_[i] - k_[k]*x_ + phi_[k])
         seq[i] = sum
     return seq
+
+
+def plot_ts(tSeq,u0,u1):
+    import matplotlib.pyplot as plt
+    ### time series
+    fig, ax = plt.subplots(figsize=(8,4))
+    ax.plot(tSeq, u0, 'r-', label='p0')
+    ax.plot(tSeq, u1, 'b-', label='p1')
+    # ax.set_ylim(-2.4, 2.4)
+    # ax.set_xlim(0, 1200)
+    ax.set_xlabel('t (s)', fontsize=12)
+    ax.set_ylabel('u (m/s)', fontsize=12)
+    ax.text(0.56, 1.02, '', transform=ax.transAxes, fontsize=12)
+    ax.grid()
+    plt.show()
+
+
+""" group plot 0 """
+""" All plots in one figure """
+def group_plot_0(tSeq, fs, u0, u1):
+
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+
+    # auto-correlation coefficient
+    tau0, R0 = autocorr_FFT(u0, 1/fs)
+    tau1, R1 = autocorr_FFT(u1, 1/fs)
+
+    # auto-correlation coefficient
+    tau, R, phase__ = crosscorr_FFT(u0, u1, 1/fs)
+
+    # PSD
+    segNum = int(120*fs)
+    freq0, S0 = scipy.signal.csd(u0, u0, fs, nperseg=segNum, noverlap=None)
+    freq1, S1 = scipy.signal.csd(u1, u1, fs, nperseg=segNum, noverlap=None)
+
+    # CSD
+    segNum = int(120*fs)
+    freq, S01 = scipy.signal.csd(u0, u1, fs, nperseg=segNum, noverlap=None)
+    S01_ = abs(S01)
+    phase_ = np.angle(S01)
+
+    # coherence, co-coherence, phase
+    segNum = int(120*fs)
+    freq, coh, co_coh, phase = coherence(u0, u1, fs, segNum)
+
+    fig = plt.figure(figsize=(12,18),tight_layout=True)
+    gs = gridspec.GridSpec(6, 5)
+
+    ### time series
+    ax = fig.add_subplot(gs[0, :])
+    ax.plot(tSeq, u0, 'r-', label='p0')
+    ax.plot(tSeq, u1, 'b-', label='p1')
+    ax.set_ylim(-2.4, 2.4)
+    ax.set_xlim(0, 1200)
+    ax.set_xlabel('t (s)', fontsize=12)
+    ax.set_ylabel('u (m/s)', fontsize=12)
+    ax.text(0.56, 1.02, '', transform=ax.transAxes, fontsize=12)
+    ax.grid()
+
+    ### auto-correlation coefficient
+    ax = fig.add_subplot(gs[1, :3])
+    ax.plot(tau0, R0, 'r-', label='p0')
+    ax.plot(tau1, R1, 'b-', label='p1')
+    ax.set_ylim(-1, 1)
+    ax.set_xlim(0, 1200)
+    ax.set_xlabel(r'$\mathrm{\tau}$ (s)', fontsize=12)
+    ax.set_ylabel(r'$\mathrm{\rho_{auto}}$', fontsize=12)
+    ax.grid()
+
+    ### PSD
+    # PSD = kaimal_u(freq[1:], uz, z, uStar)
+    ax = fig.add_subplot(gs[1, 3:])
+    ax.loglog(freq0, S0, 'r-', label='p0')
+    ax.loglog(freq1, S1, 'b-', label='p1')
+    # ax.loglog(freq[1:], PSD, 'k-', label='Kaimal')
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel(r'$\mathrm{S_{auto}}$ ($\mathrm{m^2/s}$)', fontsize=12)
+    ax.grid()
+
+    ### cross-correlation coefficient
+    ax = fig.add_subplot(gs[2, :3])
+    ax.plot(tau, R, 'g-')
+    ax.set_ylim(-1, 1)
+    ax.set_xlim(0, 300)
+    ax.set_xlabel(r'$\mathrm{\tau}$ (s)', fontsize=12)
+    ax.set_ylabel(r'$\mathrm{\rho_{cross}}$', fontsize=12)
+    ax.grid()
+
+    ### CSD
+    ax = fig.add_subplot(gs[2, 3:])
+    ax.loglog(freq, S01_, 'g-')
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel(r'$\mathrm{S_{cross}}$ ($\mathrm{m^2/s}$)', fontsize=12)
+    ax.grid()
+
+    ### coherence
+    f_out = 0.5
+    tmp = abs(freq - f_out)
+    ind_in, ind_out = 1, np.where(tmp == tmp.min())[0][0]
+
+    ax = fig.add_subplot(gs[3, :3])
+    ax.plot(freq[1:], coh[1:], linestyle='', marker='x', markersize=3, color='k')
+    ax.set_ylim(0, 1)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('coherence', fontsize=12)
+    ax.grid()
+    # zoom in
+    ax = fig.add_subplot(gs[3, 3:])
+    ax.plot(freq[ind_in:ind_out], coh[ind_in:ind_out], linestyle='-', marker='o', markersize=3, color='k')
+    ax.set_ylim(0, 1)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('coherence', fontsize=12)
+    ax.grid()
+
+    ### co-coherence
+    ax = fig.add_subplot(gs[4, :3])
+    ax.plot(freq[1:], co_coh[1:], linestyle='', marker='x', markersize=3, color='r')
+    ax.set_ylim(-1, 1)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('co-coherence', fontsize=12)
+    ax.grid()
+    # zoom in
+    ax = fig.add_subplot(gs[4, 3:])
+    ax.plot(freq[ind_in:ind_out], co_coh[ind_in:ind_out], linestyle='-', marker='o', markersize=3, color='r')
+    # ax.plot(freq[ind_in:ind_out], np.sqrt(coh[ind_in:ind_out])*np.cos(phase[ind_in:ind_out]), linestyle=':', marker='', markersize=1, color='g')
+    ax.set_ylim(-1, 1)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('co-coherence', fontsize=12)
+    ax.grid()
+
+    ### phase
+    xaxis_min = 0
+    xaxis_max = 5.0
+    xaxis_d = 0.5
+    yaxis_min = -1.0*np.pi
+    yaxis_max = 1.0*np.pi
+    yaxis_d = np.pi/4
+    labels = ['$-\pi$', r'$-3\pi/4$', r'$-\pi/2$', r'$-\pi/4$', r'$0$',
+              r'$\pi/4$', r'$\pi/2$', r'$3\pi/4$', r'$\pi$']
+    ax = fig.add_subplot(gs[5, :3])
+    ax.plot(freq[1:], phase[1:], linestyle='', marker='x', markersize=3, color='b')
+    ax.set_ylim(-np.pi, np.pi)
+    ax.set_yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
+    ax.set_yticklabels(labels)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('phase', fontsize=12)
+    ax.grid()
+    # zoom in
+    ax = fig.add_subplot(gs[5, 3:])
+    ax.plot(freq[ind_in:ind_out], phase[ind_in:ind_out], linestyle='-', marker='o', markersize=3, color='b')
+    ax.set_ylim(-np.pi, np.pi)
+    ax.set_yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
+    ax.set_yticklabels(labels)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('phase', fontsize=12)
+    ax.grid()
+
+    plt.show()
+
+""" group plot 1 """
+""" coh, co-coh and phase in one figure """
+def group_plot_1(tSeq, fs, u0, u1):
+
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+
+    # auto-correlation coefficient
+    tau0, R0 = autocorr_FFT(u0, fs)
+    tau1, R1 = autocorr_FFT(u1, fs)
+
+    # auto-correlation coefficient
+    tau, R, phase__ = crosscorr_FFT(u0, u1, fs)
+
+    # PSD
+    segNum = int(120*fs)
+    freq0, S0 = scipy.signal.csd(u0, u0, fs, nperseg=segNum, noverlap=None)
+    freq1, S1 = scipy.signal.csd(u1, u1, fs, nperseg=segNum, noverlap=None)
+
+    # CSD
+    segNum = int(120*fs)
+    freq, S01 = scipy.signal.csd(u0, u1, fs, nperseg=segNum, noverlap=None)
+    S01_ = abs(S01)
+    phase_ = np.angle(S01)
+
+    # coherence, co-coherence, phase
+    segNum = int(120*fs)
+    freq, coh, co_coh, phase = coherence(u0, u1, fs, segNum)
+
+    fig = plt.figure(figsize=(10,8),tight_layout=True)
+    gs = gridspec.GridSpec(3, 5)
+
+    ### coherence
+    f_out = 0.5
+    tmp = abs(freq - f_out)
+    ind_in, ind_out = 1, np.where(tmp == tmp.min())[0][0]
+
+    ax = fig.add_subplot(gs[0, :3])
+    ax.plot(freq[1:], coh[1:], linestyle='', marker='x', markersize=3, color='k')
+    ax.set_ylim(0, 1)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('coherence', fontsize=12)
+    ax.grid()
+    # zoom in
+    ax = fig.add_subplot(gs[0, 3:])
+    ax.plot(freq[ind_in:ind_out], coh[ind_in:ind_out], linestyle='-', marker='o', markersize=3, color='k')
+    ax.set_ylim(0, 1)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('coherence', fontsize=12)
+    ax.grid()
+
+    ### co-coherence
+    ax = fig.add_subplot(gs[1, :3])
+    ax.plot(freq[1:], co_coh[1:], linestyle='', marker='x', markersize=3, color='r')
+    ax.set_ylim(-1, 1)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('co-coherence', fontsize=12)
+    ax.grid()
+    # zoom in
+    ax = fig.add_subplot(gs[1, 3:])
+    ax.plot(freq[ind_in:ind_out], co_coh[ind_in:ind_out], linestyle='-', marker='o', markersize=3, color='r')
+    # ax.plot(freq[ind_in:ind_out], np.sqrt(coh[ind_in:ind_out])*np.cos(phase[ind_in:ind_out]), linestyle=':', marker='', markersize=1, color='g')
+    ax.set_ylim(-1, 1)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('co-coherence', fontsize=12)
+    ax.grid()
+
+    ### phase
+    xaxis_min = 0
+    xaxis_max = 5.0
+    xaxis_d = 0.5
+    yaxis_min = -1.0*np.pi
+    yaxis_max = 1.0*np.pi
+    yaxis_d = np.pi/4
+    labels = ['$-\pi$', r'$-3\pi/4$', r'$-\pi/2$', r'$-\pi/4$', r'$0$',
+              r'$\pi/4$', r'$\pi/2$', r'$3\pi/4$', r'$\pi$']
+    ax = fig.add_subplot(gs[2, :3])
+    ax.plot(freq[1:], phase[1:], linestyle='', marker='x', markersize=3, color='b')
+    ax.set_ylim(-np.pi, np.pi)
+    ax.set_yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
+    ax.set_yticklabels(labels)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('phase', fontsize=12)
+    ax.grid()
+    # zoom in
+    ax = fig.add_subplot(gs[2, 3:])
+    ax.plot(freq[ind_in:ind_out], phase[ind_in:ind_out], linestyle='-', marker='o', markersize=3, color='b')
+    ax.set_ylim(-np.pi, np.pi)
+    ax.set_yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
+    ax.set_yticklabels(labels)
+    ax.set_xlabel('f (Hz)', fontsize=12)
+    ax.set_ylabel('phase', fontsize=12)
+    ax.grid()
+
+    plt.show()
