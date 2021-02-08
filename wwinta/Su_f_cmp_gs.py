@@ -165,17 +165,17 @@ dir_0 = prjDir + '/' + jobName_0
 tSeq_0, xSeq_0, ySeq_0, zSeq_0, varSeq_0 = getData_palm(dir_0, jobName_0, 'M03', ['.001'], 'u')
 f_seq_0, PSD_u_seq_0 = PSD_palm((144000.0, 146400, 0.1), tSeq_0, 0, xSeq_0.size, ySeq_0.size, varSeq_0, 20480)
 
-prjDir = '/scratch/palmdata/JOBS'
-jobName_1  = 'wwinta_1'
-dir_1 = prjDir + '/' + jobName_1
-tSeq_1, xSeq_1, ySeq_1, zSeq_1, varSeq_1 = getData_palm(dir_1, jobName_1, 'M03', ['.001'], 'u')
-f_seq_1, PSD_u_seq_1 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, varSeq_1, 20480)
-
-prjDir = '/scratch/palmdata/JOBS'
-jobName_1  = 'mini'
-dir_1 = prjDir + '/' + jobName_1
-tSeq_1, xSeq_1, ySeq_1, zSeq_1, varSeq_1 = getData_palm(dir_1, jobName_1, 'M03', ['.001'], 'u')
-f_seq_1, PSD_u_seq_1 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, varSeq_1, 20480)
+# prjDir = '/scratch/palmdata/JOBS'
+# jobName_1  = 'wwinta_1'
+# dir_1 = prjDir + '/' + jobName_1
+# tSeq_1, xSeq_1, ySeq_1, zSeq_1, varSeq_1 = getData_palm(dir_1, jobName_1, 'M03', ['.001'], 'u')
+# f_seq_1, PSD_u_seq_1 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, varSeq_1, 20480)
+#
+# prjDir = '/scratch/palmdata/JOBS'
+# jobName_1  = 'mini'
+# dir_1 = prjDir + '/' + jobName_1
+# tSeq_1, xSeq_1, ySeq_1, zSeq_1, varSeq_1 = getData_palm(dir_1, jobName_1, 'M03', ['.001'], 'u')
+# f_seq_1, PSD_u_seq_1 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, varSeq_1, 20480)
 
 prjDir = '/scratch/palmdata/JOBS'
 jobName_1  = 'wwinta_2'

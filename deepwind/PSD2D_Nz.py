@@ -10,6 +10,7 @@ import scipy.fft
 import sliceDataClass as sdc
 import funcs
 import matplotlib.pyplot as plt
+import matplotlib.colors as clrs
 
 def getInfo_palm(dir, jobName, maskID, run_no, var):
     """ get information of x,y,z,t to decide how much data we should extract """
@@ -118,7 +119,7 @@ def getSliceData_Nz_sowfa(dir, jobName, slice, var, varD, trs_para, tInd, xInd, 
         print('processing: ' + str(t_ind) + ' ...')
         tmp = slc.data[var][t_ind]
         tmp = funcs.trs(tmp,O,alpha)
-        tmp1 = slc.meshITP_Nz(xInd, yInd, tmp[:,varD], method_='linear')
+        tmp1 = slc.meshITP_Nz(xInd, yInd, tmp[:,varD], method_='cubic')
         xSeq, ySeq, varSeq_ = tmp1[0], tmp1[1], tmp1[2]
         varSeq.append(varSeq_)
     varSeq = np.array(varSeq)
@@ -141,8 +142,8 @@ ppDir = '/scratch/palmdata/pp/' + jobName
 tSeq, xSeq, ySeq, zSeq = getInfo_palm(jobDir, jobName, 'M01', '.002', 'u')
 # height
 zInd = 4
-tSeq_0, xSeq_0, ySeq_0, zSeq_0, uSeq_0 = getData_palm(jobDir, jobName, 'M01', ['.002'], 'u', (0,150), (0,xSeq.size), (0,ySeq.size), (zInd,zInd+1))
-tSeq_0, xSeq_0, ySeq_0, zSeq_0, vSeq_0 = getData_palm(jobDir, jobName, 'M01', ['.002'], 'v', (0,150), (0,xSeq.size), (0,ySeq.size), (zInd,zInd+1))
+tSeq_0, xSeq_0, ySeq_0, zSeq_0, uSeq_0 = getData_palm(jobDir, jobName, 'M01', ['.002'], 'u', (0,10), (0,xSeq.size), (0,ySeq.size), (zInd,zInd+1))
+tSeq_0, xSeq_0, ySeq_0, zSeq_0, vSeq_0 = getData_palm(jobDir, jobName, 'M01', ['.002'], 'v', (0,10), (0,xSeq.size), (0,ySeq.size), (zInd,zInd+1))
 uvSeq_0 = np.power(np.power(uSeq_0,2) + np.power(vSeq_0,2), 0.5)
 uvSeq_0 = uvSeq_0 - np.mean(uvSeq_0)
 psd2d_0, kx_0, ky_0 = PSD2D(tSeq_0, 10, 10, uvSeq_0[:,0,:,:])
@@ -152,8 +153,8 @@ prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
 jobName = 'gs10'
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
-tSeq_1, xSeq_1, ySeq_1, H, uSeq_1 = getSliceData_Nz_sowfa(ppDir, jobName, 'Nz2', 'U', 0, ((0,0,0),30), (0,150), (0,2560,256), (0,2560,256))
-tSeq_1, xSeq_1, ySeq_1, H, vSeq_1 = getSliceData_Nz_sowfa(ppDir, jobName, 'Nz2', 'U', 1, ((0,0,0),30), (0,150), (0,2560,256), (0,2560,256))
+tSeq_1, xSeq_1, ySeq_1, H, uSeq_1 = getSliceData_Nz_sowfa(ppDir, jobName, 'Nz2', 'U', 0, ((0,0,0),30), (0,10), (0,2560,1280), (0,2560,1280))
+tSeq_1, xSeq_1, ySeq_1, H, vSeq_1 = getSliceData_Nz_sowfa(ppDir, jobName, 'Nz2', 'U', 1, ((0,0,0),30), (0,10), (0,2560,1280), (0,2560,1280))
 uvSeq_1 = np.power(np.power(uSeq_1,2) + np.power(vSeq_1,2), 0.5)
 uvSeq_1 = uvSeq_1 - np.mean(uvSeq_1)
 psd2d_1, kx_1, ky_1 = PSD2D(tSeq_1, 10, 10, uvSeq_1)
@@ -164,12 +165,12 @@ vMin, vMax, vN = (-6,4,11)
 # cbreso = 100 # resolution of colorbar
 pwlevels = np.linspace(vMin,vMax,vN*10)
 levels = np.power(10., pwlevels)
-x_ = np.copy(kx_0)
-y_ = np.copy(ky_0)
-v_ = np.copy(psd2d_0)
+x_ = np.copy(kx_1)
+y_ = np.copy(ky_1)
+v_ = np.copy(psd2d_1)
 v_[np.where(v_ < np.power(10., vMin))] = np.power(10., vMin)
 v_[np.where(v_ > np.power(10., vMax))] = np.power(10., vMax)
-CS = axs.contourf(x_, y_, v_, levels=levels, norm=colors.LogNorm(), cmap='jet')
+CS = axs.contourf(x_, y_, v_, levels=levels, norm=clrs.LogNorm(), cmap='jet')
 cbartickList = np.power(10., np.linspace(vMin,vMax,vN))
 cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
 

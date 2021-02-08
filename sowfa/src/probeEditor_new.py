@@ -13,22 +13,23 @@ zList = []
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
-jobName = 'gs10'
+jobName = 'gs10_refined'
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
 
-prbgName = 'prbg2'
+prbgName = 'prbgz_rf'
 
 # coordinate transformation
 O = (1280, 1280, 0)
-alpha = -30
+alpha = -0
 
 # input min, max and d for x, y, and z
 xMin, xMax, dx = (1280, 1280, 0)
 yMin, yMax, dy = (1280, 1280, 0)
-zMin, zMax, dz = (20, 180, 20)
+zMin, zMax, dz = (20, 240, 20)
 
 # or directly input the list of x, y, z
-zList = list(np.arange(20,200,20)) + [200.0, 400.0, 600.0]
+# zList = list(np.arange(20,200,20)) + [200.0, 400.0, 600.0]
+# zList = [20,100,180]
 
 if len(xList) == 0:
     if dx != 0:
@@ -74,8 +75,9 @@ f.write('    ' + prbgName + '\n')
 f.write('    {' + '\n')
 f.write('          type                probes;' + '\n')
 f.write('          functionObjectLibs ("libsampling.so");' + '\n')
+f.write('          interpolationScheme cellPointFace;' + '\n')
 f.write('          outputControl       runTime;' + '\n')
-f.write('          writeInterval       0.1;' + '\n')
+f.write('          writeInterval       0.5;' + '\n')
 f.write('          timeStart           0.0;' + '\n')
 f.write('          fields' + '\n')
 f.write('          (' + '\n')

@@ -7,14 +7,18 @@ import numpy as np
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
-jobName = 'gs40'
+jobName = 'gs40_local'
 jobDir = prjDir + '/' + prjName + '/' + jobName
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
+
+scalarList = ['k']
+vectorList = ['U']
 
 list = os.listdir(jobDir + '/postProcessing/' + '.')
 prbgList = [i for i in list if i[0:4]=='prbg']
 prbgList.sort()
 
+prbgList = ['prbg0']
 
 for prbg in prbgList:
     print('Processing ' + prbg + ' ......')
@@ -81,8 +85,13 @@ for prbg in prbgList:
                 U_ = [float(i) for i in U_]
                 U[p].append(U_)
 
+
+    if len(scalarList) != 0:
+        for
+
     prbgData['time'] = np.array(time)
     prbgData['U'] = np.array(U)
+
 
     ''' save probeData into a binary file with pickle '''
     f = open(ppDir + '/data/' + prbg, 'wb')

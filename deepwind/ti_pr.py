@@ -3,6 +3,7 @@ sys.path.append('/scratch/ppcode')
 sys.path.append('/scratch/ppcode/sowfa/src')
 import imp
 import numpy as np
+from netCDF4 import Dataset
 import pickle
 from scipy.interpolate import interp1d
 import funcs
@@ -91,13 +92,13 @@ def TI_pr_palm(dir, jobName, run_no_list):
     wwSeq = np.concatenate([wwSeq_list[i] for i in range(run_num)], axis=0)
     wwSeq = wwSeq.astype(float)
 
-    TIuSeq = 100 * np.power(uuSeq[2:,1:], 0.5) / uSeq[2:,1:] # somehow negative var2 values appear in the first two time steps; TI(z=0) should be specified to 0
-    TIvSeq = 100 * np.power(vvSeq[2:,1:], 0.5) / uSeq[2:,1:]
-    TIwSeq = 100 * np.power(wwSeq[2:,1:], 0.5) / uSeq[2:,1:]
+    TIuSeq = 100 * np.power(uuSeq[:,1:], 0.5) / uSeq[:,1:] # somehow negative var2 values appear in the first two time steps; TI(z=0) should be specified to 0
+    TIvSeq = 100 * np.power(vvSeq[:,1:], 0.5) / uSeq[:,1:]
+    TIwSeq = 100 * np.power(wwSeq[:,1:], 0.5) / uSeq[:,1:]
 
     return tSeq, zSeq[1:], TIuSeq, TIvSeq, TIwSeq
 
-def TI_pr_ave(tplot_para, tSeq, tDelta, zNum, TIuSeq, TIvSeq, TIwSeq):
+def TI_pr_av_seq(tplot_para, tSeq, tDelta, zNum, TIuSeq, TIvSeq, TIwSeq):
     ave_itv = tplot_para[0]
     tplot_start = tplot_para[1]
     tplot_end = tplot_para[2]
@@ -129,52 +130,147 @@ def TI_pr_ave(tplot_para, tSeq, tDelta, zNum, TIuSeq, TIvSeq, TIwSeq):
     TIvSeq = np.array(TIvplotList)
     TIwSeq = np.array(TIwplotList)
     return t_seq, TIuSeq, TIvSeq, TIwSeq
+def TI_pr_av(tplot_para, tSeq, zNum, TIuSeq, TIvSeq, TIwSeq):
+    ave_itv = tplot_para[0]
+    tplot = tplot_para[1]
 
+    tmp = tSeq - tplot + ave_itv
+    tInd_start = 0
+    for tInd in range(tSeq.size):
+        if tmp[tInd] < 0:
+            tInd_start += 1
+        else:
+            break
+
+    # compute the averaged velocity at a certain time and height
+    TIuplotList = []
+    TIvplotList = []
+    TIwplotList = []
+    for tInd in range(tSeq.size-tInd_start):
+        TIuplotList.append(TIuSeq[tInd+tInd_start,:])
+        TIwplotList.append(TIvSeq[tInd+tInd_start,:])
+        TIvplotList.append(TIwSeq[tInd+tInd_start,:])
+    TIuSeq = np.average(np.array(TIuplotList),axis=0)
+    TIvSeq = np.average(np.array(TIvplotList),axis=0)
+    TIwSeq = np.average(np.array(TIwplotList),axis=0)
+    return tplot, TIuSeq, TIvSeq, TIwSeq
+
+def ITP(varSeq, zSeq, z):
+    f = interp1d(zSeq, varSeq, kind='linear')
+    return f(z)
 
 prjName = 'deepwind'
-jobName_0 = 'gs10'
+jobName_0 = 'gs10_refined'
 dir_0 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_0
 tSeq_0, zSeq_0, TIuSeq_0, TIvSeq_0, TIwSeq_0 = TI_pr_sowfa(dir_0, ((0,0,0),30.0))
-t_seq_0, TIuSeq_0, TIvSeq_0, TIwSeq_0 = TI_pr_ave((3600,144000,144000,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, TIuSeq_0, TIvSeq_0, TIwSeq_0)
+t_seq_0, TIuSeq_0, TIvSeq_0, TIwSeq_0 = TI_pr_av_seq((3600,151200,151200,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, TIuSeq_0, TIvSeq_0, TIwSeq_0)
+
+# tplot, TIuSeq_0, TIvSeq_0, TIwSeq_0 = TI_pr_av((1200,146400), tSeq_0, zSeq_0.size, TIuSeq_0, TIvSeq_0, TIwSeq_0)
 
 prjName = 'deepwind'
 jobName_0 = 'gs10_0.0001'
 dir_0 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_0
 tSeq_0, zSeq_0, TIuSeq_0, TIvSeq_0, TIwSeq_0 = TI_pr_sowfa(dir_0, ((0,0,0),30.0))
-t_seq_0, TIuSeq_0, TIvSeq_0, TIwSeq_0 = TI_pr_ave((3600,144000,144000,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, TIuSeq_0, TIvSeq_0, TIwSeq_0)
+t_seq_0, TIuSeq_0, TIvSeq_0, TIwSeq_0 = TI_pr_av_seq((2400,146400,146400,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, TIuSeq_0, TIvSeq_0, TIwSeq_0)
 
+prjName = 'deepwind'
+jobName_1 = 'gs10'
+dir_1 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_1
+tSeq_1, zSeq_1, TIuSeq_1, TIvSeq_1, TIwSeq_1 = TI_pr_sowfa(dir_1, ((0,0,0),30.0))
+t_seq_1, TIuSeq_1, TIvSeq_1, TIwSeq_1 = TI_pr_av_seq((2400,146400,146400,1e6), tSeq_1, tSeq_1[-1]-tSeq_1[-2], zSeq_1.size, TIuSeq_1, TIvSeq_1, TIwSeq_1)
+
+prjName = 'deepwind'
+jobName_2 = 'gs10_0.01'
+dir_2 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_2
+tSeq_2, zSeq_2, TIuSeq_2, TIvSeq_2, TIwSeq_2 = TI_pr_sowfa(dir_2, ((0,0,0),30.0))
+t_seq_2, TIuSeq_2, TIvSeq_2, TIwSeq_2 = TI_pr_av_seq((2400,74400,74400,1e6), tSeq_2, tSeq_2[-1]-tSeq_2[-2], zSeq_2.size, TIuSeq_2, TIvSeq_2, TIwSeq_2)
+
+
+
+# prjDir = '/scratch/palmdata/JOBS'
+# jobName_1  = 'deepwind_NBL'
+# dir_1 = prjDir + '/' + jobName_1
+# tSeq_1, zSeq_1, TIuSeq_1, TIvSeq_1, TIwSeq_1 = TI_pr_palm(dir_1, jobName_1, ['.000', '.001'])
+
+prjDir = '/scratch/palmdata/JOBS'
+jobName_3  = 'deepwind_gs5_0.0001'
+dir_3 = prjDir + '/' + jobName_3
+tSeq_3, zSeq_3, TIuSeq_3, TIvSeq_3, TIwSeq_3 = TI_pr_palm(dir_3, jobName_3, ['.004','.005'])
+TIuSeq_3, TIvSeq_3, TIwSeq_3 = TIuSeq_3[-1], TIvSeq_3[-1], TIwSeq_3[-1]
 
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName_1  = 'deepwind_NBL'
-dir_1 = prjDir + '/' + jobName_1
-tSeq_1, zSeq_1, TIuSeq_1, TIvSeq_1, TIwSeq_1 = TI_pr_palm(dir_1, jobName_1, ['.000', '.001'])
+jobName_4  = 'deepwind_gs5_mdf'
+dir_4 = prjDir + '/' + jobName_4
+tSeq_4, zSeq_4, TIuSeq_4, TIvSeq_4, TIwSeq_4 = TI_pr_palm(dir_4, jobName_4, ['.004']) # ['.000','.001']
+TIuSeq_4, TIvSeq_4, TIwSeq_4 = TIuSeq_4[-1], TIvSeq_4[-1], TIwSeq_4[-1]
 
 
+prjDir = '/scratch/palmdata/JOBS'
+jobName_5  = 'deepwind_gs5_main'
+dir_5 = prjDir + '/' + jobName_5
+tSeq_5, zSeq_5, TIuSeq_5, TIvSeq_5, TIwSeq_5 = TI_pr_palm(dir_5, jobName_5, ['.001']) # ['.000','.001']
+TIuSeq_5, TIvSeq_5, TIwSeq_5 = TIuSeq_5[-1], TIvSeq_5[-1], TIwSeq_5[-1]
+
+prjDir = '/scratch/palmdata/JOBS'
+jobName_6  = 'deepwind_NBL_main'
+dir_6 = prjDir + '/' + jobName_6
+tSeq_6, zSeq_6, TIuSeq_6, TIvSeq_6, TIwSeq_6 = TI_pr_palm(dir_6, jobName_6, ['.004']) # ['.000','.001']
+TIuSeq_6, TIvSeq_6, TIwSeq_6 = TIuSeq_6[0], TIvSeq_6[0], TIwSeq_6[0]
+
+
+
+### plot
 fig, ax = plt.subplots(figsize=(3,4.5))
-plt.plot(TIuSeq_0[-1], zSeq_0, label='TIu-sowfa', linewidth=1.0, linestyle='-', color='r')
-plt.plot(TIvSeq_0[-1], zSeq_0, label='TIv-sowfa', linewidth=1.0, linestyle='-', color='b')
-plt.plot(TIwSeq_0[-1], zSeq_0, label='TIw-sowfa', linewidth=1.0, linestyle='-', color='g')
-plt.plot(TIuSeq_1[-1], zSeq_1, label='TIu-palm', linewidth=1.0, linestyle='--', color='r')
-plt.plot(TIvSeq_1[-1], zSeq_1, label='TIv-palm', linewidth=1.0, linestyle='--', color='b')
-plt.plot(TIwSeq_1[-1], zSeq_1, label='TIw-palm', linewidth=1.0, linestyle='--', color='g')
-plt.xlabel('TI', fontsize=12)
-# plt.ylabel('z (m)', fontsize=12)
-xaxis_min = 0
-xaxis_max = 12
-xaxis_d = 2
-yaxis_min = 0
-yaxis_max = 1000.0
-yaxis_d = 100.0
-plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
-plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), [], fontsize=12)
-plt.legend(bbox_to_anchor=(0.4,0.75), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+fltw = 1
+# plt.plot(funcs.flt_seq(TIuSeq_0[-1],fltw), zSeq_0, label='TIu-sowfa', linewidth=1.0, linestyle='-', color='r')
+# plt.plot(funcs.flt_seq(TIvSeq_0[-1],fltw), zSeq_0, label='TIv-sowfa', linewidth=1.0, linestyle='-', color='b')
+# plt.plot(funcs.flt_seq(TIwSeq_0[-1,::3],fltw), zSeq_0[::3], label='TIw-sowfa', linewidth=1.0, linestyle='-', color='g')
+plt.plot(TIuSeq_4, zSeq_4, label='TIu-palm-pcr', linewidth=1.0, linestyle='--', color='r')
+plt.plot(TIvSeq_4, zSeq_4, label='TIv-palm-pcr', linewidth=1.0, linestyle='--', color='b')
+plt.plot(TIwSeq_4, zSeq_4, label='TIw-palm-pcr', linewidth=1.0, linestyle='--', color='g')
+plt.plot(TIuSeq_5, zSeq_5, label='TIu-palm-main', linewidth=1.0, linestyle=':', color='r')
+plt.plot(TIvSeq_5, zSeq_5, label='TIv-palm-main', linewidth=1.0, linestyle=':', color='b')
+plt.plot(TIwSeq_5, zSeq_5, label='TIw-palm-main', linewidth=1.0, linestyle=':', color='g')
+plt.xlabel('TI (%)', fontsize=12)
+plt.ylabel('z (m)', fontsize=12)
+# xaxis_min = 0
+# xaxis_max = 12
+# xaxis_d = 2
+# yaxis_min = 0
+# yaxis_max = 1000.0
+# yaxis_d = 100.0
+# plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+# plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
+# plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
+# plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
+plt.legend(bbox_to_anchor=(0.2,0.75), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = 'TI_pr.png'
-plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
+# saveName = 'TI_pr.png'
+# plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
 plt.show()
 plt.close()
+
+
+### print
+print('sowfa-0.0001 20m: ', np.round(ITP(TIuSeq_0, zSeq_0, 20),3), np.round(ITP(TIvSeq_0, zSeq_0, 20),3), np.round(ITP(TIwSeq_0, zSeq_0, 20),3))
+print('sowfa-0.0001 100m: ', np.round(ITP(TIuSeq_0, zSeq_0, 100),3), np.round(ITP(TIvSeq_0, zSeq_0, 100),3), np.round(ITP(TIwSeq_0, zSeq_0, 100),3))
+print('sowfa-0.0001 180m: ', np.round(ITP(TIuSeq_0, zSeq_0, 180),3), np.round(ITP(TIvSeq_0, zSeq_0, 180),3), np.round(ITP(TIwSeq_0, zSeq_0, 180),3))
+print('sowfa-0.001 20m: ', np.round(ITP(TIuSeq_1, zSeq_1, 20),3), np.round(ITP(TIvSeq_1, zSeq_1, 20),3), np.round(ITP(TIwSeq_1, zSeq_1, 20),3))
+print('sowfa-0.001 100m: ', np.round(ITP(TIuSeq_1, zSeq_1, 100),3), np.round(ITP(TIvSeq_1, zSeq_1, 100),3), np.round(ITP(TIwSeq_1, zSeq_1, 100),3))
+print('sowfa-0.001 180m: ', np.round(ITP(TIuSeq_1, zSeq_1, 180),3), np.round(ITP(TIvSeq_1, zSeq_1, 180),3), np.round(ITP(TIwSeq_1, zSeq_1, 180),3))
+print('sowfa-0.01 20m: ', np.round(ITP(TIuSeq_2, zSeq_2, 20),3), np.round(ITP(TIvSeq_2, zSeq_2, 20),3), np.round(ITP(TIwSeq_2, zSeq_2, 20),3))
+print('sowfa-0.01 100m: ', np.round(ITP(TIuSeq_2, zSeq_2, 100),3), np.round(ITP(TIvSeq_2, zSeq_2, 100),3), np.round(ITP(TIwSeq_2, zSeq_2, 100),3))
+print('sowfa-0.01 180m: ', np.round(ITP(TIuSeq_2, zSeq_2, 180),3), np.round(ITP(TIvSeq_2, zSeq_2, 180),3), np.round(ITP(TIwSeq_2, zSeq_2, 180),3))
+
+print('palm-0.0001 20m: ', np.round(ITP(TIuSeq_3, zSeq_3, 20),3), np.round(ITP(TIvSeq_3, zSeq_3, 20),3), np.round(ITP(TIwSeq_3, zSeq_3, 20),3))
+print('palm-0.0001 100m: ', np.round(ITP(TIuSeq_3, zSeq_3, 100),3), np.round(ITP(TIvSeq_3, zSeq_3, 100),3), np.round(ITP(TIwSeq_3, zSeq_3, 100),3))
+print('palm-0.0001 180m: ', np.round(ITP(TIuSeq_3, zSeq_3, 180),3), np.round(ITP(TIvSeq_3, zSeq_3, 180),3), np.round(ITP(TIwSeq_3, zSeq_3, 180),3))
+print('palm-0.001 20m: ', np.round(ITP(TIuSeq_4, zSeq_4, 20),3), np.round(ITP(TIvSeq_4, zSeq_4, 20),3), np.round(ITP(TIwSeq_4, zSeq_4, 20),3))
+print('palm-0.001 100m: ', np.round(ITP(TIuSeq_4, zSeq_4, 100),3), np.round(ITP(TIvSeq_4, zSeq_4, 100),3), np.round(ITP(TIwSeq_4, zSeq_4, 100),3))
+print('palm-0.001 180m: ', np.round(ITP(TIuSeq_4, zSeq_4, 180),3), np.round(ITP(TIvSeq_4, zSeq_4, 180),3), np.round(ITP(TIwSeq_4, zSeq_4, 180),3))
+print('palm-0.01 20m: ', np.round(ITP(TIuSeq_5, zSeq_5, 20),3), np.round(ITP(TIvSeq_5, zSeq_5, 20),3), np.round(ITP(TIwSeq_5, zSeq_5, 20),3))
+print('palm-0.01 100m: ', np.round(ITP(TIuSeq_5, zSeq_5, 100),3), np.round(ITP(TIvSeq_5, zSeq_5, 100),3), np.round(ITP(TIwSeq_5, zSeq_5, 100),3))
+print('palm-0.01 180m: ', np.round(ITP(TIuSeq_5, zSeq_5, 180),3), np.round(ITP(TIvSeq_5, zSeq_5, 180),3), np.round(ITP(TIwSeq_5, zSeq_5, 180),3))

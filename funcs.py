@@ -48,6 +48,34 @@ def window_weight(seq, method_='bell'):
     else:
         print('error: wrong method')
 
+def flt_seq(x,tao):
+    """ 以tao来过滤一个序列 """
+    '''
+    filter x with tao
+    x must be a 1D array
+    '''
+    '''
+    x = np.array([1,2,3,4,5,6,7])
+    flt_seq(x,3)
+    '''
+    tao = int(tao)
+    l = np.shape(x)[0]
+    y = np.zeros(np.shape(x))
+
+    for i in range(l):
+        if i-tao < 0:
+            a = 0
+        else:
+            a = i-tao
+        if i+tao+1 > l:
+            b = l
+        else:
+            b = i+tao+1
+        a, b = int(a), int(b)
+        y[i] = sum(x[a:b]) / np.shape(x[a:b])[0]
+    return y
+
+
 def FFT2D(v, dx, dy):
     """ 2d Fourier Transform """
     """
@@ -269,11 +297,12 @@ def coherence(data1, data2, fs, segNum, max_freq=None):
 
     Rxy    = Pxy.real
     Qxy    = Pxy.imag
-    coh    = abs(np.array(Pxy) * np.array(np.conj(Pxy))) / (np.array(Pxx) * np.array(Pyy))
+    coh    = np.sqrt(abs(np.array(Pxy) * np.array(np.conj(Pxy))) / (np.array(Pxx) * np.array(Pyy)))
     co_coh = np.real(Pxy / np.sqrt(np.array(Pxx) * np.array(Pyy)))
+    quad_coh = np.imag(Pxy / np.sqrt(np.array(Pxx) * np.array(Pyy)))
     phase  = np.arctan2(Qxy,Rxy)
 
-    return (freq, coh, co_coh, phase)
+    return (freq, coh, co_coh, quad_coh, phase)
 
 def calc_deriv_1st_FFT(dx,y):
     N = y.size
@@ -349,6 +378,7 @@ def plot_ts(tSeq,u0,u1):
     plt.show()
 
 
+
 """ group plot 0 """
 """ All plots in one figure """
 def group_plot_0(tSeq, fs, u0, u1):
@@ -380,6 +410,9 @@ def group_plot_0(tSeq, fs, u0, u1):
 
     fig = plt.figure(figsize=(12,18),tight_layout=True)
     gs = gridspec.GridSpec(6, 5)
+
+
+
 
     ### time series
     ax = fig.add_subplot(gs[0, :])

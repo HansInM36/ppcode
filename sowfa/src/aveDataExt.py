@@ -5,7 +5,7 @@ import pickle
 # the directory where the wake data locate
 prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
-jobName = 'gs10_0.0001'
+jobName = 'gs10_0.01_refined'
 
 jobDir = prjDir + '/' + prjName + '/' + jobName
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName

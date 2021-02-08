@@ -6,13 +6,10 @@ from scipy.interpolate import interp1d
 import scipy.signal
 import matplotlib.pyplot as plt
 
-prjDir = "/scratch/HOSdata/JOBS/"
-jobName = "wind_wave"
-suffix = ""
-
-readDir = '/scratch/HOSdata/pp/' + jobName + '/data/'
-readName = "2Ddata_Dict" + suffix + '.nc'
-data = Dataset(readDir + readName, "r", format="NETCDF4")
+readDir = '/scratch/ppcode/wwinta'
+jobName = "wwinta_1"
+fileName = "waveData_regular" + '.nc'
+data = Dataset(readDir + '/' + fileName, "r", format="NETCDF4")
 
 tSeq = np.array(data.variables['time'][:]).astype(float)
 tNum = tSeq.size
@@ -74,14 +71,14 @@ for t in range(tNum):
         wSeq[t,:,:] = (etaSeq[t+1,:,:] - etaSeq[t-1,:,:]) / (tSeq[t+1] - tSeq[t-1])
 
 
-for t in range(tNum):
-    print(etaSeq[t,31,25], uSeq[t,31,25], vSeq[t,31,25], wSeq[t,31,25], cosxSeq[t,31,25], sinxSeq[t,31,25], cosySeq[t,31,25], sinySeq[t,31,25])
+# for t in range(tNum):
+#     print(etaSeq[t,31,25], uSeq[t,31,25], vSeq[t,31,25], wSeq[t,31,25], cosxSeq[t,31,25], sinxSeq[t,31,25], cosySeq[t,31,25], sinySeq[t,31,25])
 
 """ animation of eta field """
-vMin, vMax, vDelta = (-5, 5, 1.0)
+vMin, vMax, vDelta = (-1.6, 1.6, 0.4)
 cbreso = 100 # resolution of colorbar
 levels = np.linspace(vMin, vMax, cbreso + 1)
-for tInd in range(0,150,1):
+for tInd in range(0,100,1):
     fig, axs = plt.subplots(figsize=(6.0,4.6), constrained_layout=False)
     x_ = xSeq
     y_ = ySeq
@@ -93,13 +90,13 @@ for tInd in range(0,150,1):
     cbartickList = np.linspace(vMin, vMax, int((vMax-vMin)/vDelta)+1)
     cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
     cbar.ax.set_ylabel(r"$\mathrm{\eta}$" + ' (m)', fontsize=12)
-    plt.xlim([0,1800])
-    plt.ylim([0,1800])
+    plt.xlim([0,1000])
+    plt.ylim([0,600])
     plt.ylabel('y (m)', fontsize=12)
     plt.xlabel('x (m)', fontsize=12)
     plt.title('')
     saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/HOSdata/pp/' + jobName + '/animation/eta'
+    saveDir = '/scratch/palmdata/pp/' + jobName + '/animation/eta'
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
     plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
@@ -108,10 +105,10 @@ for tInd in range(0,150,1):
 
 
 """ animation of u field """
-vMin, vMax, vDelta = (-5, 5, 1.0)
+vMin, vMax, vDelta = (-1.5, 1.5, 0.5)
 cbreso = 100 # resolution of colorbar
 levels = np.linspace(vMin, vMax, cbreso + 1)
-for tInd in range(0,150,1):
+for tInd in range(0,100,1):
     fig, axs = plt.subplots(figsize=(6.0,4.6), constrained_layout=False)
     x_ = xSeq
     y_ = ySeq
@@ -123,13 +120,13 @@ for tInd in range(0,150,1):
     cbartickList = np.linspace(vMin, vMax, int((vMax-vMin)/vDelta)+1)
     cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
     cbar.ax.set_ylabel(r"$\mathrm{u}$" + ' (m/s)', fontsize=12)
-    plt.xlim([0,1800])
-    plt.ylim([0,1800])
+    plt.xlim([0,1000])
+    plt.ylim([0,600])
     plt.ylabel('y (m)', fontsize=12)
     plt.xlabel('x (m)', fontsize=12)
     plt.title('')
     saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/HOSdata/pp/' + jobName + '/animation/u'
+    saveDir = '/scratch/palmdata/pp/' + jobName + '/animation/u'
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
     plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
@@ -140,11 +137,11 @@ for tInd in range(0,150,1):
 vMin, vMax, vDelta = (-2, 2, 0.4)
 cbreso = 100 # resolution of colorbar
 levels = np.linspace(vMin, vMax, cbreso + 1)
-for tInd in range(0,150,1):
+for tInd in range(0,100,1):
     fig, axs = plt.subplots(figsize=(6.0,4.6), constrained_layout=False)
     x_ = xSeq
     y_ = ySeq
-    v_ = uSeq[tInd]
+    v_ = vSeq[tInd]
     # v_ -= v_.mean()
     v_[np.where(v_ < vMin)] = vMin
     v_[np.where(v_ > vMax)] = vMax
@@ -152,8 +149,8 @@ for tInd in range(0,150,1):
     cbartickList = np.linspace(vMin, vMax, int((vMax-vMin)/vDelta)+1)
     cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
     cbar.ax.set_ylabel(r"$\mathrm{v}$" + ' (m/s)', fontsize=12)
-    plt.xlim([0,1800])
-    plt.ylim([0,1800])
+    plt.xlim([0,600])
+    plt.ylim([0,1000])
     plt.ylabel('y (m)', fontsize=12)
     plt.xlabel('x (m)', fontsize=12)
     plt.title('')
@@ -169,11 +166,11 @@ for tInd in range(0,150,1):
 vMin, vMax, vDelta = (-4, 4, 1)
 cbreso = 100 # resolution of colorbar
 levels = np.linspace(vMin, vMax, cbreso + 1)
-for tInd in range(0,150,1):
+for tInd in range(0,100,1):
     fig, axs = plt.subplots(figsize=(6.0,4.6), constrained_layout=False)
     x_ = xSeq
     y_ = ySeq
-    v_ = uSeq[tInd]
+    v_ = wSeq[tInd]
     # v_ -= v_.mean()
     v_[np.where(v_ < vMin)] = vMin
     v_[np.where(v_ > vMax)] = vMax

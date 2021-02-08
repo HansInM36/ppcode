@@ -26,8 +26,8 @@ def velo_pr_palm(dir, jobName, run_no_list, var):
         tSeq_list.append(np.array(nc_file_list[i].variables['time'][:], dtype=type(nc_file_list[i].variables['time'])))
         varSeq_list.append(np.array(nc_file_list[i].variables[var][:], dtype=type(nc_file_list[i].variables[var])))
 
-    # dimensions = list(nc_file_list[0].dimensions
-    # vars = list(nc_file_list[0].variables
+    # dimensions = list(nc_file_list[0].dimensions)
+    # vars = list(nc_file_list[0].variables)
     # print(list(nc_file_list[0].dimensions)) #list all dimensions
     # print(list(nc_file_list[0].variables)) #list all the variables
     # print(list(nc_file_list[0].variables['u2'].dimensions)) #list dimensions of a specified variable
@@ -117,69 +117,64 @@ def single_plot(varSeq, zSeq):
     plt.title('')
     fig.tight_layout() # adjust the layout
     plt.show()
+
 def ITP(varSeq, zSeq, z):
     f = interp1d(zSeq, varSeq, kind='linear')
     return f(z)
 
 
+
 prjName = 'deepwind'
-jobName_0 = 'gs10'
+jobName_0 = 'gs10_0.0001_refined'
 dir_0 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_0
 tSeq_0, zSeq_0, uSeq_0 =  velo_pr_sowfa(dir_0, ((0,0,0),30.0), 0)
 tSeq_0, zSeq_0, vSeq_0 =  velo_pr_sowfa(dir_0, ((0,0,0),30.0), 1)
-t_seq_0, uSeq_0 = velo_pr_ave((3600,144000,144000,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, uSeq_0)
-t_seq_0, vSeq_0 = velo_pr_ave((3600,144000,144000,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, vSeq_0)
+t_seq_0, uSeq_0 = velo_pr_ave((3600,151200,151200,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, uSeq_0)
+t_seq_0, vSeq_0 = velo_pr_ave((3600,151200,151200,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, vSeq_0)
+
 
 prjName = 'deepwind'
-jobName_0 = 'gs10_0.0001'
-dir_0 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_0
-tSeq_0, zSeq_0, uSeq_0 =  velo_pr_sowfa(dir_0, ((0,0,0),30.0), 0)
-tSeq_0, zSeq_0, vSeq_0 =  velo_pr_sowfa(dir_0, ((0,0,0),30.0), 1)
-t_seq_0, uSeq_0 = velo_pr_ave((2400,144000,146400,2400), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, uSeq_0)
-t_seq_0, vSeq_0 = velo_pr_ave((2400,144000,146400,2400), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, vSeq_0)
+jobName_1 = 'gs10_refined'
+dir_1 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_1
+tSeq_1, zSeq_1, uSeq_1 =  velo_pr_sowfa(dir_1, ((0,0,0),30.0), 0)
+tSeq_1, zSeq_1, vSeq_1 =  velo_pr_sowfa(dir_1, ((0,0,0),30.0), 1)
+t_seq_1, uSeq_1 = velo_pr_ave((3600,151200,151200,1e6), tSeq_1, tSeq_1[-1]-tSeq_1[-2], zSeq_1.size, uSeq_1)
+t_seq_1, vSeq_1 = velo_pr_ave((3600,151200,151200,1e6), tSeq_1, tSeq_1[-1]-tSeq_1[-2], zSeq_1.size, vSeq_1)
+
+
+prjName = 'deepwind'
+jobName_2 = 'gs10_0.01_refined'
+dir_2 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_2
+tSeq_2, zSeq_2, uSeq_2 =  velo_pr_sowfa(dir_2, ((0,0,0),30.0), 0)
+tSeq_2, zSeq_2, vSeq_2 =  velo_pr_sowfa(dir_2, ((0,0,0),30.0), 1)
+t_seq_2, uSeq_2 = velo_pr_ave((3600,79200,79200,1e6), tSeq_2, tSeq_2[-1]-tSeq_2[-2], zSeq_2.size, uSeq_2)
+t_seq_2, vSeq_2 = velo_pr_ave((3600,79200,79200,1e6), tSeq_2, tSeq_2[-1]-tSeq_2[-2], zSeq_2.size, vSeq_2)
 
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName_1  = 'deepwind_NBL'
-dir_1 = prjDir + '/' + jobName_1
-tSeq_1, zSeq_1, uSeq_1 = velo_pr_palm(dir_1, jobName_1, ['.000', '.001'], 'u')
-tSeq_1, zSeq_1, vSeq_1 = velo_pr_palm(dir_1, jobName_1, ['.000', '.001'], 'v')
-
-prjDir = '/scratch/palmdata/JOBS'
-jobName_2  = 'deepwind_gs10_mdf'
-dir_2 = prjDir + '/' + jobName_2
-tSeq_2, zSeq_2, uSeq_2 = velo_pr_palm(dir_2, jobName_2, ['.000', '.001'], 'u')
-tSeq_2, zSeq_2, vSeq_2 = velo_pr_palm(dir_2, jobName_2, ['.000', '.001'], 'v')
-
-prjDir = '/scratch/palmdata/JOBS'
-jobName_3  = 'deepwind_gs5'
+jobName_3  = 'deepwind_gs5_0.0001_main'
 dir_3 = prjDir + '/' + jobName_3
-tSeq_3, zSeq_3, uSeq_3 = velo_pr_palm(dir_3, jobName_3, ['.000', '.001','.002','.003','.004','.005','.006','.007','.008','.009','.010','.011'], 'u')
-tSeq_3, zSeq_3, vSeq_3 = velo_pr_palm(dir_3, jobName_3, ['.000', '.001','.002','.003','.004','.005','.006','.007','.008','.009','.010','.011'], 'v')
+tSeq_3, zSeq_3, uSeq_3 = velo_pr_palm(dir_3, jobName_3, ['.000','.001'], 'u')
+tSeq_3, zSeq_3, vSeq_3 = velo_pr_palm(dir_3, jobName_3, ['.000','.001'], 'v')
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName_4  = 'deepwind_NBL_main'
+jobName_4  = 'deepwind_gs5_main'
 dir_4 = prjDir + '/' + jobName_4
-tSeq_4, zSeq_4, uSeq_4 = velo_pr_palm(dir_4, jobName_4, ['.000', '.001','.002','.003','.004'], 'u')
-tSeq_4, zSeq_4, vSeq_4 = velo_pr_palm(dir_4, jobName_4, ['.000', '.001','.002','.003','.004'], 'v')
+tSeq_4, zSeq_4, uSeq_4 = velo_pr_palm(dir_4, jobName_4, ['.000','.001'], 'u')
+tSeq_4, zSeq_4, vSeq_4 = velo_pr_palm(dir_4, jobName_4, ['.000','.001'], 'v')
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName_5  = 'deepwind_gs10_0.0001'
+jobName_5  = 'deepwind_gs5_0.01_main'
 dir_5 = prjDir + '/' + jobName_5
-tSeq_5, zSeq_5, uSeq_5 = velo_pr_palm(dir_5, jobName_5, ['.000'], 'u')
-tSeq_5, zSeq_5, vSeq_5 = velo_pr_palm(dir_5, jobName_5, ['.000'], 'v')
+tSeq_5, zSeq_5, uSeq_5 = velo_pr_palm(dir_5, jobName_5, ['.000','.001'], 'u')
+tSeq_5, zSeq_5, vSeq_5 = velo_pr_palm(dir_5, jobName_5, ['.000','.001'], 'v')
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName_6  = 'deepwind_gs20_0.01'
+jobName_6  = 'deepwind_gs5_0.01'
 dir_6 = prjDir + '/' + jobName_6
-tSeq_6, zSeq_6, uSeq_6 = velo_pr_palm(dir_6, jobName_6, ['.000'], 'u')
-tSeq_6, zSeq_6, vSeq_6 = velo_pr_palm(dir_6, jobName_6, ['.000'], 'v')
+tSeq_6, zSeq_6, uSeq_6 = velo_pr_palm(dir_6, jobName_6, ['.003','.004'], 'u')
+tSeq_6, zSeq_6, vSeq_6 = velo_pr_palm(dir_6, jobName_6, ['.003','.004'], 'v')
 
-prjDir = '/scratch/palmdata/JOBS'
-jobName_7  = 'deepwind_gs5_mdf'
-dir_7 = prjDir + '/' + jobName_7
-tSeq_7, zSeq_7, uSeq_7 = velo_pr_palm(dir_7, jobName_7, ['.000','.001'], 'u')
-tSeq_7, zSeq_7, vSeq_7 = velo_pr_palm(dir_7, jobName_7, ['.000','.001'], 'v')
 
 ### checking
 single_plot(uSeq_0[-1], zSeq_0)
@@ -190,13 +185,8 @@ v_90 = ITP(vSeq_0[-1], zSeq_0, 90)
 """ u profile of stationary flow (sowfa vs palm) """
 fig, ax = plt.subplots(figsize=(3,4.5))
 
-plt.plot(uSeq_0[-1], zSeq_0, label='sowfa', linewidth=1.0, linestyle='-', color='k')
-# plt.plot(uSeq_1[-1], zSeq_1, label='palm', linewidth=1.0, linestyle='-', color='r')
-# plt.plot(uSeq_3[-1], zSeq_3, label='palm', linewidth=1.0, linestyle='-', color='b')
-# plt.plot(uSeq_5[-1], zSeq_5, label='palm', linewidth=1.0, linestyle='-', color='g')
-# plt.plot(uSeq_6[-1], zSeq_6, label='palm', linewidth=1.0, linestyle='-', color='k')
-# plt.axhline(y=hubH, ls='--', c='black')
-# plt.axhline(y=dampH, ls=':', c='black')
+plt.plot(uSeq_2[-1], zSeq_2, label='sowfa', linewidth=1.0, linestyle='-', color='k')
+plt.plot(uSeq_6[-1], zSeq_6, label='palm', linewidth=1.0, linestyle='--', color='k')
 plt.xlabel(r"$\overline{\mathrm{u}}$ (m/s)", fontsize=12)
 plt.ylabel('z (m)', fontsize=12)
 xaxis_min = 0
@@ -219,13 +209,14 @@ plt.show()
 plt.close()
 
 
+
 """ dimensionless u gradient profile of stationary flow (sowfa vs palm) """
 startH = 5.000
 topH = 205.0
 zNum_ = 21
 kappa = 0.4
 uStar_0 = kappa / np.log(zSeq_0[0]/0.001) * np.power(uSeq_0[-1][0]**2 + vSeq_0[-1][0]**2,0.5)
-uStar_1 = kappa / np.log(zSeq_1[1]/0.001) * np.power(uSeq_1[-1][1]**2 + vSeq_1[-1][1]**2,0.5)
+uStar_3 = kappa / np.log(zSeq_3[1]/0.001) * np.power(uSeq_3[-1][1]**2 + vSeq_3[-1][1]**2,0.5)
 
 fig, ax = plt.subplots(figsize=(3,4.5))
 z_ = np.linspace(startH,topH,zNum_)
@@ -238,14 +229,14 @@ f_0 = interp1d(z_0, v_0, kind='linear', fill_value='extrapolate')
 v_0 = funcs.calc_deriv_1st_FD(dz, f_0(z_))
 v_0 = v_0 * kappa * z_ / uStar_0
 # palm
-v_1 = uSeq_1[-1]
-z_1 = zSeq_1
-f_1 = interp1d(z_1, v_1, kind='linear', fill_value='extrapolate')
-v_1 = funcs.calc_deriv_1st_FD(dz, f_1(z_))
-v_1 = v_1 * kappa * z_ / uStar_1
+v_3 = uSeq_3[-1]
+z_3 = zSeq_3
+f_3 = interp1d(z_3, v_3, kind='linear', fill_value='extrapolate')
+v_3 = funcs.calc_deriv_1st_FD(dz, f_3(z_))
+v_3 = v_3 * kappa * z_ / uStar_3
 
 plt.plot(v_0, z_, label='sowfa', linewidth=1.0, linestyle='-', color='k')
-plt.plot(v_1, z_, label='palm', linewidth=1.0, linestyle='--', color='k')
+plt.plot(v_3, z_, label='palm', linewidth=1.0, linestyle='--', color='k')
 plt.xlabel(r"$\mathrm{\phi_m}$", fontsize=12)
 plt.ylabel('z (m)', fontsize=12)
 xaxis_min = -3
@@ -262,84 +253,102 @@ plt.legend(bbox_to_anchor=(0.05,0.9), loc=6, borderaxespad=0, fontsize=12) # (1.
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = 'phi_m' + '_pr.png'
-plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
+# saveName = 'phi_m' + '_pr.png'
+# plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
 plt.show()
 plt.close()
 
 
 """ wind direction profile of stationary flow (sowfa vs palm) """
-fig, ax = plt.subplots(figsi""" animation for deepwind_gs10 (SOWFA) """
-prjDir = '/scratch/sowfadata/JOBS'
-prjName = 'deepwind'
-jobName = 'gs10'
-ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
-tSeq, xSeq, ySeq, H, varSeq = getSliceData_Nz_sowfa(ppDir, jobName, 'Nz0', 'U', 0, ((0,0,0),30), (0,150), (0,2560,256), (0,2560,256))
-t0 = tSeq[0]
-
-vMin, vMax, vDelta = (-2, 2, 0.4)
-cbreso = 100 # resolution of colorbar
-levels = np.linspace(vMin, vMax, cbreso + 1)
-
-# transform coors of prbg
-prbg0 = np.vstack((780 + 20*np.arange(0,51), np.array([1280 for i in range(51)]), np.array([0 for i in range(51)])))
-prbg0 = funcs.trs(prbg0.T, (1280,1280,0), -30); prbg0[:,0] += 1280; prbg0[:,1] += 1280;
-prbg1 = np.vstack((np.array([1280 for i in range(51)]), 780 + 20*np.arange(0,51), np.array([0 for i in range(51)])))
-prbg1 = funcs.trs(prbg1.T, (1280,1280,0), -30); prbg1[:,0] += 1280; prbg1[:,1] += 1280;
-
-
-for tInd in range(0,150,100):
-    fig, axs = plt.subplots(figsize=(8,8), constrained_layout=False)
-    x_ = xSeq
-    y_ = ySeq
-    v_ = varSeq[tInd]
-    v_ -= v_.mean()
-    v_[np.where(v_ < vMin)] = vMin
-    v_[np.where(v_ > vMax)] = vMax
-    CS = axs.contourf(x_, y_, v_, cbreso, levels=levels, cmap='jet', vmin=vMin, vmax=vMax)
-    plt.scatter(prbg0[:,0], prbg0[:,1], 1, marker='o', color='k')
-    plt.scatter(prbg1[:,0], prbg1[:,1], 1, marker='o', color='k')
-    cbartickList = np.linspace(vMin, vMax, int((vMax-vMin)/vDelta)+1)
-    cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
-    axs.text(0.8, 1.01, 't = ' + str(np.round(tSeq[tInd]-t0,2)) + 's', transform=axs.transAxes, fontsize=12)
-    cbar.ax.set_ylabel(r"$\mathrm{u'}$" + ' (m/s)', fontsize=12)
-    plt.xlim([0,2560])
-    plt.ylim([0,2560])
-    plt.ylabel('y (m)')
-    plt.xlabel('x (m)')
-    plt.title('')
-    saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/projects/deepwind/photo/animation/Nz_sowfa'
-    # if not os.path.exists(saveDir):
-    #     os.makedirs(saveDir)
-    # plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
-    plt.show()
-    plt.close()ze=(3,4.5))
+fig, ax = plt.subplots(figsize=(3,4.5))
 
 wdSeq_0 = 270 - np.arctan(vSeq_0[-1] / uSeq_0[-1]) * 180/np.pi
-wdSeq_1 = 270 - np.arctan(vSeq_1[-1][1:] / uSeq_1[-1][1:]) * 180/np.pi
+wdSeq_3 = 270 - np.arctan(vSeq_3[-1][1:] / uSeq_3[-1][1:]) * 180/np.pi
 
 plt.plot(wdSeq_0, zSeq_0, label='sowfa', linewidth=1.0, linestyle='-', color='k')
-plt.plot(wdSeq_1, zSeq_1[1:], label='palm', linewidth=1.0, linestyle='--', color='k')
+plt.plot(wdSeq_3, zSeq_3[1:], label='palm', linewidth=1.0, linestyle='--', color='k')
 # plt.axhline(y=hubH, ls='--', c='black')
 # plt.axhline(y=dampH, ls=':', c='black')
 plt.xlabel(r"wind direction ($\degree$)", fontsize=12)
-# plt.ylabel('z (m)')
+plt.ylabel('z (m)', fontsize=12)
 xaxis_min = 260
 xaxis_max = 290
-xaxis_d = 5
+xaxis_d = 10
 yaxis_min = 0
 yaxis_max = 1000.0
 yaxis_d = 100.0
 plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
 plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
-plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), [], fontsize=12)
+plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
 plt.legend(bbox_to_anchor=(0.05,0.9), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = 'wd' + '_pr.png'
-plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
+# saveName = 'wd' + '_pr.png'
+# plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
 plt.show()
 plt.close()
+
+""" print wind speed variation """
+wsv_0 = ITP(uSeq_0[-1], zSeq_0, 180) - ITP(uSeq_0[-1], zSeq_0, 20)
+wsv_1 = ITP(uSeq_1[-1], zSeq_1, 180) - ITP(uSeq_1[-1], zSeq_1, 20)
+wsv_2 = ITP(uSeq_2[-1], zSeq_2, 180) - ITP(uSeq_2[-1], zSeq_2, 20)
+
+wsv_3 = ITP(uSeq_3[-1], zSeq_3, 180) - ITP(uSeq_3[-1], zSeq_3, 20)
+wsv_4 = ITP(uSeq_4[-1], zSeq_4, 180) - ITP(uSeq_4[-1], zSeq_4, 20)
+wsv_5 = ITP(uSeq_5[-1], zSeq_5, 180) - ITP(uSeq_5[-1], zSeq_5, 20)
+
+print('sowfa-0.0001: ', np.round(wsv_0,3))
+print('sowfa-0.001: ', np.round(wsv_1,3))
+print('sowfa-0.01: ', np.round(wsv_2,3))
+
+print('palm-0.0001: ', np.round(wsv_3,3))
+print('palm-0.001: ', np.round(wsv_4,3))
+print('palm-0.01: ', np.round(wsv_5,3))
+
+
+""" print wind direction variation """
+wdSeq_0 = 270 - np.arctan(vSeq_0[-1] / uSeq_0[-1]) * 180/np.pi
+wdSeq_1 = 270 - np.arctan(vSeq_1[-1] / uSeq_1[-1]) * 180/np.pi
+wdSeq_2 = 270 - np.arctan(vSeq_2[-1] / uSeq_2[-1]) * 180/np.pi
+
+wdSeq_3 = 270 - np.arctan(vSeq_3[-1][1:] / uSeq_3[-1][1:]) * 180/np.pi
+wdSeq_4 = 270 - np.arctan(vSeq_4[-1][1:] / uSeq_4[-1][1:]) * 180/np.pi
+wdSeq_5 = 270 - np.arctan(vSeq_5[-1][1:] / uSeq_5[-1][1:]) * 180/np.pi
+
+wdv_0 = ITP(wdSeq_0, zSeq_0, 180) - ITP(wdSeq_0, zSeq_0, 20)
+wdv_1 = ITP(wdSeq_1, zSeq_1, 180) - ITP(wdSeq_1, zSeq_1, 20)
+wdv_2 = ITP(wdSeq_2, zSeq_2, 180) - ITP(wdSeq_2, zSeq_2, 20)
+
+wdv_3 = ITP(wdSeq_3, zSeq_3[1:], 180) - ITP(wdSeq_3, zSeq_3[1:], 20)
+wdv_4 = ITP(wdSeq_4, zSeq_4[1:], 180) - ITP(wdSeq_4, zSeq_4[1:], 20)
+wdv_5 = ITP(wdSeq_5, zSeq_5[1:], 180) - ITP(wdSeq_5, zSeq_5[1:], 20)
+
+print('sowfa-0.0001: ', np.round(wdv_0,3))
+print('sowfa-0.001: ', np.round(wdv_1,3))
+print('sowfa-0.01: ', np.round(wdv_2,3))
+
+print('palm-0.0001: ', np.round(wdv_3,3))
+print('palm-0.001: ', np.round(wdv_4,3))
+print('palm-0.01: ', np.round(wdv_5,3))
+
+
+""" print uStar """
+kappa = 0.4
+
+uStar_0 = kappa / np.log(zSeq_0[0]/0.0001) * np.power(uSeq_0[-1][0]**2 + vSeq_0[-1][0]**2,0.5)
+uStar_1 = kappa / np.log(zSeq_1[0]/0.001) * np.power(uSeq_1[-1][0]**2 + vSeq_1[-1][0]**2,0.5)
+uStar_2 = kappa / np.log(zSeq_2[0]/0.01) * np.power(uSeq_2[-1][0]**2 + vSeq_2[-1][0]**2,0.5)
+
+uStar_3 = kappa / np.log(zSeq_3[1]/0.0001) * np.power(uSeq_3[-1][1]**2 + vSeq_3[-1][1]**2,0.5)
+uStar_4 = kappa / np.log(zSeq_4[1]/0.001) * np.power(uSeq_4[-1][1]**2 + vSeq_4[-1][1]**2,0.5)
+uStar_5 = kappa / np.log(zSeq_5[1]/0.01) * np.power(uSeq_5[-1][1]**2 + vSeq_5[-1][1]**2,0.5)
+
+print('sowfa-0.0001: ', np.round(uStar_0,3))
+print('sowfa-0.001: ', np.round(uStar_1,3))
+print('sowfa-0.01: ', np.round(uStar_2,3))
+
+print('palm-0.0001: ', np.round(uStar_3,3))
+print('palm-0.001: ', np.round(uStar_4,3))
+print('palm-0.01: ', np.round(uStar_5,3))

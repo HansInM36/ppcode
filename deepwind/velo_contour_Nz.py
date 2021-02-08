@@ -121,7 +121,7 @@ def getSliceData_Nz_sowfa(dir, jobName, slice, var, varD, trs_para, tInd, xInd, 
         tmp1 = slc.meshITP_Nz(xInd, yInd, tmp[:,varD], method_='linear')
         xSeq, ySeq, varSeq_ = tmp1[0], tmp1[1], tmp1[2]
         varSeq.append(varSeq_)
-    varSeq = np.arrray(varSeq)
+    varSeq = np.array(varSeq)
     return tSeq, xSeq, ySeq, H, varSeq
 
 # dir, jobName, slice, var, varD, trs_para, tInd, xInd, yInd = ppDir, jobName, 'Nz0', 'U', 0, ((0,0,0),30), (0,150), (0,2560,256), (0,2560,256)
@@ -132,7 +132,7 @@ prjDir = '/scratch/sowfadata/JOBS'
 prjName = 'deepwind'
 jobName = 'gs10'
 ppDir = '/scratch/sowfadata/pp/' + prjName + '/' + jobName
-tSeq, xSeq, ySeq, H, varSeq = getSliceData_Nz_sowfa(ppDir, jobName, 'Nz2', 'U', 0, ((0,0,0),30), (0,150), (0,2560,256), (0,2560,256))
+tSeq, xSeq, ySeq, H, varSeq = getSliceData_Nz_sowfa(ppDir, jobName, 'Nz2', 'U', 0, ((0,0,0),30), (0,30), (680,1880,240), (680,1880,240))
 t0 = tSeq[0]
 
 vMin, vMax, vDelta = (-2, 2, 0.4)
@@ -146,8 +146,8 @@ prbg1 = np.vstack((np.array([1280 for i in range(51)]), 780 + 20*np.arange(0,51)
 prbg1 = funcs.trs(prbg1.T, (1280,1280,0), -30); prbg1[:,0] += 1280; prbg1[:,1] += 1280;
 
 
-for tInd in range(0,150,1):
-    fig, axs = plt.subplots(figsize=(4.5,4.5), constrained_layout=False)
+for tInd in range(0,30,1):
+    fig, axs = plt.subplots(figsize=(4.5,3.8), constrained_layout=False)
     x_ = xSeq
     y_ = ySeq
     v_ = varSeq[tInd]
@@ -161,13 +161,13 @@ for tInd in range(0,150,1):
     cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
     axs.text(0.8, 1.01, 't = ' + str(np.round(tSeq[tInd]-t0,2)) + 's', transform=axs.transAxes, fontsize=12)
     cbar.ax.set_ylabel(r"$\mathrm{u'}$" + ' (m/s)', fontsize=12)
-    plt.xlim([0,2560])
-    plt.ylim([0,2560])
+    plt.xlim([680,1880])
+    plt.ylim([680,1880])
     plt.ylabel('y (m)', fontsize=12)
     plt.xlabel('x (m)', fontsize=12)
     plt.title('')
     saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/projects/deepwind/photo/animation/Nz_sowfa'
+    saveDir = '/scratch/projects/deepwind/animation/Nz_h100_sowfa'
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
     plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
@@ -176,27 +176,15 @@ for tInd in range(0,150,1):
 
 
 
-""" animation for deepwind_gs10 (PALM) """
-jobName  = 'deepwind_gs10'
+""" animation for deepwind_gs5_main (PALM) """
+jobName  = 'deepwind_gs5_main'
 jobDir = '/scratch/palmdata/JOBS/' + jobName
 ppDir = '/scratch/palmdata/pp/' + jobName
-tSeq, xSeq, ySeq, zSeq = getInfo_palm(jobDir, jobName, 'M01', '.022', 'u')
+tSeq, xSeq, ySeq, zSeq = getInfo_palm(jobDir, jobName, 'M01', '.001', 'u')
 t0 = tSeq[0]
 # height
-zInd = 5
-tSeq, xSeq, ySeq, zSeq, varSeq = getData_palm(jobDir, jobName, 'M01', ['.022','.023'], 'u', (0,300), (0,xSeq.size), (0,ySeq.size), (zInd,zInd+1))
-print(np.min(varSeq-varSeq.mean()),np.max(varSeq-varSeq.mean())) # find min and max
-
-
-""" animation for deepwind_NBL (PALM) """
-jobName  = 'deepwind_NBL'
-jobDir = '/scratch/palmdata/JOBS/' + jobName
-ppDir = '/scratch/palmdata/pp/' + jobName
-tSeq, xSeq, ySeq, zSeq = getInfo_palm(jobDir, jobName, 'M01', '.002', 'u')
-t0 = tSeq[0]
-# height
-zInd = 4
-tSeq, xSeq, ySeq, zSeq, varSeq = getData_palm(jobDir, jobName, 'M01', ['.002'], 'u', (0,300), (0,xSeq.size), (0,ySeq.size), (zInd,zInd+1))
+zInd = 1
+tSeq, xSeq, ySeq, zSeq, varSeq = getData_palm(jobDir, jobName, 'M01', ['.001'], 'u', [0,30], (0,xSeq.size), (0,ySeq.size), (zInd,zInd+1))
 print(np.min(varSeq-varSeq.mean()),np.max(varSeq-varSeq.mean())) # find min and max
 
 
@@ -204,11 +192,11 @@ vMin, vMax, vDelta = (-2, 2, 0.4)
 cbreso = 100 # resolution of colorbar
 levels = np.linspace(vMin, vMax, cbreso + 1)
 
-prbg0 = [list(780 + 20*np.arange(0,51)), [1280 for i in range(51)]]
-prbg1 = [[1280 for i in range(51)], list(780 + 20*np.arange(0,51))]
+prbg0 = [list(2560 + 780 + 20*np.arange(0,51)), [1280 for i in range(51)]]
+prbg1 = [[2560 + 1280 for i in range(51)], list(780 + 20*np.arange(0,51))]
 
-for tInd in range(0,150,1):
-    fig, axs = plt.subplots(figsize=(4.5,4.5), constrained_layout=False)
+for tInd in range(0,30,1):
+    fig, axs = plt.subplots(figsize=(4.5,3.8), constrained_layout=False)
     x_ = xSeq
     y_ = ySeq
     v_ = varSeq[tInd,0]
@@ -221,59 +209,13 @@ for tInd in range(0,150,1):
     cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
     axs.text(0.8, 1.01, 't = ' + str(np.round(tSeq[tInd]-t0,2)) + 's', transform=axs.transAxes, fontsize=12)
     cbar.ax.set_ylabel(r"$\mathrm{u'}$" + ' (m/s)', fontsize=12)
-    plt.xlim([0,2560])
-    plt.ylim([0,2560])
+    plt.xlim([3240,4440])
+    plt.ylim([680,1880])
     plt.ylabel('y (m)', fontsize=12)
     plt.xlabel('x (m)', fontsize=12)
     plt.title('')
     saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/projects/deepwind/photo/animation/Nz_palm'
-    if not os.path.exists(saveDir):
-        os.makedirs(saveDir)
-    plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
-    # plt.show()
-    plt.close('all')
-
-
-""" animation for pcr_u12_nbl (PALM) """
-jobName  = 'pcr_u12_nbl'
-jobDir = '/scratch/palmdata/JOBS/' + jobName
-ppDir = '/scratch/palmdata/pp/' + jobName
-tSeq, xSeq, ySeq, zSeq = getInfo_palm(jobDir, jobName, 'M04', '.007', 'u')
-t0 = tSeq[0]
-# height
-zInd = 0
-tSeq, xSeq, ySeq, zSeq, varSeq = getData_palm(jobDir, jobName, 'M04', ['.007'], 'u', [0,150], (0,xSeq.size), (0,ySeq.size), (zInd,zInd+1))
-print(np.min(varSeq-varSeq.mean()),np.max(varSeq-varSeq.mean())) # find min and max
-
-vMin, vMax, vDelta = (-2, 2, 0.4)
-cbreso = 100 # resolution of colorbar
-levels = np.linspace(vMin, vMax, cbreso + 1)
-
-prbg0 = [list(780 + 20*np.arange(0,51)), [1280 for i in range(51)]]
-prbg1 = [[1280 for i in range(51)], list(780 + 20*np.arange(0,51))]
-
-for tInd in range(0,150,1):
-    fig, axs = plt.subplots(figsize=(4.5,4.5), constrained_layout=False)
-    x_ = xSeq
-    y_ = ySeq
-    v_ = varSeq[tInd,0]
-    v_ -= v_.mean()
-    v_[np.where(v_ < vMin)] = vMin
-    v_[np.where(v_ > vMax)] = vMax
-    CS = axs.contourf(x_, y_, v_, cbreso, levels=levels, cmap='jet', vmin=vMin, vmax=vMax)
-    plt.scatter(prbg0[0]+prbg1[0], prbg0[1]+prbg1[1], 1, marker='o', color='k')
-    cbartickList = np.linspace(vMin, vMax, int((vMax-vMin)/vDelta)+1)
-    cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
-    axs.text(0.8, 1.01, 't = ' + str(np.round(tSeq[tInd]-t0,2)) + 's', transform=axs.transAxes, fontsize=12)
-    cbar.ax.set_ylabel(r"$\mathrm{u'}$" + ' (m/s)', fontsize=12)
-    plt.xlim([0,2560])
-    plt.ylim([0,2560])
-    plt.ylabel('y (m)', fontsize=12)
-    plt.xlabel('x (m)', fontsize=12)
-    plt.title('')
-    saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/projects/deepwind/animation/' + jobName
+    saveDir = '/scratch/projects/deepwind/animation/Nz_h97.5_palm'
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
     plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')

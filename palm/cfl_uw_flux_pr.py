@@ -92,6 +92,6 @@ plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is th
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = varName_save + '_pr.png'
-plt.savefig(ppDir + '/' + saveName)
+# saveName = varName_save + '_pr.png'
+# plt.savefig(ppDir + '/' + saveName)
 plt.show()

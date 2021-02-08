@@ -233,26 +233,6 @@ f_seq_2, PSD_w_seq_2_180 = PSD_palm((72000.0, 74400, 0.1), tSeq_2, 8, xSeq_2.siz
 
 
 """ test cases """
-prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_u12_cbl'
-dir_1 = prjDir + '/' + jobName
-tSeq_1, xSeq_1, ySeq_1, zSeq_1, uSeq_1 = getData_palm(dir_1, jobName, 'M01', ['.001'], 'u')
-tSeq_1, xSeq_1, ySeq_1, zSeq_1, vSeq_1 = getData_palm(dir_1, jobName, 'M01', ['.001'], 'v')
-tSeq_1, xSeq_1, ySeq_1, zSeq_1, wSeq_1 = getData_palm(dir_1, jobName, 'M01', ['.001'], 'w')
-f_seq_1, PSD_u_seq_1_20 = PSD_palm((105600.0, 108000, 0.5), tSeq_1, 0, xSeq_1.size, ySeq_1.size, uSeq_1, 20480)
-f_seq_1, PSD_v_seq_1_20 = PSD_palm((105600.0, 108000, 0.5), tSeq_1, 0, xSeq_1.size, ySeq_1.size, vSeq_1, 20480)
-f_seq_1, PSD_w_seq_1_20 = PSD_palm((105600.0, 108000, 0.5), tSeq_1, 0, xSeq_1.size, ySeq_1.size, wSeq_1, 20480)
-
-
-prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_NBL_U10'
-dir_1 = prjDir + '/' + jobName
-tSeq_1, xSeq_1, ySeq_1, zSeq_1, uSeq_1 = getData_palm(dir_1, jobName, 'M03', ['.001','.002'], 'u')
-tSeq_1, xSeq_1, ySeq_1, zSeq_1, vSeq_1 = getData_palm(dir_1, jobName, 'M03', ['.001','.002'], 'v')
-tSeq_1, xSeq_1, ySeq_1, zSeq_1, wSeq_1 = getData_palm(dir_1, jobName, 'M03', ['.001','.002'], 'w')
-f_seq_1, PSD_u_seq_1_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, uSeq_1, 20480)
-f_seq_1, PSD_v_seq_1_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, vSeq_1, 20480)
-f_seq_1, PSD_w_seq_1_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, wSeq_1, 20480)
 
 prjDir = '/scratch/palmdata/JOBS'
 jobName  = 'pcr_u8_nbl'
@@ -263,6 +243,9 @@ tSeq_1, xSeq_1, ySeq_1, zSeq_1, wSeq_1 = getData_palm(dir_1, jobName, 'M01', ['.
 f_seq_1, PSD_u_seq_1_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, uSeq_1, 20480)
 f_seq_1, PSD_v_seq_1_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, vSeq_1, 20480)
 f_seq_1, PSD_w_seq_1_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_1, 0, xSeq_1.size, ySeq_1.size, wSeq_1, 20480)
+ua_1 = uSeq_1.mean()
+var_1 = uSeq_1.var()
+
 
 prjDir = '/scratch/palmdata/JOBS'
 jobName  = 'pcr_u12_cbl'
@@ -273,6 +256,8 @@ tSeq_2, xSeq_2, ySeq_2, zSeq_2, wSeq_2 = getData_palm(dir_2, jobName, 'M01', ['.
 f_seq_2, PSD_u_seq_2_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_2, 0, xSeq_2.size, ySeq_2.size, uSeq_2, 20480)
 f_seq_2, PSD_v_seq_2_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_2, 0, xSeq_2.size, ySeq_2.size, vSeq_2, 20480)
 f_seq_2, PSD_w_seq_2_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_2, 0, xSeq_2.size, ySeq_2.size, wSeq_2, 20480)
+ua_2 = uSeq_2[:,4,:,:].mean()
+var_2 = uSeq_2.var()
 
 prjDir = '/scratch/palmdata/JOBS'
 jobName  = 'pcr_u12_nbl'
@@ -283,9 +268,11 @@ tSeq_3, xSeq_3, ySeq_3, zSeq_3, wSeq_3 = getData_palm(dir_3, jobName, 'M01', ['.
 f_seq_3, PSD_u_seq_3_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_3, 0, xSeq_3.size, ySeq_3.size, uSeq_3, 20480)
 f_seq_3, PSD_v_seq_3_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_3, 0, xSeq_3.size, ySeq_3.size, vSeq_3, 20480)
 f_seq_3, PSD_w_seq_3_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_3, 0, xSeq_3.size, ySeq_3.size, wSeq_3, 20480)
+ua_3 = uSeq_3.mean()
+var_3 = uSeq_3.var()
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_u12_nbl_1'
+jobName  = 'pcr_u12_nbl_1'  # based on 'pcr_u12_cbl', set heatflux to 0, back ground pressure to 0, turn on coriolis force
 dir_4 = prjDir + '/' + jobName
 tSeq_4, xSeq_4, ySeq_4, zSeq_4, uSeq_4 = getData_palm(dir_4, jobName, 'M01', ['.001','.002','.003'], 'u')
 tSeq_4, xSeq_4, ySeq_4, zSeq_4, vSeq_4 = getData_palm(dir_4, jobName, 'M01', ['.001','.002','.003'], 'v')
@@ -293,9 +280,11 @@ tSeq_4, xSeq_4, ySeq_4, zSeq_4, wSeq_4 = getData_palm(dir_4, jobName, 'M01', ['.
 f_seq_4, PSD_u_seq_4_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_4, 0, xSeq_4.size, ySeq_4.size, uSeq_4, 20480)
 f_seq_4, PSD_v_seq_4_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_4, 0, xSeq_4.size, ySeq_4.size, vSeq_4, 20480)
 f_seq_4, PSD_w_seq_4_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_4, 0, xSeq_4.size, ySeq_4.size, wSeq_4, 20480)
+ua_4 = uSeq_4.mean()
+var_4 = uSeq_4.var()
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_u12_nbl_2'
+jobName  = 'pcr_u12_nbl_2' # based on 'pcr_u12_nbl_1', change ug, vg so that u90 = 8
 dir_5 = prjDir + '/' + jobName
 tSeq_5, xSeq_5, ySeq_5, zSeq_5, uSeq_5 = getData_palm(dir_5, jobName, 'M01', ['.001','.002','.003'], 'u')
 tSeq_5, xSeq_5, ySeq_5, zSeq_5, vSeq_5 = getData_palm(dir_5, jobName, 'M01', ['.001','.002','.003'], 'v')
@@ -303,9 +292,11 @@ tSeq_5, xSeq_5, ySeq_5, zSeq_5, wSeq_5 = getData_palm(dir_5, jobName, 'M01', ['.
 f_seq_5, PSD_u_seq_5_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_5, 0, xSeq_5.size, ySeq_5.size, uSeq_5, 20480)
 f_seq_5, PSD_v_seq_5_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_5, 0, xSeq_5.size, ySeq_5.size, vSeq_5, 20480)
 f_seq_5, PSD_w_seq_5_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_5, 0, xSeq_5.size, ySeq_5.size, wSeq_5, 20480)
+ua_5 = uSeq_5.mean()
+var_5 = uSeq_5.var()
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'pcr_u12_nbl_3'
+jobName  = 'pcr_u12_nbl_3' # based on 'pcr_u12_nbl_1', turn off coriolis force
 dir_6 = prjDir + '/' + jobName
 tSeq_6, xSeq_6, ySeq_6, zSeq_6, uSeq_6 = getData_palm(dir_6, jobName, 'M01', ['.001','.002','.003'], 'u')
 tSeq_6, xSeq_6, ySeq_6, zSeq_6, vSeq_6 = getData_palm(dir_6, jobName, 'M01', ['.001','.002','.003'], 'v')
@@ -313,22 +304,47 @@ tSeq_6, xSeq_6, ySeq_6, zSeq_6, wSeq_6 = getData_palm(dir_6, jobName, 'M01', ['.
 f_seq_6, PSD_u_seq_6_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_6, 0, xSeq_6.size, ySeq_6.size, uSeq_6, 20480)
 f_seq_6, PSD_v_seq_6_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_6, 0, xSeq_6.size, ySeq_6.size, vSeq_6, 20480)
 f_seq_6, PSD_w_seq_6_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_6, 0, xSeq_6.size, ySeq_6.size, wSeq_6, 20480)
+ua_6 = uSeq_6.mean()
+var_6 = uSeq_6.var()
 
+prjDir = '/scratch/palmdata/JOBS'
+jobName  = 'pcr_u12_nbl_4' # based on 'pcr_u12_nbl_2', double the ug, vg
+dir_7 = prjDir + '/' + jobName
+tSeq_7, xSeq_7, ySeq_7, zSeq_7, uSeq_7 = getData_palm(dir_7, jobName, 'M01', ['.000','.001'], 'u')
+tSeq_7, xSeq_7, ySeq_7, zSeq_7, vSeq_7 = getData_palm(dir_7, jobName, 'M01', ['.000','.001'], 'v')
+tSeq_7, xSeq_7, ySeq_7, zSeq_7, wSeq_7 = getData_palm(dir_7, jobName, 'M01', ['.000','.001'], 'w')
+f_seq_7, PSD_u_seq_7_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_7, 0, xSeq_7.size, ySeq_7.size, uSeq_7, 20480)
+f_seq_7, PSD_v_seq_7_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_7, 0, xSeq_7.size, ySeq_7.size, vSeq_7, 20480)
+f_seq_7, PSD_w_seq_7_20 = PSD_palm((144000.0, 146400, 0.1), tSeq_7, 0, xSeq_7.size, ySeq_7.size, wSeq_7, 20480)
+ua_7 = uSeq_7.mean()
+var_7 = uSeq_7.var()
 
 
 """ check PSD """
 fig, ax = plt.subplots(figsize=(5.2,3))
-# colors = plt.cm.jet(np.linspace(0,1,6))
-colors = ['red','blue','green','salmon','cornflowerblue','lightgreen','k']
+colors = plt.cm.jet(np.linspace(0,1,8))
+# colors = ['red','blue','green','salmon','cornflowerblue','lightgreen','k']
 dn = 1
-plt.loglog(f_seq_0[0::dn], PSD_u_seq_0_100[0::dn], label='sowfa_gs20', linewidth=1.0, linestyle='--', color=colors[0])
-plt.loglog(f_seq_1[0::dn], PSD_u_seq_1_20[0::dn], label='pcr_u8_nbl', linewidth=1.0, linestyle='-', color=colors[1])
-plt.loglog(f_seq_2[0::dn], PSD_u_seq_2_20[0::dn], label='pcr_u12_cbl', linewidth=1.0, linestyle='--', color=colors[2])
-plt.loglog(f_seq_3[0::dn], PSD_u_seq_3_20[0::dn], label='pcr_u12_nbl', linewidth=1.0, linestyle='--', color=colors[3])
-plt.loglog(f_seq_4[0::dn], PSD_u_seq_4_20[0::dn], label='pcr_u12_nbl_1', linewidth=1.0, linestyle='--', color=colors[4])
-plt.loglog(f_seq_5[0::dn], PSD_u_seq_5_20[0::dn], label='pcr_u12_nbl_2', linewidth=1.0, linestyle='--', color=colors[5])
-plt.loglog(f_seq_6[0::dn], PSD_u_seq_6_20[0::dn], label='pcr_u12_nbl_3', linewidth=1.0, linestyle='--', color=colors[6])
+# plt.loglog(f_seq_0[0::dn], PSD_u_seq_0_100[0::dn], label='sowfa_gs20', linewidth=1.0, linestyle='--', color=colors[0])
 
+
+# plt.loglog(f_seq_1[0::dn], PSD_u_seq_1_20[0::dn], label='pcr_u8_nbl', linewidth=1.0, linestyle='-', color=colors[1])
+# plt.loglog(f_seq_2[0::dn], PSD_u_seq_2_20[0::dn], label='pcr_u12_cbl', linewidth=1.0, linestyle='--', color=colors[2])
+# plt.loglog(f_seq_3[0::dn], PSD_u_seq_3_20[0::dn], label='pcr_u12_nbl', linewidth=1.0, linestyle='--', color=colors[3])
+# plt.loglog(f_seq_4[0::dn], PSD_u_seq_4_20[0::dn], label='pcr_u12_nbl_1', linewidth=1.0, linestyle='--', color=colors[4])
+# plt.loglog(f_seq_5[0::dn], PSD_u_seq_5_20[0::dn], label='pcr_u12_nbl_2', linewidth=1.0, linestyle='--', color=colors[5])
+# plt.loglog(f_seq_6[0::dn], PSD_u_seq_6_20[0::dn], label='pcr_u12_nbl_3', linewidth=1.0, linestyle='--', color=colors[6])
+# plt.loglog(f_seq_7[0::dn], PSD_u_seq_7_20[0::dn], label='pcr_u12_nbl_4', linewidth=1.0, linestyle='--', color=colors[7])
+
+
+### scaled
+plt.loglog(f_seq_1[0::dn]/ua_1, PSD_u_seq_1_20[0::dn]/var_1, label='pcr_u8_nbl', linewidth=1.0, linestyle='-', color=colors[1])
+plt.loglog(f_seq_2[0::dn]/ua_2, PSD_u_seq_2_20[0::dn]/var_2, label='pcr_u12_cbl', linewidth=1.0, linestyle='--', color=colors[2])
+plt.loglog(f_seq_3[0::dn]/ua_3, PSD_u_seq_3_20[0::dn]/var_3, label='pcr_u12_nbl', linewidth=1.0, linestyle='--', color=colors[3])
+plt.loglog(f_seq_4[0::dn]/ua_4, PSD_u_seq_4_20[0::dn]/var_4, label='pcr_u12_nbl_1', linewidth=1.0, linestyle='--', color=colors[4])
+plt.loglog(f_seq_5[0::dn]/ua_5, PSD_u_seq_5_20[0::dn]/var_5, label='pcr_u12_nbl_2', linewidth=1.0, linestyle='--', color=colors[5])
+plt.loglog(f_seq_6[0::dn]/ua_6, PSD_u_seq_6_20[0::dn]/var_6, label='pcr_u12_nbl_3', linewidth=1.0, linestyle='--', color=colors[6])
+plt.loglog(f_seq_7[0::dn]/ua_7, PSD_u_seq_7_20[0::dn]/var_7, label='pcr_u12_nbl_4', linewidth=1.0, linestyle='--', color=colors[7])
 
 # -5/3 law
 f_ = np.linspace(1e-2,1e0,100)
