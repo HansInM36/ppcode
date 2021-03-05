@@ -123,49 +123,52 @@ def ITP(varSeq, zSeq, z):
     return f(z)
 
 
-prjDir = '/scratch/palmdata/JOBS'
-jobName_0  = 'wwinta_0'
-dir_0 = prjDir + '/' + jobName_0
-tSeq_0, zSeq_0, uSeq_0 = velo_pr_palm(dir_0, jobName_0, ['.000','.001'], 'u')
-tSeq_0, zSeq_0, vSeq_0 = velo_pr_palm(dir_0, jobName_0, ['.000','.001'], 'v')
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName_1  = 'wwinta_1'
-dir_1 = prjDir + '/' + jobName_1
-tSeq_1, zSeq_1, uSeq_1 = velo_pr_palm(dir_1, jobName_1, ['.000','.001'], 'u')
-tSeq_1, zSeq_1, vSeq_1 = velo_pr_palm(dir_1, jobName_1, ['.000','.001'], 'v')
+jobName  = 'wwinta_gs20_regular_hws'
+dir = prjDir + '/' + jobName
+tSeq, zuSeq, uSeq = velo_pr_palm(dir, jobName, ['.000'], 'u')
+tSeq, zvSeq, vSeq = velo_pr_palm(dir, jobName, ['.000'], 'v')
 
-prjDir = '/scratch/palmdata/JOBS'
-jobName_2  = 'wwinta_2'
-dir_2 = prjDir + '/' + jobName_2
-tSeq_2, zSeq_2, uSeq_2 = velo_pr_palm(dir_2, jobName_2, ['.000','.001'], 'u')
-tSeq_2, zSeq_2, vSeq_2 = velo_pr_palm(dir_2, jobName_2, ['.000','.001'], 'v')
+vhSeq = np.sqrt(np.power(uSeq,2)+np.power(vSeq,2))
+
+""" calculate and print uStar """
+kappa = 0.4
+uStar = kappa / np.log(zuSeq[1]/0.001) * np.power(uSeq[-1][1]**2 + vSeq[-1][1]**2,0.5)
+print(uStar)
+
+#### checking
+#single_plot(uSeq[-1], zSeq)
+#u_90 = ITP(uSeq[-1], zSeq, 90)
+#v_90 = ITP(vSeq[-1], zSeq, 90)
 
 
-
-""" u profile of stationary flow (sowfa vs palm) """
+""" u profile of stationary flow """
 fig, ax = plt.subplots(figsize=(3,4.5))
-
-plt.plot(uSeq_0[-1], zSeq_0, label='no wave', linewidth=1.0, linestyle='-', color='k')
-plt.plot(uSeq_1[-1], zSeq_1, label='regular', linewidth=1.0, linestyle='-', color='r')
-plt.plot(uSeq_2[-1], zSeq_2, label='irregular', linewidth=1.0, linestyle='-', color='b')
+plt.plot(vhSeq[-1], zuSeq, label=jobName, linewidth=1.0, linestyle='-', color='k')
 plt.xlabel(r"$\overline{\mathrm{u}}$ (m/s)", fontsize=12)
 plt.ylabel('z (m)', fontsize=12)
 xaxis_min = 0
-xaxis_max = 6.0
+xaxis_max = 16.0
 xaxis_d = 2.0
 yaxis_min = 0.0
-yaxis_max = 800.0
-yaxis_d = 100.0
+yaxis_max = 100.0
+yaxis_d = 10.0
 plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
 plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
-plt.legend(bbox_to_anchor=(0.05,0.9), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+#plt.legend(bbox_to_anchor=(0.02,0.9), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
-plt.title('')
+plt.title(jobName)
 fig.tight_layout() # adjust the layout
-# saveName = 'u' + '_pr.png'
-# plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
+saveDir = '/scratch/projects/wwinta/photo/pr'
+saveName = jobName + '_pr.png'
+if not os.path.exists(saveDir):
+    os.makedirs(saveDir)
+plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
 plt.show()
 plt.close()
+
+
+

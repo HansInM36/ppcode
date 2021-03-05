@@ -346,6 +346,14 @@ def kaimal_w(f, uz, z, uStar):
     down = f * np.power(1 + 5.3*f_, 5/3)
     return up/down
 
+""" wind spectrum (ref. Recent spectra of atmospheric turbulence (Busch, Panofsky, 1968)) """
+def Busch_Panofsky_w(f, uz, z, uStar, phi=1.0):
+    f_ = f*z / uz
+    up = 3.36 * f_ / phi * np.power(uStar,2)
+    down = f * (1 + 10 * np.power(f_/phi, 5/3))
+    return up/down
+
+
 def IEC_coh(f, d, uz, L):
     a, b = 12, 0.12
     A = np.power(f*d/uz,2)

@@ -72,8 +72,9 @@ def coh_sowfa(p0_ind, p1_ind, xNum, yNum, t_para, tSeq, varSeq, tL):
     u1_ = f1(t_seq)
 
     segNum = tL*fs
-    freq, coh, co_coh, phase = funcs.coherence(u0_, u1_, fs, segNum)
-    return t_seq, u0_, u1_, freq, coh, co_coh, phase
+    # freq, coh, co_coh, phase = funcs.coherence(u0_, u1_, fs, segNum)
+    tmp = funcs.coherence(u0_, u1_, fs, segNum)
+    return t_seq, u0_, u1_, tmp[0], tmp[1], tmp[2], tmp[4]
 
 def getData_palm(dir, jobName, maskID, run_no_list, var):
     """ extract velocity data of specified probe groups """
@@ -478,11 +479,11 @@ freq_1, coh_av_1, coh_std_1, co_coh_av_1, co_coh_std_1, phase_av_1, phase_std_1 
 freq_2, coh_av_2, coh_std_2, co_coh_av_2, co_coh_std_2, phase_av_2, phase_std_2 = coh_av_sowfa_y(0, 0, 50, 2, 4, xSeq_0.size, ySeq_0.size, (144000.0, 146400.0, 0.5), tSeq_0, varSeq_0, 240)
 freq_3, coh_av_3, coh_std_3, co_coh_av_3, co_coh_std_3, phase_av_3, phase_std_3 = coh_av_sowfa_y(0, 0, 50, 2, 4, xSeq_0.size, ySeq_0.size, (144000.0, 146400.0, 1.0), tSeq_0, varSeq_0, 240)
 
-fig, ax = plt.subplots(figsize=(8,4))
-ax.plot(freq_0[0:], co_coh_av_0[0:], linestyle='-', marker='', markersize=1, color='r', label='fs=10Hz')
-ax.plot(freq_1[0:], co_coh_av_1[0:], linestyle='-', marker='', markersize=1, color='b', label='fs=5Hz')
-ax.plot(freq_2[0:], co_coh_av_2[0:], linestyle='-', marker='', markersize=1, color='g', label='fs=2Hz')
-ax.plot(freq_3[0:], co_coh_av_3[0:], linestyle='-', marker='', markersize=1, color='orange', label='fs=1Hz')
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(freq_0[0:], co_coh_av_0[0:], linestyle='-', marker='', markersize=1, color='r', label=r'$f_s$=10Hz')
+ax.plot(freq_1[0:], co_coh_av_1[0:], linestyle='-', marker='', markersize=1, color='b', label=r'$f_s$=5Hz')
+ax.plot(freq_2[0:], co_coh_av_2[0:], linestyle='-', marker='', markersize=1, color='g', label=r'$f_s$=2Hz')
+ax.plot(freq_3[0:], co_coh_av_3[0:], linestyle='-', marker='', markersize=1, color='orange', label=r'$f_s$=1Hz')
 ax.fill_between(freq_0[0:], co_coh_av_0[0:]-co_coh_std_0[0:], co_coh_av_0[0:]+co_coh_std_0[0:], color='salmon', alpha=0.8)
 ax.fill_between(freq_1[0:], co_coh_av_1[0:]-co_coh_std_1[0:], co_coh_av_1[0:]+co_coh_std_1[0:], color='lightskyblue', alpha=0.6)
 ax.fill_between(freq_2[0:], co_coh_av_2[0:]-co_coh_std_2[0:], co_coh_av_2[0:]+co_coh_std_2[0:], color='lightgreen', alpha=0.5)
@@ -503,11 +504,11 @@ ax.set_ylim(yaxis_min, yaxis_max)
 ax.set_xlim(xaxis_min, xaxis_max)
 ax.set_xticks(list(np.linspace(xaxis_min, xaxis_max, int(np.round((xaxis_max-xaxis_min)/xaxis_d)+1))))
 ax.set_yticks(list(np.linspace(yaxis_min, yaxis_max, int(np.round((yaxis_max-yaxis_min)/yaxis_d)+1))))
-plt.legend(bbox_to_anchor=(0.84,0.8), loc=6, borderaxespad=0, fontsize=10) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+plt.legend(bbox_to_anchor=(0.66,0.76), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 ax.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = 'co-coh_av_cmp_fs.png'
+saveName = 'co-coh_av_cmp_fs_mdf.png'
 plt.savefig('/scratch/projects/deepwind/photo/coherence_sensitivity' + '/' + saveName)
 plt.show()
 plt.close()
@@ -530,11 +531,11 @@ freq_1, coh_av_1, coh_std_1, co_coh_av_1, co_coh_std_1, phase_av_1, phase_std_1 
 freq_2, coh_av_2, coh_std_2, co_coh_av_2, co_coh_std_2, phase_av_2, phase_std_2 = coh_av_sowfa_y(0, 0, 50, 2, 4, xSeq_0.size, ySeq_0.size, (144000.0, 146400.0, 0.5), tSeq_0, varSeq_0, 240)
 freq_3, coh_av_3, coh_std_3, co_coh_av_3, co_coh_std_3, phase_av_3, phase_std_3 = coh_av_sowfa_y(0, 0, 50, 2, 4, xSeq_0.size, ySeq_0.size, (144000.0, 145200.0, 0.5), tSeq_0, varSeq_0, 240)
 
-fig, ax = plt.subplots(figsize=(8,4))
-ax.plot(freq_0[0:], co_coh_av_0[0:], linestyle='-', marker='', markersize=1, color='r', label='Ts=7200s')
-ax.plot(freq_1[0:], co_coh_av_1[0:], linestyle='-', marker='', markersize=1, color='b', label='Ts=3600s')
-ax.plot(freq_2[0:], co_coh_av_2[0:], linestyle='-', marker='', markersize=1, color='g', label='Ts=2400s')
-ax.plot(freq_3[0:], co_coh_av_3[0:], linestyle='-', marker='', markersize=1, color='orange', label='Ts=1200s')
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(freq_0[0:], co_coh_av_0[0:], linestyle='-', marker='', markersize=1, color='r', label=r'$T_s$=7200s')
+ax.plot(freq_1[0:], co_coh_av_1[0:], linestyle='-', marker='', markersize=1, color='b', label=r'$T_s$=3600s')
+ax.plot(freq_2[0:], co_coh_av_2[0:], linestyle='-', marker='', markersize=1, color='g', label=r'$T_s$=2400s')
+ax.plot(freq_3[0:], co_coh_av_3[0:], linestyle='-', marker='', markersize=1, color='orange', label=r'$T_s$=1200s')
 ax.fill_between(freq_0[0:], co_coh_av_0[0:]-co_coh_std_0[0:], co_coh_av_0[0:]+co_coh_std_0[0:], color='salmon', alpha=0.8)
 ax.fill_between(freq_1[0:], co_coh_av_1[0:]-co_coh_std_1[0:], co_coh_av_1[0:]+co_coh_std_1[0:], color='lightskyblue', alpha=0.6)
 ax.fill_between(freq_2[0:], co_coh_av_2[0:]-co_coh_std_2[0:], co_coh_av_2[0:]+co_coh_std_2[0:], color='lightgreen', alpha=0.5)
@@ -555,11 +556,11 @@ ax.set_ylim(yaxis_min, yaxis_max)
 ax.set_xlim(xaxis_min, xaxis_max)
 ax.set_xticks(list(np.linspace(xaxis_min, xaxis_max, int(np.round((xaxis_max-xaxis_min)/xaxis_d)+1))))
 ax.set_yticks(list(np.linspace(yaxis_min, yaxis_max, int(np.round((yaxis_max-yaxis_min)/yaxis_d)+1))))
-plt.legend(bbox_to_anchor=(0.8,0.8), loc=6, borderaxespad=0, fontsize=10) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+plt.legend(bbox_to_anchor=(0.66,0.76), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 ax.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = 'co-coh_av_cmp_Ts.png'
+saveName = 'co-coh_av_cmp_Ts_mdf.png'
 plt.savefig('/scratch/projects/deepwind/photo/coherence_sensitivity' + '/' + saveName)
 plt.show()
 plt.close()
@@ -582,11 +583,11 @@ freq_1, coh_av_1, coh_std_1, co_coh_av_1, co_coh_std_1, phase_av_1, phase_std_1 
 freq_2, coh_av_2, coh_std_2, co_coh_av_2, co_coh_std_2, phase_av_2, phase_std_2 = coh_av_sowfa_y(0, 0, 50, 2, 4, xSeq_0.size, ySeq_0.size, (144000.0, 146400.0, 0.5), tSeq_0, varSeq_0, 120)
 freq_3, coh_av_3, coh_std_3, co_coh_av_3, co_coh_std_3, phase_av_3, phase_std_3 = coh_av_sowfa_y(0, 0, 50, 2, 4, xSeq_0.size, ySeq_0.size, (144000.0, 146400.0, 0.5), tSeq_0, varSeq_0, 60)
 
-fig, ax = plt.subplots(figsize=(8,4))
-ax.plot(freq_0[0:], co_coh_av_0[0:], linestyle='-', marker='', markersize=1, color='r', label='segL=480s')
-ax.plot(freq_1[0:], co_coh_av_1[0:], linestyle='-', marker='', markersize=1, color='b', label='segL=240s')
-ax.plot(freq_2[0:], co_coh_av_2[0:], linestyle='-', marker='', markersize=1, color='g', label='segL=120s')
-ax.plot(freq_3[0:], co_coh_av_3[0:], linestyle='-', marker='', markersize=1, color='orange', label='segL=60s')
+fig, ax = plt.subplots(figsize=(6,4))
+ax.plot(freq_0[0:], co_coh_av_0[0:], linestyle='-', marker='', markersize=1, color='r', label=r'$L_s$=480s')
+ax.plot(freq_1[0:], co_coh_av_1[0:], linestyle='-', marker='', markersize=1, color='b', label=r'$L_s$=240s')
+ax.plot(freq_2[0:], co_coh_av_2[0:], linestyle='-', marker='', markersize=1, color='g', label=r'$L_s$=120s')
+ax.plot(freq_3[0:], co_coh_av_3[0:], linestyle='-', marker='', markersize=1, color='orange', label=r'$L_s$=60s')
 ax.fill_between(freq_0[0:], co_coh_av_0[0:]-co_coh_std_0[0:], co_coh_av_0[0:]+co_coh_std_0[0:], color='salmon', alpha=0.8)
 ax.fill_between(freq_1[0:], co_coh_av_1[0:]-co_coh_std_1[0:], co_coh_av_1[0:]+co_coh_std_1[0:], color='lightskyblue', alpha=0.6)
 ax.fill_between(freq_2[0:], co_coh_av_2[0:]-co_coh_std_2[0:], co_coh_av_2[0:]+co_coh_std_2[0:], color='lightgreen', alpha=0.5)
@@ -607,11 +608,11 @@ ax.set_ylim(yaxis_min, yaxis_max)
 ax.set_xlim(xaxis_min, xaxis_max)
 ax.set_xticks(list(np.linspace(xaxis_min, xaxis_max, int(np.round((xaxis_max-xaxis_min)/xaxis_d)+1))))
 ax.set_yticks(list(np.linspace(yaxis_min, yaxis_max, int(np.round((yaxis_max-yaxis_min)/yaxis_d)+1))))
-plt.legend(bbox_to_anchor=(0.8,0.8), loc=6, borderaxespad=0, fontsize=10) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+plt.legend(bbox_to_anchor=(0.66,0.76), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 ax.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = 'co-coh_av_cmp_segL.png'
+saveName = 'co-coh_av_cmp_segL_mdf.png'
 plt.savefig('/scratch/projects/deepwind/photo/coherence_sensitivity' + '/' + saveName)
 plt.show()
 plt.close()

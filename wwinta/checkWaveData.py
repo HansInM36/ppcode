@@ -69,18 +69,17 @@ def get_wave(dir, file):
         else:
             wSeq[t,:,:] = (etaSeq[t+1,:,:] - etaSeq[t-1,:,:]) / (tSeq[t+1] - tSeq[t-1])
 
-    return tSeq, etaSeq, phiSeq, uSeq, vSeq, wSeq
+    return tSeq, xSeq, ySeq, etaSeq, phiSeq, uSeq, vSeq, wSeq
 
-prjDir = '/scratch/palmdata/pp/wwinta'
-
-dir = '/scratch/ppcode/wwinta'
+dir = '/scratch/palmdata/pp/wwinta/data'
 file = "waveData_regular.nc"
 wave_regular = get_wave(dir, file)
 
-dir = '/scratch/ppcode/wwinta'
+dir = '/scratch/palmdata/pp/wwinta/data'
 file = "waveData_irregular.nc"
 wave_irregular = get_wave(dir, file)
 
+tSeq, xSeq, ySeq, etaSeq, phiSeq, uSeq, vSeq, wSeq = wave_irregular
 
 """ animation of eta field """
 vMin, vMax, vDelta = (-1.6, 1.6, 0.4)
@@ -104,7 +103,7 @@ for tInd in range(0,100,1):
     plt.xlabel('x (m)', fontsize=12)
     plt.title('')
     saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/palmdata/pp/' + jobName + '/animation/eta'
+    saveDir = '/scratch/palmdata/pp/wwinta/animation/eta_irregular'
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
     plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
@@ -134,36 +133,7 @@ for tInd in range(0,100,1):
     plt.xlabel('x (m)', fontsize=12)
     plt.title('')
     saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/palmdata/pp/' + jobName + '/animation/u'
-    if not os.path.exists(saveDir):
-        os.makedirs(saveDir)
-    plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
-    # plt.show()
-    plt.close('all')
-
-""" animation of v field """
-vMin, vMax, vDelta = (-2, 2, 0.4)
-cbreso = 100 # resolution of colorbar
-levels = np.linspace(vMin, vMax, cbreso + 1)
-for tInd in range(0,100,1):
-    fig, axs = plt.subplots(figsize=(6.0,4.6), constrained_layout=False)
-    x_ = xSeq
-    y_ = ySeq
-    v_ = vSeq[tInd]
-    # v_ -= v_.mean()
-    v_[np.where(v_ < vMin)] = vMin
-    v_[np.where(v_ > vMax)] = vMax
-    CS = axs.contourf(x_, y_, v_, cbreso, levels=levels, cmap='bwr', vmin=vMin, vmax=vMax)
-    cbartickList = np.linspace(vMin, vMax, int((vMax-vMin)/vDelta)+1)
-    cbar = plt.colorbar(CS, ax=axs, orientation='vertical', ticks=cbartickList, fraction=.1)
-    cbar.ax.set_ylabel(r"$\mathrm{v}$" + ' (m/s)', fontsize=12)
-    plt.xlim([0,600])
-    plt.ylim([0,1000])
-    plt.ylabel('y (m)', fontsize=12)
-    plt.xlabel('x (m)', fontsize=12)
-    plt.title('')
-    saveName = "%.4d" % tInd + '.png'
-    saveDir = '/scratch/HOSdata/pp/' + jobName + '/animation/v'
+    saveDir = '/scratch/palmdata/pp/wwinta/animation/u_irregular'
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
     plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')

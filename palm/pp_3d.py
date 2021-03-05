@@ -8,7 +8,7 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 
 prjDir = "/scratch/palmdata"
-jobname  = 'pcr_SBL_U10'
+jobname  = 'mini'
 cycle_no_list = ['.002'] # "" for initial run, ".001" for first cycle, etc.
 cycle_num = len(cycle_no_list)
 
@@ -17,7 +17,7 @@ cycle_num = len(cycle_no_list)
 #xpos     = "1030"           # x-position of plot (turbine at 2000 m)
 #ypos     = "2400"           # y-position of plot (turbine at 2000 m)
 
-varname = 'u'
+varName = 'u'
 varunit = 'm/s'
 
 print("+++ Preparing plots for run " + jobname + "...")
@@ -30,11 +30,23 @@ for i in range(cycle_num):
     input_file = prjDir + "/JOBS/" + jobname + "/OUTPUT/" + jobname + "_3d" + cycle_no_list[i] + ".nc"
     nc_file_list.append(Dataset(input_file, "r", format="NETCDF4"))
     tseq_list.append(np.array(nc_file_list[i].variables['time'][:], dtype=type(nc_file_list[i].variables['time'])))
-    varseq_list.append(np.array(nc_file_list[i].variables[varname][:], dtype=type(nc_file_list[i].variables[varname])))
+    varseq_list.append(np.array(nc_file_list[i].variables[varName][:], dtype=type(nc_file_list[i].variables[varName])))
 
 # print(list(nc_file_list[0].dimensions)) #list all dimensions
 # print(list(nc_file_list[0].variables)) #list all the variables
 # print(list(nc_file_list[0].variables['u2'].dimensions)) #list dimensions of a specified variable
+
+# extract the values of all dimensions of the var
+zName = list(nc_file_list[0].variables[varName].dimensions)[1] # the height name string
+zSeq = np.array(nc_file_list[0].variables[zName][:], dtype=type(nc_file_list[0].variables[zName])) # array of height levels
+zNum = zSeq.size
+zSeq = zSeq.astype(float)
+yName = list(nc_file_list[0].variables[varName].dimensions)[2] # the height name string
+ySeq = np.array(nc_file_list[0].variables[yName][:], dtype=type(nc_file_list[0].variables[yName])) # array of height levels
+ySeq = ySeq.astype(float)
+xName = list(nc_file_list[0].variables[varName].dimensions)[3] # the height name string
+xSeq = np.array(nc_file_list[0].variables[xName][:], dtype=type(nc_file_list[0].variables[xName])) # array of height levels
+xSeq = xSeq.astype(float)
 
 # concatenate arraies of all cycle_no_list along the first dimension (axis=0), i.e. time
 tseq = np.concatenate([tseq_list[i] for i in range(cycle_num)], axis=0)

@@ -1,4 +1,4 @@
-### This script read HOS Post_processing output file VP_card_fitted.dat ###
+### This script generate 2d regular wave field and store wave data into netcdf file ###
 import os
 import sys
 import numpy as np
@@ -6,7 +6,7 @@ from netCDF4 import Dataset
 
 """ INPUT START """
 ## wave properties
-wl = 100
+wl = 246.4
 ka = 0.1
 
 ## mesh
@@ -32,20 +32,20 @@ ySeq = np.linspace(0,wl*Ly,J);       yNum = ySeq.size
 etaArray = np.zeros((tNum, yNum, xNum))
 for tInd in range(tNum):
     for xInd in range(xNum):
-        etaArray[tInd,:,xInd] = A * np.sin(omg*tSeq[tInd] - k*xSeq[xInd])
+        etaArray[tInd,:,xInd] = A * np.sin(omg*tSeq[tInd]*0 - k*xSeq[xInd])
 
 phiArray = np.zeros((tNum, yNum, xNum))
 for tInd in range(tNum):
     for xInd in range(xNum):
-        phiArray[tInd,:,xInd] = omg/k*A * np.cos(omg*tSeq[tInd] - k*xSeq[xInd])
+        phiArray[tInd,:,xInd] = omg/k*A * np.cos(omg*tSeq[tInd]*0 - k*xSeq[xInd])
 
 
 
 ### open a new file for netcdf data
-saveDir = '/scratch/ppcode/wwinta'
+saveDir = '/scratch/projects/wwinta/waveData'
 if not os.path.exists(saveDir):
     os.makedirs(saveDir)
-saveName = 'waveData_regular.nc'
+saveName = 'waveData_bump.nc'
 ncfile = Dataset(saveDir + '/' + saveName, mode='w', format='NETCDF4_CLASSIC')
 
 # create dimensions

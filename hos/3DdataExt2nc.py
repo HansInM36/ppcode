@@ -6,7 +6,7 @@ from netCDF4 import Dataset
 
 
 prjDir = "/scratch/HOSdata/JOBS"
-jobName = "wwinta_2"
+jobName = "wwinta_3"
 suffix = ""
 
 
@@ -60,10 +60,10 @@ phiArray = np.array(phiList)
 
 
 ### open a new file for netcdf data
-saveDir = '/scratch/ppcode/wwinta'
+saveDir = '/scratch/palmdata/pp/wwinta/data'
 if not os.path.exists(saveDir):
     os.makedirs(saveDir)
-saveName = "waveData" + suffix + '.nc'
+saveName = "waveData_irregular_3.nc"
 ncfile = Dataset(saveDir + '/' + saveName, mode='w', format='NETCDF4_CLASSIC')
 
 # create dimensions

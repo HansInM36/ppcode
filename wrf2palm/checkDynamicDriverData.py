@@ -6,10 +6,15 @@ from scipy.interpolate import interp1d
 import scipy.signal
 import matplotlib.pyplot as plt
 
-readDir = '/home/xni001/palm/current_version/trunk/UTIL/Bergen'
-readName = "Bergen_dynamic_driver_d10_test.nc"
+readDir = '/scratch/palmdata/JOBS/WRFnesting_test/WRF/dynamic_driver'
+readName = "WRFnesting_test_dynamic"
 
 data = Dataset(readDir + '/' + readName, "r", format="NETCDF4")
+
+dimlist = list(data.dimensions)
+varlist = list(data.variables)
+
+
 time = data.variables['time'][:]
 
 init_atmosphere_pt = np.array(data.variables['init_atmosphere_pt'])

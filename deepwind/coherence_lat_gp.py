@@ -14,6 +14,7 @@ import funcs
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
+
 def getData_sowfa(dir, prbg, trs_para, var, varD):
     """ extract velocity data of specified probe groups """
     # coordinate transmation
@@ -168,17 +169,17 @@ def coh_av_palm_y(xInd, yInd_start, yInd_end, dyInd, zInd, t_para, tSeq, varSeq,
         quad_coh.append(results[6])
         phase.append(results[7])
         freq = results[3]
-    # coh = np.array(coh)
-    # coh_av = np.mean(coh, axis=0)
-    # coh_std = np.std(coh, axis=0)
+    coh = np.array(coh)
+    coh_av = np.mean(coh, axis=0)
+    coh_std = np.std(coh, axis=0)
     co_coh = np.array(co_coh)
     co_coh_av = np.mean(co_coh, axis=0)
     co_coh_std = np.std(co_coh, axis=0)
     quad_coh = np.array(quad_coh)
     quad_coh_av = np.mean(quad_coh, axis=0)
     quad_coh_std = np.std(quad_coh, axis=0)
-    coh_av = np.power(np.power(co_coh_av,2)+np.power(quad_coh_av,2),0.5)
-    coh_std = np.power(np.power(co_coh_std,2)+np.power(quad_coh_std,2),0.5)
+    # coh_av = np.power(np.power(co_coh_av,2)+np.power(quad_coh_av,2),0.5)
+    # coh_std = np.power(np.power(co_coh_std,2)+np.power(quad_coh_std,2),0.5)
     phase = np.array(phase)
     phase_av = np.mean(phase, axis=0)
     phase_std = np.std(phase, axis=0)
@@ -253,17 +254,17 @@ def coh_av_sowfa_y(xInd, yInd_start, yInd_end, dyInd, zInd, xNum, yNum, t_para, 
         quad_coh.append(results[6])
         phase.append(results[7])
         freq = results[3]
-    # coh = np.array(coh)
-    # coh_av = np.mean(coh, axis=0)
-    # coh_std = np.std(coh, axis=0)
+    coh = np.array(coh)
+    coh_av = np.mean(coh, axis=0)
+    coh_std = np.std(coh, axis=0)
     co_coh = np.array(co_coh)
     co_coh_av = np.mean(co_coh, axis=0)
     co_coh_std = np.std(co_coh, axis=0)
     quad_coh = np.array(quad_coh)
     quad_coh_av = np.mean(quad_coh, axis=0)
     quad_coh_std = np.std(quad_coh, axis=0)
-    coh_av = np.power(np.power(co_coh_av,2)+np.power(quad_coh_av,2),0.5)
-    coh_std = np.power(np.power(co_coh_std,2)+np.power(quad_coh_std,2),0.5)
+    # coh_av = np.power(np.power(co_coh_av,2)+np.power(quad_coh_av,2),0.5)
+    # coh_std = np.power(np.power(co_coh_std,2)+np.power(quad_coh_std,2),0.5)
     phase = np.array(phase)
     phase_av = np.mean(phase, axis=0)
     phase_std = np.std(phase, axis=0)
@@ -308,7 +309,7 @@ def plot_coh_av(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, phase_st
     fig.set_figheight(4)
 
     #coherence
-    axs[0].plot(freq[1:], coh_av[1:], linestyle='-', marker='', markersize=3, color='k')
+    axs[0].plot(freq[1:], coh_av[1:], linestyle='-', marker='o', markersize=3, color='k')
     # popt, pcov = curve_fit(fitting_func, freq[ind_in:ind_out], coh[ind_in:ind_out], bounds=(0, [1, 100]))
     # axs[0].plot(freq[0:ind_out], fitting_func(freq[0:ind_out], *popt), linestyle='-', color='k',
     # label='a=%5.3f, alpha=%5.3f' % tuple(popt))
@@ -330,7 +331,7 @@ def plot_coh_av(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, phase_st
     #axs[0].legend(bbox_to_anchor=(0.2,0.9), loc=6, borderaxespad=0, fontsize=10)
 
     #co-coherence
-    axs[1].plot(freq[1:], co_coh_av[1:], linestyle='-', marker='', markersize=3, color='r')
+    axs[1].plot(freq[1:], co_coh_av[1:], linestyle='-', marker='o', markersize=3, color='r')
     axs[1].fill_between(freq[1:], co_coh_av[1:]-co_coh_std[1:], co_coh_av[1:]+co_coh_std[1:], color='salmon')
     axs[1].tick_params(axis='both', which='major', labelsize=10)
     xaxis_min = 0
@@ -349,7 +350,7 @@ def plot_coh_av(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, phase_st
     # axs[1].set_title('dx = ' + str(np.round(dx,1)) + 'm' + ', ' + 'h = ' + str(np.round(p0_coor[2])) + 'm', fontsize=12)
 
     #phase
-    axs[2].plot(freq[1:], phase_av[1:], linestyle='-', marker='', markersize=3, color='b')
+    axs[2].plot(freq[1:], phase_av[1:], linestyle='-', marker='o', markersize=3, color='b')
     axs[2].fill_between(freq[1:], phase_av[1:]-phase_std[1:], phase_av[1:]+phase_std[1:], color='lightskyblue')
     axs[2].tick_params(axis='both', which='major', labelsize=10)
     xaxis_min = 0
@@ -385,7 +386,7 @@ def plot_coh_av_zoomin(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, p
     fig.set_figheight(4)
 
     #coherence
-    axs[0,0].plot(freq[1:], coh_av[1:], linestyle='-', marker='', markersize=3, color='k')
+    axs[0,0].plot(freq[1:], coh_av[1:], linestyle='-', marker='o', markersize=3, color='k')
     # popt, pcov = curve_fit(fitting_func, freq[ind_in:ind_out], coh[ind_in:ind_out], bounds=(0, [1, 100]))
     # axs[0].plot(freq[0:ind_out], fitting_func(freq[0:ind_out], *popt), linestyle='-', color='k',
     # label='a=%5.3f, alpha=%5.3f' % tuple(popt))
@@ -406,7 +407,7 @@ def plot_coh_av_zoomin(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, p
     axs[0,0].set_ylabel('coherence', fontsize=12)
     #axs[0,0].legend(bbox_to_anchor=(0.2,0.9), loc=6, borderaxespad=0, fontsize=10)
 
-    axs[1,0].plot(freq[1:], coh_av[1:], linestyle='-', marker='', markersize=3, color='k')
+    axs[1,0].plot(freq[1:], coh_av[1:], linestyle='-', marker='o', markersize=3, color='k')
     # popt, pcov = curve_fit(fitting_func, freq[ind_in:ind_out], coh[ind_in:ind_out], bounds=(0, [1, 100]))
     # axs[0].plot(freq[0:ind_out], fitting_func(freq[0:ind_out], *popt), linestyle='-', color='k',
     # label='a=%5.3f, alpha=%5.3f' % tuple(popt))
@@ -426,7 +427,7 @@ def plot_coh_av_zoomin(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, p
     axs[1,0].set_ylabel('coherence', fontsize=12)
 
     #co-coherence
-    axs[0,1].plot(freq[1:], co_coh_av[1:], linestyle='-', marker='', markersize=3, color='r')
+    axs[0,1].plot(freq[1:], co_coh_av[1:], linestyle='-', marker='o', markersize=3, color='r')
     axs[0,1].fill_between(freq[1:], co_coh_av[1:]-co_coh_std[1:], co_coh_av[1:]+co_coh_std[1:], color='salmon')
     axs[0,1].tick_params(axis='both', which='major', labelsize=10)
     xaxis_min = 0
@@ -444,7 +445,7 @@ def plot_coh_av_zoomin(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, p
     axs[0,1].set_ylabel('co-coherence', fontsize=12)
     # axs[0,1].set_title('dx = ' + str(np.round(dx,1)) + 'm' + ', ' + 'h = ' + str(np.round(p0_coor[2])) + 'm', fontsize=12)
 
-    axs[1,1].plot(freq[1:], co_coh_av[1:], linestyle='-', marker='', markersize=3, color='r')
+    axs[1,1].plot(freq[1:], co_coh_av[1:], linestyle='-', marker='o', markersize=3, color='r')
     axs[1,1].fill_between(freq[1:], co_coh_av[1:]-co_coh_std[1:], co_coh_av[1:]+co_coh_std[1:], color='salmon')
     axs[1,1].tick_params(axis='both', which='major', labelsize=10)
     xaxis_min = 0
@@ -462,7 +463,7 @@ def plot_coh_av_zoomin(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, p
     axs[1,1].set_ylabel('co-coherence', fontsize=12)
 
     #phase
-    axs[0,2].plot(freq[1:], phase_av[1:], linestyle='-', marker='', markersize=3, color='b')
+    axs[0,2].plot(freq[1:], phase_av[1:], linestyle='-', marker='o', markersize=3, color='b')
     axs[0,2].fill_between(freq[1:], phase_av[1:]-phase_std[1:], phase_av[1:]+phase_std[1:], color='lightskyblue')
     axs[0,2].tick_params(axis='both', which='major', labelsize=10)
     xaxis_min = 0
@@ -483,7 +484,7 @@ def plot_coh_av_zoomin(freq, coh_av, coh_std, co_coh_av, co_coh_std, phase_av, p
     axs[0,2].set_xlabel('f (1/s)', fontsize=12)
     axs[0,2].set_ylabel('phase', fontsize=12)
 
-    axs[1,2].plot(freq[1:], phase_av[1:], linestyle='-', marker='', markersize=3, color='b')
+    axs[1,2].plot(freq[1:], phase_av[1:], linestyle='-', marker='o', markersize=3, color='b')
     axs[1,2].fill_between(freq[1:], phase_av[1:]-phase_std[1:], phase_av[1:]+phase_std[1:], color='lightskyblue')
     axs[1,2].tick_params(axis='both', which='major', labelsize=10)
     xaxis_min = 0
@@ -539,9 +540,8 @@ def calc_uz_sowfa(xNum,yNum,zInd,uSeq):
 def calc_uz_palm(zInd,uSeq):
     uz = np.mean(uSeq[:,zInd,:,:])
     return uz
-def coh_kaimal(f, d, U, L, a, b):
+def coh_IEC(f, d, U, L, a, b):
     return np.exp(-a * np.power(np.power(f*d/U,2) + np.power(b*d/L,2),0.5))
-
 
 
 """ SOWFA """
@@ -664,7 +664,7 @@ freq, coh_av_4_d80h180, coh_std_4_d80h180, co_coh_av_4_d80h180, co_coh_std_4_d80
 prjDir = '/scratch/palmdata/JOBS'
 jobName  = 'deepwind_gs5_0.01_main'
 dir_5 = prjDir + '/' + jobName
-tSeq_5, xSeq_5, ySeq_5, zSeq_5, varSeq_5 = getData_palm(dir_5, jobName, 'M04', ['.001'], 'u')
+tSeq_5, xSeq_5, ySeq_5, zSeq_5, varSeq_5 = getData_palm(dir_5, jobName, 'M04', ['.000'], 'u')
 # calculate coherence
 t_seq_5, u0_5, u1_5, freq, coh_5_d40h20, co_coh_5_d40h20, quad_coh_5_d40h20, phase_5_d40h20 = coh_palm((0,24,0), (0,26,0), (3600.0, 10800.0, 0.5), tSeq_5, varSeq_5, 240)
 t_seq_5, u0_5, u1_5, freq, coh_5_d80h20, co_coh_5_d80h20, quad_coh_5_d80h20, phase_5_d80h20 = coh_palm((0,24,0), (0,28,0), (3600.0, 10800.0, 0.5), tSeq_5, varSeq_5, 240)
@@ -685,6 +685,218 @@ freq, coh_av_5_d80h180, coh_std_5_d80h180, co_coh_av_5_d80h180, co_coh_std_5_d80
 
 
 
+
+""" 3*3 plots of co_coh_av with fitting """
+# fitting
+def fitting_func(f_, a):
+    return np.exp(-a*f_)
+
+fig = plt.figure()
+fig.set_figwidth(10)
+fig.set_figheight(8)
+rNum, cNum = (3,3)
+axs = fig.subplots(nrows=rNum, ncols=cNum)
+
+## height = 20m
+uz_0_20 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
+uz_3_20 = calc_uz_palm(4,varSeq_3) # palm
+
+axs[0,0].plot(freq[1:]*40/uz_0_20, co_coh_av_0_d40h20[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, co_coh_av_0_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,0].plot(freq[1:]*40/uz_3_20, co_coh_av_3_d40h20[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,0].plot(freq[1:]*80/uz_3_20, co_coh_av_3_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,0].plot(freq[1:]*40/uz_0_20, coh_IEC(freq[1:], 40, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, coh_IEC(freq[1:], 80, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+axs[0,0].set_xlim(0, 1.0); axs[0,0].set_xticklabels([])
+axs[0,0].set_ylim(0.0, 1.0)
+axs[0,0].set_ylabel(r"co-coh", fontsize=12)
+axs[0,0].text(0.5, 0.8, r"$\mathrm{z_0 = 0.0001m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[0,0].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0].transAxes
+
+uz_1_20 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
+uz_4_20 = calc_uz_palm(4,varSeq_4) # palm
+
+axs[0,1].plot(freq[1:]*40/uz_1_20, co_coh_av_1_d40h20[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, co_coh_av_1_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,1].plot(freq[1:]*40/uz_4_20, co_coh_av_4_d40h20[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,1].plot(freq[1:]*80/uz_4_20, co_coh_av_4_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,1].plot(freq[1:]*40/uz_1_20, coh_IEC(freq[1:], 40, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, coh_IEC(freq[1:], 80, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+axs[0,1].set_xlim(0, 1.0); axs[0,1].set_xticklabels([])
+axs[0,1].set_ylim(-0.2, 1.0); axs[0,1].set_yticklabels([])
+axs[0,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[0,1].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0].transAxes
+
+uz_2_20 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
+uz_5_20 = calc_uz_palm(4,varSeq_5) # palm
+
+axs[0,2].plot(freq[1:]*40/uz_2_20, co_coh_av_2_d40h20[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, co_coh_av_2_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,2].plot(freq[1:]*40/uz_5_20, co_coh_av_5_d40h20[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,2].plot(freq[1:]*80/uz_5_20, co_coh_av_5_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,2].plot(freq[1:]*40/uz_2_20, coh_IEC(freq[1:], 40, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, coh_IEC(freq[1:], 80, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+axs[0,2].set_xlim(0, 1.0); axs[0,2].set_xticklabels([])
+axs[0,2].set_ylim(-0.2, 1.0); axs[0,2].set_yticklabels([])
+axs[0,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[0,2].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0].transAxes
+
+## height = 100m
+uz_0_100 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
+uz_3_100 = calc_uz_palm(4,varSeq_3) # palm
+
+axs[1,0].plot(freq[1:]*40/uz_0_100, co_coh_av_0_d40h100[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, co_coh_av_0_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,0].plot(freq[1:]*40/uz_3_100, co_coh_av_3_d40h100[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,0].plot(freq[1:]*80/uz_3_100, co_coh_av_3_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,0].plot(freq[1:]*40/uz_0_100, coh_IEC(freq[1:], 40, uz_0_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, coh_IEC(freq[1:], 80, uz_0_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_0_100, co_coh_av_0_d40h100[1:25], bounds=(0, [100]))
+axs[1,0].plot(freq*40/uz_0_100, fitting_func(freq*40/uz_0_100, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_0_100, co_coh_av_0_d80h100[1:25], bounds=(0, [100]))
+axs[1,0].plot(freq*80/uz_0_100, fitting_func(freq*80/uz_0_100, *popt_1), linestyle=':', color='k', label='Davenport-80m')
+
+axs[1,0].set_xlim(0, 1.0); axs[1,0].set_xticklabels([])
+axs[1,0].set_ylim(-0.2, 1.0)
+axs[1,0].set_ylabel(r"co-coh", fontsize=12)
+axs[1,0].text(0.5, 0.8, r"$\mathrm{z_0 = 0.0001m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,0].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,0].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[1,0].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
+
+uz_1_100 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
+uz_4_100 = calc_uz_palm(4,varSeq_4) # palm
+
+axs[1,1].plot(freq[1:]*40/uz_1_100, co_coh_av_1_d40h100[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, co_coh_av_1_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,1].plot(freq[1:]*40/uz_4_100, co_coh_av_4_d40h100[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,1].plot(freq[1:]*80/uz_4_100, co_coh_av_4_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,1].plot(freq[1:]*40/uz_1_100, coh_IEC(freq[1:], 40, uz_1_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, coh_IEC(freq[1:], 80, uz_1_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_1_100, co_coh_av_1_d40h100[1:25], bounds=(0, [100]))
+axs[1,1].plot(freq*40/uz_1_100, fitting_func(freq*40/uz_1_100, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_1_100, co_coh_av_1_d80h100[1:25], bounds=(0, [100]))
+axs[1,1].plot(freq*80/uz_1_100, fitting_func(freq*80/uz_1_100, *popt_1), linestyle=':', color='k', label='Davenport-80m')
+
+axs[1,1].set_xlim(0, 1.0); axs[1,1].set_xticklabels([])
+axs[1,1].set_ylim(-0.2, 1.0); axs[1,1].set_yticklabels([])
+axs[1,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,1].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,1].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[1,1].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
+
+uz_2_100 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
+uz_5_100 = calc_uz_palm(4,varSeq_5) # palm
+
+axs[1,2].plot(freq[1:]*40/uz_2_100, co_coh_av_2_d40h100[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, co_coh_av_2_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,2].plot(freq[1:]*40/uz_5_100, co_coh_av_5_d40h100[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,2].plot(freq[1:]*80/uz_5_100, co_coh_av_5_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,2].plot(freq[1:]*40/uz_2_100, coh_IEC(freq[1:], 40, uz_2_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, coh_IEC(freq[1:], 80, uz_2_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_2_100, co_coh_av_2_d40h100[1:25], bounds=(0, [100]))
+axs[1,2].plot(freq*40/uz_2_100, fitting_func(freq*40/uz_2_100, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_2_100, co_coh_av_2_d80h100[1:25], bounds=(0, [100]))
+axs[1,2].plot(freq*80/uz_2_100, fitting_func(freq*80/uz_2_100, *popt_1), linestyle=':', color='k', label='Davenport-80m')
+
+axs[1,2].set_xlim(0, 1.0); axs[1,2].set_xticklabels([])
+axs[1,2].set_ylim(-0.2, 1.0); axs[1,2].set_yticklabels([])
+axs[1,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,2].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,2].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[1,2].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
+
+## height = 180m
+uz_0_180 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
+uz_3_180 = calc_uz_palm(4,varSeq_3) # palm
+
+axs[2,0].plot(freq[1:]*40/uz_0_180, co_coh_av_0_d40h180[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, co_coh_av_0_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,0].plot(freq[1:]*40/uz_3_180, co_coh_av_3_d40h180[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,0].plot(freq[1:]*80/uz_3_180, co_coh_av_3_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,0].plot(freq[1:]*40/uz_0_180, coh_IEC(freq[1:], 40, uz_0_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, coh_IEC(freq[1:], 80, uz_0_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_0_180, co_coh_av_0_d40h180[1:25], bounds=(0, [100]))
+axs[2,0].plot(freq*40/uz_0_180, fitting_func(freq*40/uz_0_180, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_0_180, co_coh_av_0_d80h180[1:25], bounds=(0, [100]))
+axs[2,0].plot(freq*80/uz_0_180, fitting_func(freq*80/uz_0_180, *popt_1), linestyle=':', color='k', label='Davenport-80m')
+
+axs[2,0].set_xlim(0, 1.0)
+axs[2,0].set_ylim(-0.2, 1.0)
+axs[2,0].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
+axs[2,0].set_ylabel(r"co-coh", fontsize=12)
+axs[2,0].text(0.5, 0.8, r"$\mathrm{z_0 = 0.0001m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,0].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,0].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[2,0].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
+
+uz_1_180 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
+uz_4_180 = calc_uz_palm(4,varSeq_4) # palm
+
+axs[2,1].plot(freq[1:]*40/uz_1_180, co_coh_av_1_d40h180[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, co_coh_av_1_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,1].plot(freq[1:]*40/uz_4_180, co_coh_av_4_d40h180[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,1].plot(freq[1:]*80/uz_4_180, co_coh_av_4_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,1].plot(freq[1:]*40/uz_1_180, coh_IEC(freq[1:], 40, uz_1_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, coh_IEC(freq[1:], 80, uz_1_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_1_180, co_coh_av_1_d40h180[1:25], bounds=(0, [100]))
+axs[2,1].plot(freq*40/uz_1_180, fitting_func(freq*40/uz_1_180, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_1_180, co_coh_av_1_d80h180[1:25], bounds=(0, [100]))
+axs[2,1].plot(freq*80/uz_1_180, fitting_func(freq*80/uz_1_180, *popt_1), linestyle=':', color='k', label='Davenport-80m')
+
+axs[2,1].set_xlim(0, 1.0)
+axs[2,1].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
+axs[2,1].set_ylim(-0.2, 1.0); axs[2,1].set_yticklabels([])
+axs[2,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,1].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,1].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[2,1].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
+
+uz_2_180 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
+uz_5_180 = calc_uz_palm(4,varSeq_5) # palm
+
+axs[2,2].plot(freq[1:]*40/uz_2_180, co_coh_av_2_d40h180[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, co_coh_av_2_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,2].plot(freq[1:]*40/uz_5_180, co_coh_av_5_d40h180[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,2].plot(freq[1:]*80/uz_5_180, co_coh_av_5_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,2].plot(freq[1:]*40/uz_2_180, coh_IEC(freq[1:], 40, uz_2_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, coh_IEC(freq[1:], 80, uz_2_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_2_180, co_coh_av_2_d40h180[1:25], bounds=(0, [100]))
+axs[2,2].plot(freq*40/uz_2_180, fitting_func(freq*40/uz_2_180, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_2_180, co_coh_av_2_d80h180[1:25], bounds=(0, [100]))
+axs[2,2].plot(freq*80/uz_2_180, fitting_func(freq*80/uz_2_180, *popt_1), linestyle=':', color='k', label='Davenport-80m')
+
+axs[2,2].set_xlim(0, 1.0)
+axs[2,2].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
+axs[2,2].set_ylim(-0.2, 1.0); axs[2,2].set_yticklabels([])
+axs[2,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,2].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,2].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[2,2].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
+
+for i in range(3):
+    for j in range(3):
+        axs[i,j].grid(True)
+
+# plt.legend(bbox_to_anchor=(0.0,1.06,1.,.12), loc=9, ncol=2, mode='expand', borderaxespad=0, fontsize=12)
+handles, labels = axs[1,0].get_legend_handles_labels()
+lgdord = [0,1,2,3,4,5,6,7]
+fig.legend([handles[i] for i in lgdord], [labels[i] for i in lgdord], loc='upper center', bbox_to_anchor=(0.5,0.98), ncol=4, mode='None', borderaxespad=0, fontsize=12)
+saveDir = '/scratch/projects/deepwind/photo/coherence'
+saveName = 'co-coh_av_lat_gp_fit.png'
+plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
+plt.show()
+
+
 """ 3*3 plots of co-coh_av """
 fig = plt.figure()
 fig.set_figwidth(10)
@@ -696,10 +908,10 @@ axs = fig.subplots(nrows=rNum, ncols=cNum)
 uz_0_20 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_20 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[0,0].plot(freq[1:]*40/uz_0_20, co_coh_av_0_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,0].plot(freq[1:]*80/uz_0_20, co_coh_av_0_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,0].plot(freq[1:]*40/uz_3_20, co_coh_av_3_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,0].plot(freq[1:]*80/uz_3_20, co_coh_av_3_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,0].plot(freq[1:]*40/uz_0_20, co_coh_av_0_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, co_coh_av_0_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,0].plot(freq[1:]*40/uz_3_20, co_coh_av_3_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,0].plot(freq[1:]*80/uz_3_20, co_coh_av_3_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[0,0].set_xlim(0, 1.0); axs[0,0].set_xticklabels([])
 axs[0,0].set_ylim(-0.2, 1.0)
@@ -710,10 +922,10 @@ axs[0,0].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 uz_1_20 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_20 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[0,1].plot(freq[1:]*40/uz_1_20, co_coh_av_1_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,1].plot(freq[1:]*80/uz_1_20, co_coh_av_1_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,1].plot(freq[1:]*40/uz_4_20, co_coh_av_4_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,1].plot(freq[1:]*80/uz_4_20, co_coh_av_4_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,1].plot(freq[1:]*40/uz_1_20, co_coh_av_1_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, co_coh_av_1_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,1].plot(freq[1:]*40/uz_4_20, co_coh_av_4_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,1].plot(freq[1:]*80/uz_4_20, co_coh_av_4_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[0,1].set_xlim(0, 1.0); axs[0,1].set_xticklabels([])
 axs[0,1].set_ylim(-0.2, 1.0); axs[0,1].set_yticklabels([])
 axs[0,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -722,10 +934,10 @@ axs[0,1].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 uz_2_20 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_20 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[0,2].plot(freq[1:]*40/uz_2_20, co_coh_av_2_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,2].plot(freq[1:]*80/uz_2_20, co_coh_av_2_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,2].plot(freq[1:]*40/uz_5_20, co_coh_av_5_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,2].plot(freq[1:]*80/uz_5_20, co_coh_av_5_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,2].plot(freq[1:]*40/uz_2_20, co_coh_av_2_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, co_coh_av_2_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,2].plot(freq[1:]*40/uz_5_20, co_coh_av_5_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,2].plot(freq[1:]*80/uz_5_20, co_coh_av_5_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[0,2].set_xlim(0, 1.0); axs[0,2].set_xticklabels([])
 axs[0,2].set_ylim(-0.2, 1.0); axs[0,2].set_yticklabels([])
 axs[0,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -735,10 +947,10 @@ axs[0,2].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 uz_0_100 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_100 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[1,0].plot(freq[1:]*40/uz_0_100, co_coh_av_0_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,0].plot(freq[1:]*80/uz_0_100, co_coh_av_0_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,0].plot(freq[1:]*40/uz_3_100, co_coh_av_3_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,0].plot(freq[1:]*80/uz_3_100, co_coh_av_3_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,0].plot(freq[1:]*40/uz_0_100, co_coh_av_0_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, co_coh_av_0_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,0].plot(freq[1:]*40/uz_3_100, co_coh_av_3_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,0].plot(freq[1:]*80/uz_3_100, co_coh_av_3_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[1,0].set_xlim(0, 1.0); axs[1,0].set_xticklabels([])
 axs[1,0].set_ylim(-0.2, 1.0)
 axs[1,0].set_ylabel(r"co-coh", fontsize=12)
@@ -748,10 +960,10 @@ axs[1,0].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 uz_1_100 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_100 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[1,1].plot(freq[1:]*40/uz_1_100, co_coh_av_1_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,1].plot(freq[1:]*80/uz_1_100, co_coh_av_1_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,1].plot(freq[1:]*40/uz_4_100, co_coh_av_4_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,1].plot(freq[1:]*80/uz_4_100, co_coh_av_4_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,1].plot(freq[1:]*40/uz_1_100, co_coh_av_1_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, co_coh_av_1_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,1].plot(freq[1:]*40/uz_4_100, co_coh_av_4_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,1].plot(freq[1:]*80/uz_4_100, co_coh_av_4_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[1,1].set_xlim(0, 1.0); axs[1,1].set_xticklabels([])
 axs[1,1].set_ylim(-0.2, 1.0); axs[1,1].set_yticklabels([])
 axs[1,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -760,10 +972,10 @@ axs[1,1].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 uz_2_100 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_100 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[1,2].plot(freq[1:]*40/uz_2_100, co_coh_av_2_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,2].plot(freq[1:]*80/uz_2_100, co_coh_av_2_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,2].plot(freq[1:]*40/uz_5_100, co_coh_av_5_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,2].plot(freq[1:]*80/uz_5_100, co_coh_av_5_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,2].plot(freq[1:]*40/uz_2_100, co_coh_av_2_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, co_coh_av_2_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,2].plot(freq[1:]*40/uz_5_100, co_coh_av_5_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,2].plot(freq[1:]*80/uz_5_100, co_coh_av_5_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[1,2].set_xlim(0, 1.0); axs[1,2].set_xticklabels([])
 axs[1,2].set_ylim(-0.2, 1.0); axs[1,2].set_yticklabels([])
 axs[1,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -773,10 +985,10 @@ axs[1,2].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 uz_0_180 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_180 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[2,0].plot(freq[1:]*40/uz_0_180, co_coh_av_0_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,0].plot(freq[1:]*80/uz_0_180, co_coh_av_0_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,0].plot(freq[1:]*40/uz_3_180, co_coh_av_3_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,0].plot(freq[1:]*80/uz_3_180, co_coh_av_3_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,0].plot(freq[1:]*40/uz_0_180, co_coh_av_0_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, co_coh_av_0_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,0].plot(freq[1:]*40/uz_3_180, co_coh_av_3_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,0].plot(freq[1:]*80/uz_3_180, co_coh_av_3_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[2,0].set_xlim(0, 1.0)
 axs[2,0].set_ylim(-0.2, 1.0)
 axs[2,0].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
@@ -787,10 +999,10 @@ axs[2,0].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0
 uz_1_180 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_180 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[2,1].plot(freq[1:]*40/uz_1_180, co_coh_av_1_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,1].plot(freq[1:]*80/uz_1_180, co_coh_av_1_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,1].plot(freq[1:]*40/uz_4_180, co_coh_av_4_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,1].plot(freq[1:]*80/uz_4_180, co_coh_av_4_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,1].plot(freq[1:]*40/uz_1_180, co_coh_av_1_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, co_coh_av_1_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,1].plot(freq[1:]*40/uz_4_180, co_coh_av_4_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,1].plot(freq[1:]*80/uz_4_180, co_coh_av_4_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[2,1].set_xlim(0, 1.0)
 axs[2,1].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
 axs[2,1].set_ylim(-0.2, 1.0); axs[2,1].set_yticklabels([])
@@ -800,10 +1012,10 @@ axs[2,1].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0
 uz_2_180 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_180 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[2,2].plot(freq[1:]*40/uz_2_180, co_coh_av_2_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,2].plot(freq[1:]*80/uz_2_180, co_coh_av_2_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,2].plot(freq[1:]*40/uz_5_180, co_coh_av_5_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,2].plot(freq[1:]*80/uz_5_180, co_coh_av_5_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,2].plot(freq[1:]*40/uz_2_180, co_coh_av_2_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, co_coh_av_2_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,2].plot(freq[1:]*40/uz_5_180, co_coh_av_5_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,2].plot(freq[1:]*80/uz_5_180, co_coh_av_5_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[2,2].set_xlim(0, 1.0)
 axs[2,2].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
 axs[2,2].set_ylim(-0.2, 1.0); axs[2,2].set_yticklabels([])
@@ -836,10 +1048,10 @@ axs = fig.subplots(nrows=rNum, ncols=cNum)
 uz_0_20 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_20 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[0,0].plot(freq[1:]*40/uz_0_20, quad_coh_av_0_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,0].plot(freq[1:]*80/uz_0_20, quad_coh_av_0_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,0].plot(freq[1:]*40/uz_3_20, quad_coh_av_3_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,0].plot(freq[1:]*80/uz_3_20, quad_coh_av_3_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,0].plot(freq[1:]*40/uz_0_20, quad_coh_av_0_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, quad_coh_av_0_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,0].plot(freq[1:]*40/uz_3_20, quad_coh_av_3_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,0].plot(freq[1:]*80/uz_3_20, quad_coh_av_3_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[0,0].set_xlim(0, 1.0); axs[0,0].set_xticklabels([])
 axs[0,0].set_ylim(-0.2, 1.0)
@@ -850,10 +1062,10 @@ axs[0,0].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 uz_1_20 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_20 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[0,1].plot(freq[1:]*40/uz_1_20, quad_coh_av_1_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,1].plot(freq[1:]*80/uz_1_20, quad_coh_av_1_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,1].plot(freq[1:]*40/uz_4_20, quad_coh_av_4_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,1].plot(freq[1:]*80/uz_4_20, quad_coh_av_4_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,1].plot(freq[1:]*40/uz_1_20, quad_coh_av_1_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, quad_coh_av_1_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,1].plot(freq[1:]*40/uz_4_20, quad_coh_av_4_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,1].plot(freq[1:]*80/uz_4_20, quad_coh_av_4_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[0,1].set_xlim(0, 1.0); axs[0,1].set_xticklabels([])
 axs[0,1].set_ylim(-0.2, 1.0); axs[0,1].set_yticklabels([])
 axs[0,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -862,10 +1074,10 @@ axs[0,1].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 uz_2_20 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_20 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[0,2].plot(freq[1:]*40/uz_2_20, quad_coh_av_2_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,2].plot(freq[1:]*80/uz_2_20, quad_coh_av_2_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,2].plot(freq[1:]*40/uz_5_20, quad_coh_av_5_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,2].plot(freq[1:]*80/uz_5_20, quad_coh_av_5_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,2].plot(freq[1:]*40/uz_2_20, quad_coh_av_2_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, quad_coh_av_2_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,2].plot(freq[1:]*40/uz_5_20, quad_coh_av_5_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,2].plot(freq[1:]*80/uz_5_20, quad_coh_av_5_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[0,2].set_xlim(0, 1.0); axs[0,2].set_xticklabels([])
 axs[0,2].set_ylim(-0.2, 1.0); axs[0,2].set_yticklabels([])
 axs[0,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -875,10 +1087,10 @@ axs[0,2].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 uz_0_100 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_100 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[1,0].plot(freq[1:]*40/uz_0_100, quad_coh_av_0_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,0].plot(freq[1:]*80/uz_0_100, quad_coh_av_0_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,0].plot(freq[1:]*40/uz_3_100, quad_coh_av_3_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,0].plot(freq[1:]*80/uz_3_100, quad_coh_av_3_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,0].plot(freq[1:]*40/uz_0_100, quad_coh_av_0_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, quad_coh_av_0_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,0].plot(freq[1:]*40/uz_3_100, quad_coh_av_3_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,0].plot(freq[1:]*80/uz_3_100, quad_coh_av_3_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[1,0].set_xlim(0, 1.0); axs[1,0].set_xticklabels([])
 axs[1,0].set_ylim(-0.2, 1.0)
 axs[1,0].set_ylabel(r"quad-coh", fontsize=12)
@@ -888,10 +1100,10 @@ axs[1,0].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 uz_1_100 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_100 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[1,1].plot(freq[1:]*40/uz_1_100, quad_coh_av_1_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,1].plot(freq[1:]*80/uz_1_100, quad_coh_av_1_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,1].plot(freq[1:]*40/uz_4_100, quad_coh_av_4_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,1].plot(freq[1:]*80/uz_4_100, quad_coh_av_4_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,1].plot(freq[1:]*40/uz_1_100, quad_coh_av_1_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, quad_coh_av_1_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,1].plot(freq[1:]*40/uz_4_100, quad_coh_av_4_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,1].plot(freq[1:]*80/uz_4_100, quad_coh_av_4_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[1,1].set_xlim(0, 1.0); axs[1,1].set_xticklabels([])
 axs[1,1].set_ylim(-0.2, 1.0); axs[1,1].set_yticklabels([])
 axs[1,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -900,10 +1112,10 @@ axs[1,1].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 uz_2_100 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_100 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[1,2].plot(freq[1:]*40/uz_2_100, quad_coh_av_2_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,2].plot(freq[1:]*80/uz_2_100, quad_coh_av_2_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,2].plot(freq[1:]*40/uz_5_100, quad_coh_av_5_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,2].plot(freq[1:]*80/uz_5_100, quad_coh_av_5_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,2].plot(freq[1:]*40/uz_2_100, quad_coh_av_2_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, quad_coh_av_2_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,2].plot(freq[1:]*40/uz_5_100, quad_coh_av_5_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,2].plot(freq[1:]*80/uz_5_100, quad_coh_av_5_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[1,2].set_xlim(0, 1.0); axs[1,2].set_xticklabels([])
 axs[1,2].set_ylim(-0.2, 1.0); axs[1,2].set_yticklabels([])
 axs[1,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -913,10 +1125,10 @@ axs[1,2].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 uz_0_180 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_180 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[2,0].plot(freq[1:]*40/uz_0_180, quad_coh_av_0_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,0].plot(freq[1:]*80/uz_0_180, quad_coh_av_0_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,0].plot(freq[1:]*40/uz_3_180, quad_coh_av_3_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,0].plot(freq[1:]*80/uz_3_180, quad_coh_av_3_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,0].plot(freq[1:]*40/uz_0_180, quad_coh_av_0_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, quad_coh_av_0_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,0].plot(freq[1:]*40/uz_3_180, quad_coh_av_3_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,0].plot(freq[1:]*80/uz_3_180, quad_coh_av_3_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[2,0].set_xlim(0, 1.0)
 axs[2,0].set_ylim(-0.2, 1.0)
 axs[2,0].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
@@ -927,10 +1139,10 @@ axs[2,0].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0
 uz_1_180 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_180 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[2,1].plot(freq[1:]*40/uz_1_180, quad_coh_av_1_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,1].plot(freq[1:]*80/uz_1_180, quad_coh_av_1_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,1].plot(freq[1:]*40/uz_4_180, quad_coh_av_4_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,1].plot(freq[1:]*80/uz_4_180, quad_coh_av_4_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,1].plot(freq[1:]*40/uz_1_180, quad_coh_av_1_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, quad_coh_av_1_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,1].plot(freq[1:]*40/uz_4_180, quad_coh_av_4_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,1].plot(freq[1:]*80/uz_4_180, quad_coh_av_4_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[2,1].set_xlim(0, 1.0)
 axs[2,1].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
 axs[2,1].set_ylim(-0.2, 1.0); axs[2,1].set_yticklabels([])
@@ -940,10 +1152,10 @@ axs[2,1].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0
 uz_2_180 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_180 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[2,2].plot(freq[1:]*40/uz_2_180, quad_coh_av_2_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,2].plot(freq[1:]*80/uz_2_180, quad_coh_av_2_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,2].plot(freq[1:]*40/uz_5_180, quad_coh_av_5_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,2].plot(freq[1:]*80/uz_5_180, quad_coh_av_5_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,2].plot(freq[1:]*40/uz_2_180, quad_coh_av_2_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, quad_coh_av_2_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,2].plot(freq[1:]*40/uz_5_180, quad_coh_av_5_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,2].plot(freq[1:]*80/uz_5_180, quad_coh_av_5_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 axs[2,2].set_xlim(0, 1.0)
 axs[2,2].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
 axs[2,2].set_ylim(-0.2, 1.0); axs[2,2].set_yticklabels([])
@@ -966,6 +1178,10 @@ plt.show()
 
 
 """ 3*3 plots of coh_av """
+# fitting
+def fitting_func(f_, a):
+    return np.exp(-a*f_)
+
 fig = plt.figure()
 fig.set_figwidth(10)
 fig.set_figheight(8)
@@ -976,15 +1192,15 @@ axs = fig.subplots(nrows=rNum, ncols=cNum)
 uz_0_20 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_20 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[0,0].plot(freq[1:]*40/uz_0_20, coh_av_0_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,0].plot(freq[1:]*80/uz_0_20, coh_av_0_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,0].plot(freq[1:]*40/uz_3_20, coh_av_3_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,0].plot(freq[1:]*80/uz_3_20, coh_av_3_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[0,0].plot(freq[1:]*40/uz_0_20, coh_kaimal(freq[1:], 40, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[0,0].plot(freq[1:]*80/uz_0_20, coh_kaimal(freq[1:], 80, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[0,0].plot(freq[1:]*40/uz_0_20, coh_av_0_d40h20[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, coh_av_0_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,0].plot(freq[1:]*40/uz_3_20, coh_av_3_d40h20[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,0].plot(freq[1:]*80/uz_3_20, coh_av_3_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,0].plot(freq[1:]*40/uz_0_20, coh_IEC(freq[1:], 40, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, coh_IEC(freq[1:], 80, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[0,0].set_xlim(0, 1.0); axs[0,0].set_xticklabels([])
-axs[0,0].set_ylim(-0.2, 1.0)
+axs[0,0].set_ylim(0.0, 1.0)
 axs[0,0].set_ylabel(r"coh", fontsize=12)
 axs[0,0].text(0.5, 0.8, r"$\mathrm{z_0 = 0.0001m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[0,0].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0].transAxes
@@ -992,30 +1208,30 @@ axs[0,0].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 uz_1_20 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_20 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[0,1].plot(freq[1:]*40/uz_1_20, coh_av_1_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,1].plot(freq[1:]*80/uz_1_20, coh_av_1_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,1].plot(freq[1:]*40/uz_4_20, coh_av_4_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,1].plot(freq[1:]*80/uz_4_20, coh_av_4_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[0,1].plot(freq[1:]*40/uz_1_20, coh_kaimal(freq[1:], 40, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[0,1].plot(freq[1:]*80/uz_1_20, coh_kaimal(freq[1:], 80, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[0,1].plot(freq[1:]*40/uz_1_20, coh_av_1_d40h20[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, coh_av_1_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,1].plot(freq[1:]*40/uz_4_20, coh_av_4_d40h20[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,1].plot(freq[1:]*80/uz_4_20, coh_av_4_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,1].plot(freq[1:]*40/uz_1_20, coh_IEC(freq[1:], 40, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, coh_IEC(freq[1:], 80, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[0,1].set_xlim(0, 1.0); axs[0,1].set_xticklabels([])
-axs[0,1].set_ylim(-0.2, 1.0); axs[0,1].set_yticklabels([])
+axs[0,1].set_ylim(0.0, 1.0); axs[0,1].set_yticklabels([])
 axs[0,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[0,1].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0].transAxes
 
 uz_2_20 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_20 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[0,2].plot(freq[1:]*40/uz_2_20, coh_av_2_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,2].plot(freq[1:]*80/uz_2_20, coh_av_2_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,2].plot(freq[1:]*40/uz_5_20, coh_av_5_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,2].plot(freq[1:]*80/uz_5_20, coh_av_5_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[0,2].plot(freq[1:]*40/uz_2_20, coh_kaimal(freq[1:], 40, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[0,2].plot(freq[1:]*80/uz_2_20, coh_kaimal(freq[1:], 80, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[0,2].plot(freq[1:]*40/uz_2_20, coh_av_2_d40h20[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, coh_av_2_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,2].plot(freq[1:]*40/uz_5_20, coh_av_5_d40h20[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,2].plot(freq[1:]*80/uz_5_20, coh_av_5_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,2].plot(freq[1:]*40/uz_2_20, coh_IEC(freq[1:], 40, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, coh_IEC(freq[1:], 80, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[0,2].set_xlim(0, 1.0); axs[0,2].set_xticklabels([])
-axs[0,2].set_ylim(-0.2, 1.0); axs[0,2].set_yticklabels([])
+axs[0,2].set_ylim(0.0, 1.0); axs[0,2].set_yticklabels([])
 axs[0,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[0,2].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0].transAxes
 
@@ -1023,109 +1239,151 @@ axs[0,2].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 uz_0_100 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_100 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[1,0].plot(freq[1:]*40/uz_0_100, coh_av_0_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,0].plot(freq[1:]*80/uz_0_100, coh_av_0_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,0].plot(freq[1:]*40/uz_3_100, coh_av_3_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,0].plot(freq[1:]*80/uz_3_100, coh_av_3_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[1,0].plot(freq[1:]*40/uz_0_100, coh_kaimal(freq[1:], 40, uz_0_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[1,0].plot(freq[1:]*80/uz_0_100, coh_kaimal(freq[1:], 80, uz_0_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[1,0].plot(freq[1:]*40/uz_0_100, coh_av_0_d40h100[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, coh_av_0_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,0].plot(freq[1:]*40/uz_3_100, coh_av_3_d40h100[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,0].plot(freq[1:]*80/uz_3_100, coh_av_3_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,0].plot(freq[1:]*40/uz_0_100, coh_IEC(freq[1:], 40, uz_0_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, coh_IEC(freq[1:], 80, uz_0_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_0_100, coh_av_0_d40h100[1:25], bounds=(0, [100]))
+axs[1,0].plot(freq*40/uz_0_100, fitting_func(freq*40/uz_0_100, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_0_100, coh_av_0_d80h100[1:25], bounds=(0, [100]))
+axs[1,0].plot(freq*80/uz_0_100, fitting_func(freq*80/uz_0_100, *popt_1), linestyle=':', color='k', label='Davenport-80m')
 
 axs[1,0].set_xlim(0, 1.0); axs[1,0].set_xticklabels([])
-axs[1,0].set_ylim(-0.2, 1.0)
+axs[1,0].set_ylim(0.0, 1.0)
 axs[1,0].set_ylabel(r"coh", fontsize=12)
 axs[1,0].text(0.5, 0.8, r"$\mathrm{z_0 = 0.0001m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[1,0].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,0].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[1,0].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
 
 uz_1_100 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_100 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[1,1].plot(freq[1:]*40/uz_1_100, coh_av_1_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,1].plot(freq[1:]*80/uz_1_100, coh_av_1_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,1].plot(freq[1:]*40/uz_4_100, coh_av_4_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,1].plot(freq[1:]*80/uz_4_100, coh_av_4_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[1,1].plot(freq[1:]*40/uz_1_100, coh_kaimal(freq[1:], 40, uz_1_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[1,1].plot(freq[1:]*80/uz_1_100, coh_kaimal(freq[1:], 80, uz_1_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[1,1].plot(freq[1:]*40/uz_1_100, coh_av_1_d40h100[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, coh_av_1_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,1].plot(freq[1:]*40/uz_4_100, coh_av_4_d40h100[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,1].plot(freq[1:]*80/uz_4_100, coh_av_4_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,1].plot(freq[1:]*40/uz_1_100, coh_IEC(freq[1:], 40, uz_1_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, coh_IEC(freq[1:], 80, uz_1_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_1_100, coh_av_1_d40h100[1:25], bounds=(0, [100]))
+axs[1,1].plot(freq*40/uz_1_100, fitting_func(freq*40/uz_1_100, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_1_100, coh_av_1_d80h100[1:25], bounds=(0, [100]))
+axs[1,1].plot(freq*80/uz_1_100, fitting_func(freq*80/uz_1_100, *popt_1), linestyle=':', color='k', label='Davenport-80m')
 
 axs[1,1].set_xlim(0, 1.0); axs[1,1].set_xticklabels([])
-axs[1,1].set_ylim(-0.2, 1.0); axs[1,1].set_yticklabels([])
+axs[1,1].set_ylim(0.0, 1.0); axs[1,1].set_yticklabels([])
 axs[1,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[1,1].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,1].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[1,1].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
 
 uz_2_100 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_100 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[1,2].plot(freq[1:]*40/uz_2_100, coh_av_2_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,2].plot(freq[1:]*80/uz_2_100, coh_av_2_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,2].plot(freq[1:]*40/uz_5_100, coh_av_5_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,2].plot(freq[1:]*80/uz_5_100, coh_av_5_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[1,2].plot(freq[1:]*40/uz_2_100, coh_kaimal(freq[1:], 40, uz_2_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[1,2].plot(freq[1:]*80/uz_2_100, coh_kaimal(freq[1:], 80, uz_2_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[1,2].plot(freq[1:]*40/uz_2_100, coh_av_2_d40h100[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, coh_av_2_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,2].plot(freq[1:]*40/uz_5_100, coh_av_5_d40h100[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,2].plot(freq[1:]*80/uz_5_100, coh_av_5_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,2].plot(freq[1:]*40/uz_2_100, coh_IEC(freq[1:], 40, uz_2_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, coh_IEC(freq[1:], 80, uz_2_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_2_100, coh_av_2_d40h100[1:25], bounds=(0, [100]))
+axs[1,2].plot(freq*40/uz_2_100, fitting_func(freq*40/uz_2_100, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_2_100, coh_av_2_d80h100[1:25], bounds=(0, [100]))
+axs[1,2].plot(freq*80/uz_2_100, fitting_func(freq*80/uz_2_100, *popt_1), linestyle=':', color='k', label='Davenport-80m')
 
 axs[1,2].set_xlim(0, 1.0); axs[1,2].set_xticklabels([])
-axs[1,2].set_ylim(-0.2, 1.0); axs[1,2].set_yticklabels([])
+axs[1,2].set_ylim(0.0, 1.0); axs[1,2].set_yticklabels([])
 axs[1,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[1,2].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[1,2].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[1,2].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
 
 ## height = 180m
 uz_0_180 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_180 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[2,0].plot(freq[1:]*40/uz_0_180, coh_av_0_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,0].plot(freq[1:]*80/uz_0_180, coh_av_0_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,0].plot(freq[1:]*40/uz_3_180, coh_av_3_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,0].plot(freq[1:]*80/uz_3_180, coh_av_3_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[2,0].plot(freq[1:]*40/uz_0_180, coh_kaimal(freq[1:], 40, uz_0_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[2,0].plot(freq[1:]*80/uz_0_180, coh_kaimal(freq[1:], 80, uz_0_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[2,0].plot(freq[1:]*40/uz_0_180, coh_av_0_d40h180[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, coh_av_0_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,0].plot(freq[1:]*40/uz_3_180, coh_av_3_d40h180[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,0].plot(freq[1:]*80/uz_3_180, coh_av_3_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,0].plot(freq[1:]*40/uz_0_180, coh_IEC(freq[1:], 40, uz_0_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, coh_IEC(freq[1:], 80, uz_0_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_0_180, coh_av_0_d40h180[1:25], bounds=(0, [100]))
+axs[2,0].plot(freq*40/uz_0_180, fitting_func(freq*40/uz_0_180, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_0_180, coh_av_0_d80h180[1:25], bounds=(0, [100]))
+axs[2,0].plot(freq*80/uz_0_180, fitting_func(freq*80/uz_0_180, *popt_1), linestyle=':', color='k', label='Davenport-80m')
 
 axs[2,0].set_xlim(0, 1.0)
-axs[2,0].set_ylim(-0.2, 1.0)
+axs[2,0].set_ylim(0.0, 1.0)
 axs[2,0].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
 axs[2,0].set_ylabel(r"coh", fontsize=12)
 axs[2,0].text(0.5, 0.8, r"$\mathrm{z_0 = 0.0001m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[2,0].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,0].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[2,0].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
 
 uz_1_180 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_180 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[2,1].plot(freq[1:]*40/uz_1_180, coh_av_1_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,1].plot(freq[1:]*80/uz_1_180, coh_av_1_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,1].plot(freq[1:]*40/uz_4_180, coh_av_4_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,1].plot(freq[1:]*80/uz_4_180, coh_av_4_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[2,1].plot(freq[1:]*40/uz_1_180, coh_kaimal(freq[1:], 40, uz_1_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[2,1].plot(freq[1:]*80/uz_1_180, coh_kaimal(freq[1:], 80, uz_1_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[2,1].plot(freq[1:]*40/uz_1_180, coh_av_1_d40h180[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, coh_av_1_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,1].plot(freq[1:]*40/uz_4_180, coh_av_4_d40h180[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,1].plot(freq[1:]*80/uz_4_180, coh_av_4_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,1].plot(freq[1:]*40/uz_1_180, coh_IEC(freq[1:], 40, uz_1_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, coh_IEC(freq[1:], 80, uz_1_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_1_180, coh_av_1_d40h180[1:25], bounds=(0, [100]))
+axs[2,1].plot(freq*40/uz_1_180, fitting_func(freq*40/uz_1_180, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_1_180, coh_av_1_d80h180[1:25], bounds=(0, [100]))
+axs[2,1].plot(freq*80/uz_1_180, fitting_func(freq*80/uz_1_180, *popt_1), linestyle=':', color='k', label='Davenport-80m')
 
 axs[2,1].set_xlim(0, 1.0)
 axs[2,1].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
-axs[2,1].set_ylim(-0.2, 1.0); axs[2,1].set_yticklabels([])
+axs[2,1].set_ylim(0.0, 1.0); axs[2,1].set_yticklabels([])
 axs[2,1].text(0.5, 0.8, r"$\mathrm{z_0 = 0.001m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[2,1].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,1].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[2,1].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
 
 uz_2_180 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_180 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[2,2].plot(freq[1:]*40/uz_2_180, coh_av_2_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,2].plot(freq[1:]*80/uz_2_180, coh_av_2_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,2].plot(freq[1:]*40/uz_5_180, coh_av_5_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,2].plot(freq[1:]*80/uz_5_180, coh_av_5_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[2,2].plot(freq[1:]*40/uz_2_180, coh_kaimal(freq[1:], 40, uz_2_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[2,2].plot(freq[1:]*80/uz_2_180, coh_kaimal(freq[1:], 80, uz_2_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[2,2].plot(freq[1:]*40/uz_2_180, coh_av_2_d40h180[1:], linestyle='', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, coh_av_2_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,2].plot(freq[1:]*40/uz_5_180, coh_av_5_d40h180[1:], linestyle='', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,2].plot(freq[1:]*80/uz_5_180, coh_av_5_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,2].plot(freq[1:]*40/uz_2_180, coh_IEC(freq[1:], 40, uz_2_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=3, color='k', label='IEC-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, coh_IEC(freq[1:], 80, uz_2_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
+
+popt_0, pcov = curve_fit(fitting_func, freq[1:25]*40/uz_2_180, coh_av_2_d40h180[1:25], bounds=(0, [100]))
+axs[2,2].plot(freq*40/uz_2_180, fitting_func(freq*40/uz_2_180, *popt_0), linestyle='-.', color='k', label='Davenport-40m')
+popt_1, pcov = curve_fit(fitting_func, freq[1:25]*80/uz_2_180, coh_av_2_d80h180[1:25], bounds=(0, [100]))
+axs[2,2].plot(freq*80/uz_2_180, fitting_func(freq*80/uz_2_180, *popt_1), linestyle=':', color='k', label='Davenport-80m')
 
 axs[2,2].set_xlim(0, 1.0)
 axs[2,2].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
-axs[2,2].set_ylim(-0.2, 1.0); axs[2,2].set_yticklabels([])
+axs[2,2].set_ylim(0.0, 1.0); axs[2,2].set_yticklabels([])
 axs[2,2].text(0.5, 0.8, r"$\mathrm{z_0 = 0.01m}$", fontsize=12) # transform=axs[0,0].transAxes
 axs[2,2].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0].transAxes
+axs[2,2].text(0.5, 0.4, r'$\mathrm{a_{40m}=%5.2f}$' % tuple(popt_0), fontsize=12)
+axs[2,2].text(0.5, 0.2, r'$\mathrm{a_{80m}=%5.2f}$' % tuple(popt_1), fontsize=12)
 
 for i in range(3):
     for j in range(3):
         axs[i,j].grid(True)
 
 # plt.legend(bbox_to_anchor=(0.0,1.06,1.,.12), loc=9, ncol=2, mode='expand', borderaxespad=0, fontsize=12)
-handles, labels = axs[0,0].get_legend_handles_labels()
-lgdord = [0,1,2,3,4,5]
-fig.legend([handles[i] for i in lgdord], [labels[i] for i in lgdord], loc='upper center', bbox_to_anchor=(0.5,0.98), ncol=3, mode='None', borderaxespad=0, fontsize=12)
+handles, labels = axs[1,0].get_legend_handles_labels()
+lgdord = [0,1,2,3,4,5,6,7]
+fig.legend([handles[i] for i in lgdord], [labels[i] for i in lgdord], loc='upper center', bbox_to_anchor=(0.5,0.98), ncol=4, mode='None', borderaxespad=0, fontsize=12)
 saveDir = '/scratch/projects/deepwind/photo/coherence'
-saveName = 'coh_av_lat_gp.png'
+saveName = 'coh_av_lat_gp_fit.png'
 plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
 plt.show()
 
@@ -1147,10 +1405,10 @@ ylabels = ['$-\pi$', r'$-3\pi/4$', r'$-\pi/2$', r'$-\pi/4$', r'$0$',
 uz_0_20 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_20 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[0,0].plot(freq[1:]*40/uz_0_20, phase_av_0_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,0].plot(freq[1:]*80/uz_0_20, phase_av_0_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,0].plot(freq[1:]*40/uz_3_20, phase_av_3_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,0].plot(freq[1:]*80/uz_3_20, phase_av_3_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,0].plot(freq[1:]*40/uz_0_20, phase_av_0_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, phase_av_0_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,0].plot(freq[1:]*40/uz_3_20, phase_av_3_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,0].plot(freq[1:]*80/uz_3_20, phase_av_3_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[0,0].set_xlim(0, 1.0); axs[0,0].set_xticklabels([])
 axs[0,0].set_ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
@@ -1163,10 +1421,10 @@ axs[0,0].text(0.5, 0.5*np.pi, r"$\mathrm{h = 20m}$", fontsize=12) # transform=ax
 uz_1_20 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_20 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[0,1].plot(freq[1:]*40/uz_1_20, phase_av_1_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,1].plot(freq[1:]*80/uz_1_20, phase_av_1_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,1].plot(freq[1:]*40/uz_4_20, phase_av_4_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,1].plot(freq[1:]*80/uz_4_20, phase_av_4_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,1].plot(freq[1:]*40/uz_1_20, phase_av_1_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, phase_av_1_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,1].plot(freq[1:]*40/uz_4_20, phase_av_4_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,1].plot(freq[1:]*80/uz_4_20, phase_av_4_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[0,1].set_xlim(0, 1.0); axs[0,1].set_xticklabels([])
 axs[0,1].set_ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
@@ -1178,10 +1436,10 @@ axs[0,1].text(0.5, 0.5*np.pi, r"$\mathrm{h = 20m}$", fontsize=12) # transform=ax
 uz_2_20 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_20 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[0,2].plot(freq[1:]*40/uz_2_20, phase_av_2_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,2].plot(freq[1:]*80/uz_2_20, phase_av_2_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,2].plot(freq[1:]*40/uz_5_20, phase_av_5_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,2].plot(freq[1:]*80/uz_5_20, phase_av_5_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[0,2].plot(freq[1:]*40/uz_2_20, phase_av_2_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, phase_av_2_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,2].plot(freq[1:]*40/uz_5_20, phase_av_5_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,2].plot(freq[1:]*80/uz_5_20, phase_av_5_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[0,2].set_xlim(0, 1.0); axs[0,2].set_xticklabels([])
 axs[0,2].set_ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
@@ -1194,10 +1452,10 @@ axs[0,2].text(0.5, 0.5*np.pi, r"$\mathrm{h = 20m}$", fontsize=12) # transform=ax
 uz_0_100 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_100 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[1,0].plot(freq[1:]*40/uz_0_100, phase_av_0_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,0].plot(freq[1:]*80/uz_0_100, phase_av_0_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,0].plot(freq[1:]*40/uz_3_100, phase_av_3_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,0].plot(freq[1:]*80/uz_3_100, phase_av_3_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,0].plot(freq[1:]*40/uz_0_100, phase_av_0_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, phase_av_0_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,0].plot(freq[1:]*40/uz_3_100, phase_av_3_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,0].plot(freq[1:]*80/uz_3_100, phase_av_3_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[1,0].set_xlim(0, 1.0); axs[1,0].set_xticklabels([])
 axs[1,0].set_ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
@@ -1210,10 +1468,10 @@ axs[1,0].text(0.5, 0.5*np.pi, r"$\mathrm{h = 100m}$", fontsize=12) # transform=a
 uz_1_100 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_100 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[1,1].plot(freq[1:]*40/uz_1_100, phase_av_1_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,1].plot(freq[1:]*80/uz_1_100, phase_av_1_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,1].plot(freq[1:]*40/uz_4_100, phase_av_4_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,1].plot(freq[1:]*80/uz_4_100, phase_av_4_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,1].plot(freq[1:]*40/uz_1_100, phase_av_1_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, phase_av_1_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,1].plot(freq[1:]*40/uz_4_100, phase_av_4_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,1].plot(freq[1:]*80/uz_4_100, phase_av_4_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[1,1].set_xlim(0, 1.0); axs[1,1].set_xticklabels([])
 axs[1,1].set_ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
@@ -1225,10 +1483,10 @@ axs[1,1].text(0.5, 0.5*np.pi, r"$\mathrm{h = 100m}$", fontsize=12) # transform=a
 uz_2_100 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_100 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[1,2].plot(freq[1:]*40/uz_2_100, phase_av_2_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,2].plot(freq[1:]*80/uz_2_100, phase_av_2_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,2].plot(freq[1:]*40/uz_5_100, phase_av_5_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,2].plot(freq[1:]*80/uz_5_100, phase_av_5_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[1,2].plot(freq[1:]*40/uz_2_100, phase_av_2_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, phase_av_2_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,2].plot(freq[1:]*40/uz_5_100, phase_av_5_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,2].plot(freq[1:]*80/uz_5_100, phase_av_5_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[1,2].set_xlim(0, 1.0); axs[1,2].set_xticklabels([])
 axs[1,2].set_ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
@@ -1241,10 +1499,10 @@ axs[1,2].text(0.5, 0.5*np.pi, r"$\mathrm{h = 100m}$", fontsize=12) # transform=a
 uz_0_180 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_180 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[2,0].plot(freq[1:]*40/uz_0_180, phase_av_0_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,0].plot(freq[1:]*80/uz_0_180, phase_av_0_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,0].plot(freq[1:]*40/uz_3_180, phase_av_3_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,0].plot(freq[1:]*80/uz_3_180, phase_av_3_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,0].plot(freq[1:]*40/uz_0_180, phase_av_0_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, phase_av_0_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,0].plot(freq[1:]*40/uz_3_180, phase_av_3_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,0].plot(freq[1:]*80/uz_3_180, phase_av_3_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[2,0].set_xlim(0, 1.0)
 axs[2,0].set_ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
@@ -1258,10 +1516,10 @@ axs[2,0].text(0.5, 0.5*np.pi, r"$\mathrm{h = 180m}$", fontsize=12) # transform=a
 uz_1_180 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_180 = calc_uz_palm(4,varSeq_4) # palm
 
-axs[2,1].plot(freq[1:]*40/uz_1_180, phase_av_1_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,1].plot(freq[1:]*80/uz_1_180, phase_av_1_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,1].plot(freq[1:]*40/uz_4_180, phase_av_4_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,1].plot(freq[1:]*80/uz_4_180, phase_av_4_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,1].plot(freq[1:]*40/uz_1_180, phase_av_1_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, phase_av_1_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,1].plot(freq[1:]*40/uz_4_180, phase_av_4_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,1].plot(freq[1:]*80/uz_4_180, phase_av_4_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[2,1].set_xlim(0, 1.0)
 axs[2,1].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
@@ -1274,10 +1532,10 @@ axs[2,1].text(0.5, 0.5*np.pi, r"$\mathrm{h = 180m}$", fontsize=12) # transform=a
 uz_2_180 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_180 = calc_uz_palm(4,varSeq_5) # palm
 
-axs[2,2].plot(freq[1:]*40/uz_2_180, phase_av_2_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,2].plot(freq[1:]*80/uz_2_180, phase_av_2_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,2].plot(freq[1:]*40/uz_5_180, phase_av_5_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,2].plot(freq[1:]*80/uz_5_180, phase_av_5_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
+axs[2,2].plot(freq[1:]*40/uz_2_180, phase_av_2_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, phase_av_2_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,2].plot(freq[1:]*40/uz_5_180, phase_av_5_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,2].plot(freq[1:]*80/uz_5_180, phase_av_5_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
 
 axs[2,2].set_xlim(0, 1.0)
 axs[2,2].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
@@ -1314,12 +1572,12 @@ axs = fig.subplots(nrows=rNum, ncols=cNum)
 uz_0_20 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_20 = calc_uz_palm(4,varSeq_3) # palm
 
-axs[0,0].plot(freq[1:]*40/uz_0_20, coh_0_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,0].plot(freq[1:]*80/uz_0_20, coh_0_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,0].plot(freq[1:]*40/uz_3_20, coh_3_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,0].plot(freq[1:]*80/uz_3_20, coh_3_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[0,0].plot(freq[1:]*40/uz_0_20, coh_kaimal(freq[1:], 40, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[0,0].plot(freq[1:]*80/uz_0_20, coh_kaimal(freq[1:], 80, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[0,0].plot(freq[1:]*40/uz_0_20, coh_0_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, coh_0_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,0].plot(freq[1:]*40/uz_3_20, coh_3_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,0].plot(freq[1:]*80/uz_3_20, coh_3_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,0].plot(freq[1:]*40/uz_0_20, coh_IEC(freq[1:], 40, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[0,0].plot(freq[1:]*80/uz_0_20, coh_IEC(freq[1:], 80, uz_0_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[0,0].set_xlim(0, 1.0); axs[0,0].set_xticklabels([])
 axs[0,0].set_ylim(-0.2, 1.0)
@@ -1329,12 +1587,12 @@ axs[0,0].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 
 uz_1_20 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_20 = calc_uz_palm(4,varSeq_4) # palm
-axs[0,1].plot(freq[1:]*40/uz_1_20, coh_1_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,1].plot(freq[1:]*80/uz_1_20, coh_1_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,1].plot(freq[1:]*40/uz_4_20, coh_4_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,1].plot(freq[1:]*80/uz_4_20, coh_4_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[0,1].plot(freq[1:]*40/uz_1_20, coh_kaimal(freq[1:], 40, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[0,1].plot(freq[1:]*80/uz_1_20, coh_kaimal(freq[1:], 80, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[0,1].plot(freq[1:]*40/uz_1_20, coh_1_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, coh_1_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,1].plot(freq[1:]*40/uz_4_20, coh_4_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,1].plot(freq[1:]*80/uz_4_20, coh_4_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,1].plot(freq[1:]*40/uz_1_20, coh_IEC(freq[1:], 40, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[0,1].plot(freq[1:]*80/uz_1_20, coh_IEC(freq[1:], 80, uz_1_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[0,1].set_xlim(0, 1.0); axs[0,1].set_xticklabels([])
 axs[0,1].set_ylim(-0.2, 1.0); axs[0,1].set_yticklabels([])
@@ -1343,12 +1601,12 @@ axs[0,1].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 
 uz_2_20 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_20 = calc_uz_palm(4,varSeq_5) # palm
-axs[0,2].plot(freq[1:]*40/uz_2_20, coh_2_d40h20[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[0,2].plot(freq[1:]*80/uz_2_20, coh_2_d80h20[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[0,2].plot(freq[1:]*40/uz_5_20, coh_5_d40h20[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[0,2].plot(freq[1:]*80/uz_5_20, coh_5_d80h20[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[0,2].plot(freq[1:]*40/uz_2_20, coh_kaimal(freq[1:], 40, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[0,2].plot(freq[1:]*80/uz_2_20, coh_kaimal(freq[1:], 80, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[0,2].plot(freq[1:]*40/uz_2_20, coh_2_d40h20[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, coh_2_d80h20[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[0,2].plot(freq[1:]*40/uz_5_20, coh_5_d40h20[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[0,2].plot(freq[1:]*80/uz_5_20, coh_5_d80h20[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[0,2].plot(freq[1:]*40/uz_2_20, coh_IEC(freq[1:], 40, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[0,2].plot(freq[1:]*80/uz_2_20, coh_IEC(freq[1:], 80, uz_2_20, 8.1*0.7*20, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[0,2].set_xlim(0, 1.0); axs[0,2].set_xticklabels([])
 axs[0,2].set_ylim(-0.2, 1.0); axs[0,2].set_yticklabels([])
@@ -1358,12 +1616,12 @@ axs[0,2].text(0.5, 0.6, r"$\mathrm{h = 20m}$", fontsize=12) # transform=axs[0,0]
 ## height = 100m
 uz_0_100 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_100 = calc_uz_palm(4,varSeq_3) # palm
-axs[1,0].plot(freq[1:]*40/uz_0_100, coh_0_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,0].plot(freq[1:]*80/uz_0_100, coh_0_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,0].plot(freq[1:]*40/uz_3_100, coh_3_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,0].plot(freq[1:]*80/uz_3_100, coh_3_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[1,0].plot(freq[1:]*40/uz_0_100, coh_kaimal(freq[1:], 40, uz_0_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[1,0].plot(freq[1:]*80/uz_0_100, coh_kaimal(freq[1:], 80, uz_0_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[1,0].plot(freq[1:]*40/uz_0_100, coh_0_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, coh_0_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,0].plot(freq[1:]*40/uz_3_100, coh_3_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,0].plot(freq[1:]*80/uz_3_100, coh_3_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,0].plot(freq[1:]*40/uz_0_100, coh_IEC(freq[1:], 40, uz_0_100, 8.1*42, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[1,0].plot(freq[1:]*80/uz_0_100, coh_IEC(freq[1:], 80, uz_0_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[1,0].set_xlim(0, 1.0); axs[1,0].set_xticklabels([])
 axs[1,0].set_ylim(-0.2, 1.0)
@@ -1373,12 +1631,12 @@ axs[1,0].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 
 uz_1_100 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_100 = calc_uz_palm(4,varSeq_4) # palm
-axs[1,1].plot(freq[1:]*40/uz_1_100, coh_1_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,1].plot(freq[1:]*80/uz_1_100, coh_1_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,1].plot(freq[1:]*40/uz_4_100, coh_4_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,1].plot(freq[1:]*80/uz_4_100, coh_4_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[1,1].plot(freq[1:]*40/uz_1_100, coh_kaimal(freq[1:], 40, uz_1_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[1,1].plot(freq[1:]*80/uz_1_100, coh_kaimal(freq[1:], 80, uz_1_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[1,1].plot(freq[1:]*40/uz_1_100, coh_1_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, coh_1_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,1].plot(freq[1:]*40/uz_4_100, coh_4_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,1].plot(freq[1:]*80/uz_4_100, coh_4_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,1].plot(freq[1:]*40/uz_1_100, coh_IEC(freq[1:], 40, uz_1_100, 8.1*42, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[1,1].plot(freq[1:]*80/uz_1_100, coh_IEC(freq[1:], 80, uz_1_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[1,1].set_xlim(0, 1.0); axs[1,1].set_xticklabels([])
 axs[1,1].set_ylim(-0.2, 1.0); axs[1,1].set_yticklabels([])
@@ -1387,12 +1645,12 @@ axs[1,1].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 
 uz_2_100 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_100 = calc_uz_palm(4,varSeq_5) # palm
-axs[1,2].plot(freq[1:]*40/uz_2_100, coh_2_d40h100[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[1,2].plot(freq[1:]*80/uz_2_100, coh_2_d80h100[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[1,2].plot(freq[1:]*40/uz_5_100, coh_5_d40h100[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[1,2].plot(freq[1:]*80/uz_5_100, coh_5_d80h100[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[1,2].plot(freq[1:]*40/uz_2_100, coh_kaimal(freq[1:], 40, uz_2_100, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[1,2].plot(freq[1:]*80/uz_2_100, coh_kaimal(freq[1:], 80, uz_2_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[1,2].plot(freq[1:]*40/uz_2_100, coh_2_d40h100[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, coh_2_d80h100[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[1,2].plot(freq[1:]*40/uz_5_100, coh_5_d40h100[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[1,2].plot(freq[1:]*80/uz_5_100, coh_5_d80h100[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[1,2].plot(freq[1:]*40/uz_2_100, coh_IEC(freq[1:], 40, uz_2_100, 8.1*42, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[1,2].plot(freq[1:]*80/uz_2_100, coh_IEC(freq[1:], 80, uz_2_100, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[1,2].set_xlim(0, 1.0); axs[1,2].set_xticklabels([])
 axs[1,2].set_ylim(-0.2, 1.0); axs[1,2].set_yticklabels([])
@@ -1402,12 +1660,12 @@ axs[1,2].text(0.5, 0.6, r"$\mathrm{h = 100m}$", fontsize=12) # transform=axs[0,0
 ## height = 180m
 uz_0_180 = calc_uz_sowfa(xSeq_0.size,ySeq_0.size,4,varSeq_0) # sowfa
 uz_3_180 = calc_uz_palm(4,varSeq_3) # palm
-axs[2,0].plot(freq[1:]*40/uz_0_180, coh_0_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,0].plot(freq[1:]*80/uz_0_180, coh_0_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,0].plot(freq[1:]*40/uz_3_180, coh_3_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,0].plot(freq[1:]*80/uz_3_180, coh_3_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[2,0].plot(freq[1:]*40/uz_0_180, coh_kaimal(freq[1:], 40, uz_0_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[2,0].plot(freq[1:]*80/uz_0_180, coh_kaimal(freq[1:], 80, uz_0_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[2,0].plot(freq[1:]*40/uz_0_180, coh_0_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, coh_0_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,0].plot(freq[1:]*40/uz_3_180, coh_3_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,0].plot(freq[1:]*80/uz_3_180, coh_3_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,0].plot(freq[1:]*40/uz_0_180, coh_IEC(freq[1:], 40, uz_0_180, 8.1*42, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[2,0].plot(freq[1:]*80/uz_0_180, coh_IEC(freq[1:], 80, uz_0_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[2,0].set_xlim(0, 1.0)
 axs[2,0].set_ylim(-0.2, 1.0)
@@ -1418,12 +1676,12 @@ axs[2,0].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0
 
 uz_1_180 = calc_uz_sowfa(xSeq_1.size,ySeq_1.size,4,varSeq_1) # sowfa
 uz_4_180 = calc_uz_palm(4,varSeq_4) # palm
-axs[2,1].plot(freq[1:]*40/uz_1_180, coh_1_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,1].plot(freq[1:]*80/uz_1_180, coh_1_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,1].plot(freq[1:]*40/uz_4_180, coh_4_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,1].plot(freq[1:]*80/uz_4_180, coh_4_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[2,1].plot(freq[1:]*40/uz_1_180, coh_kaimal(freq[1:], 40, uz_1_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[2,1].plot(freq[1:]*80/uz_1_180, coh_kaimal(freq[1:], 80, uz_1_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[2,1].plot(freq[1:]*40/uz_1_180, coh_1_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, coh_1_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,1].plot(freq[1:]*40/uz_4_180, coh_4_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,1].plot(freq[1:]*80/uz_4_180, coh_4_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,1].plot(freq[1:]*40/uz_1_180, coh_IEC(freq[1:], 40, uz_1_180, 8.1*42, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[2,1].plot(freq[1:]*80/uz_1_180, coh_IEC(freq[1:], 80, uz_1_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[2,1].set_xlim(0, 1.0)
 axs[2,1].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
@@ -1433,12 +1691,12 @@ axs[2,1].text(0.5, 0.6, r"$\mathrm{h = 180m}$", fontsize=12) # transform=axs[0,0
 
 uz_2_180 = calc_uz_sowfa(xSeq_2.size,ySeq_2.size,4,varSeq_2) # sowfa
 uz_5_180 = calc_uz_palm(4,varSeq_5) # palm
-axs[2,2].plot(freq[1:]*40/uz_2_180, coh_2_d40h180[1:], linestyle='-', marker='', markersize=1, color='r', label='sowfa-40m')
-axs[2,2].plot(freq[1:]*80/uz_2_180, coh_2_d80h180[1:], linestyle='--', marker='', markersize=1, color='r', label='sowfa-80m')
-axs[2,2].plot(freq[1:]*40/uz_5_180, coh_5_d40h180[1:], linestyle='-', marker='', markersize=1, color='b', label='palm-40m')
-axs[2,2].plot(freq[1:]*80/uz_5_180, coh_5_d80h180[1:], linestyle='--', marker='', markersize=1, color='b', label='palm-80m')
-axs[2,2].plot(freq[1:]*40/uz_2_180, coh_kaimal(freq[1:], 40, uz_2_180, 8.1*42, 12, 0.12), linestyle='-', marker='', markersize=1, color='k', label='Kaimal-40m')
-axs[2,2].plot(freq[1:]*80/uz_2_180, coh_kaimal(freq[1:], 80, uz_2_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=1, color='k', label='Kaimal-80m')
+axs[2,2].plot(freq[1:]*40/uz_2_180, coh_2_d40h180[1:], linestyle='-', marker='o', markersize=3, color='r', label='sowfa-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, coh_2_d80h180[1:], linestyle='', marker='x', markersize=3, color='r', label='sowfa-80m')
+axs[2,2].plot(freq[1:]*40/uz_5_180, coh_5_d40h180[1:], linestyle='-', marker='o', markersize=3, color='b', label='palm-40m')
+axs[2,2].plot(freq[1:]*80/uz_5_180, coh_5_d80h180[1:], linestyle='', marker='x', markersize=3, color='b', label='palm-80m')
+axs[2,2].plot(freq[1:]*40/uz_2_180, coh_IEC(freq[1:], 40, uz_2_180, 8.1*42, 12, 0.12), linestyle='-', marker='o', markersize=3, color='k', label='IEC-40m')
+axs[2,2].plot(freq[1:]*80/uz_2_180, coh_IEC(freq[1:], 80, uz_2_180, 8.1*42, 12, 0.12), linestyle='--', marker='', markersize=3, color='k', label='IEC-80m')
 
 axs[2,2].set_xlim(0, 1.0)
 axs[2,2].set_xlabel(r'$\mathrm{f\delta/\overline{u}}$', fontsize=12)
