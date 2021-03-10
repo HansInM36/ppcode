@@ -9,10 +9,10 @@ from netCDF4 import Dataset
 from scipy.interpolate import interp1d
 import funcs
 import matplotlib.pyplot as plt
-from matplotlib import colors, ticker, cm
+from matplotlib import colors
 
 
-def velo_pr_palm(dir, jobName, run_no_list, var):
+def pr_palm(dir, jobName, run_no_list, var):
     """ extract horizontal average of velocity at various times and heights """
     run_num = len(run_no_list)
 
@@ -45,57 +45,7 @@ def velo_pr_palm(dir, jobName, run_no_list, var):
     varSeq = varSeq.astype(float)
 
     return tSeq, zSeq, varSeq
-def velo_pr_sowfa(dir, trs_para, varD):
-    """ extract horizontal average of velocity at various times and heights """
-    # coordinate transmation
-    O = trs_para[0]
-    alpha = trs_para[1]
 
-    fr = open(dir + '/data/' + 'aveData', 'rb')
-    aveData = pickle.load(fr)
-    fr.close()
-
-    zSeq = aveData['H']
-    zNum = zSeq.size
-
-    tSeq = aveData['time']
-    tNum = tSeq.size
-    tDelta = tSeq[1] - tSeq[0]
-
-    uSeq = aveData['U_mean']
-    vSeq = aveData['V_mean']
-    wSeq = aveData['W_mean']
-
-    varSeq = np.zeros((tNum,zNum))
-    for zInd in range(zNum):
-        tmp = np.concatenate((uSeq[:,zInd].reshape(tNum,1), vSeq[:,zInd].reshape(tNum,1)), axis=1)
-        tmp = np.concatenate((tmp, wSeq[:,zInd].reshape(tNum,1)), axis=1)
-        tmp_ = funcs.trs(tmp,O,alpha)
-        varSeq[:,zInd] = tmp_[:,varD]
-
-    return tSeq, zSeq, varSeq
-
-def velo_pr_ave(tplot_para, tSeq, tDelta, zNum, varSeq):
-    """ calculate temporally averaged horizontal average of velocity at various times and heights """
-    ave_itv = tplot_para[0]
-    tplot_start = tplot_para[1]
-    tplot_end = tplot_para[2]
-    tplot_delta = tplot_para[3]
-    tplotNum = int((tplot_end - tplot_start)/tplot_delta+1)
-    tplotList = list(np.linspace(tplot_start, tplot_end, tplotNum))
-
-    # compute the averaged velocity at a certain time and height
-    varplotList = []
-    for tplot in tplotList:
-        varplot = np.zeros(zNum)
-        for zInd in range(zNum):
-            f = interp1d(tSeq, varSeq[:,zInd], kind='linear', fill_value='extrapolate')
-            tplot_tmp = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
-            varplot[zInd] = f(tplot_tmp).mean()
-        varplotList.append(varplot)
-    t_seq = np.array(tplotList)
-    varSeq = np.array(varplotList)
-    return t_seq, varSeq
 
 def single_plot(varSeq, zSeq):
     """ single velo_pr plot """
@@ -124,51 +74,35 @@ def ITP(varSeq, zSeq, z):
 
 
 
-prjDir = '/scratch/palmdata/JOBS'
-jobName  = 'wwinta_gs20_mode1_mdf'
-dir = prjDir + '/' + jobName
-tSeq, zuSeq, uSeq = velo_pr_palm(dir, jobName, ['.000'], 'u')
-tSeq, zvSeq, vSeq = velo_pr_palm(dir, jobName, ['.000'], 'v')
+jobName = 'WRFPALM_20150701'
+dir = '/scratch/palmdata/JOBS/' + jobName
+tSeq, zSeq, thetaSeq = pr_palm(dir, jobName, ['.000','.001','.002','.003','.004','.005','.006','.007'], 'theta')
 
-vhSeq = np.sqrt(np.power(uSeq,2)+np.power(vSeq,2))
-
-""" calculate and print uStar """
-kappa = 0.4
-uStar = kappa / np.log(zuSeq[1]/0.001) * np.power(uSeq[-1][1]**2 + vSeq[-1][1]**2,0.5)
-print(uStar)
-
-#### checking
-#single_plot(uSeq[-1], zSeq)
-#u_90 = ITP(uSeq[-1], zSeq, 90)
-#v_90 = ITP(vSeq[-1], zSeq, 90)
-
-
-""" u profile of stationary flow """
-fig, ax = plt.subplots(figsize=(3,4.5))
-plt.plot(vhSeq[-1], zuSeq, label=jobName, linewidth=1.0, linestyle='-', color='k')
-plt.xlabel(r"$\overline{\mathrm{u}}$ (m/s)", fontsize=12)
+""" profile of potential temperature """
+fig, ax = plt.subplots(figsize=(6,4.5))
+colors = plt.cm.jet(np.linspace(0,1,tSeq.size))
+for i in range(1,tSeq.size):
+    plt.plot(thetaSeq[i], zSeq, label='t = ' + str(int(tSeq[i])) + 's', linewidth=1.0, color=colors[i])
+plt.xlabel(r"$\mathrm{\theta}$ (K)", fontsize=12)
 plt.ylabel('z (m)', fontsize=12)
-xaxis_min = 0
-xaxis_max = 6.0
-xaxis_d = 1.0
+xaxis_min = 285.0
+xaxis_max = 305.0
+xaxis_d = 5.0
 yaxis_min = 0.0
-yaxis_max = 100.0
-yaxis_d = 10.0
+yaxis_max = 1200.0
+yaxis_d = 100.0
 plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
 plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
 plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
-#plt.legend(bbox_to_anchor=(0.02,0.9), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
-plt.title(jobName)
+plt.title('')
 fig.tight_layout() # adjust the layout
-saveDir = '/scratch/projects/wwinta/photo/pr'
-saveName = jobName + '_pr.png'
+saveName = 'theta_pr.png'
+saveDir = '/scratch/projects/WRFnesting/photo'
 if not os.path.exists(saveDir):
     os.makedirs(saveDir)
-#plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
+plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
 plt.show()
 plt.close()
-
-
-

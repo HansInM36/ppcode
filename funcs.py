@@ -628,3 +628,18 @@ def group_plot_1(tSeq, fs, u0, u1):
     ax.grid()
 
     plt.show()
+
+
+def NaN_interp1(data):
+
+    bad_indexes = np.isnan(data)
+
+    good_indexes = np.logical_not(bad_indexes)
+
+    good_data = data[good_indexes]
+
+    interpolated = np.interp(bad_indexes.nonzero()[0], good_indexes.nonzero()[0], good_data)
+
+    data[bad_indexes] = interpolated
+
+    return data

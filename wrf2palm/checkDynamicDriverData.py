@@ -6,8 +6,11 @@ from scipy.interpolate import interp1d
 import scipy.signal
 import matplotlib.pyplot as plt
 
-readDir = '/scratch/palmdata/JOBS/WRFnesting_test/WRF/dynamic_driver'
-readName = "WRFnesting_test_dynamic"
+readDir = '/scratch/palmdata/JOBS/WRFPALM_20150701/INPUT'
+readName = "WRFPALM_20150701_dynamic"
+
+nx, ny, nz = 256, 256, 96
+dx, dy, dz = 10, 10, 10
 
 data = Dataset(readDir + '/' + readName, "r", format="NETCDF4")
 
@@ -15,7 +18,13 @@ dimlist = list(data.dimensions)
 varlist = list(data.variables)
 
 
-time = data.variables['time'][:]
+tSeq = data.variables['time'][:]
+
+zSeq = data.variables['z'][:]
+zwSeq = data.variables['zw'][:]
+
+
+pSeq = data.variables['surface_forcing_surface_pressure'][:]
 
 init_atmosphere_pt = np.array(data.variables['init_atmosphere_pt'])
 init_atmosphere_qv = np.array(data.variables['init_atmosphere_qv'])
@@ -58,3 +67,22 @@ ls_forcing_north_w = np.array(data.variables['ls_forcing_north_w'])
 ls_forcing_top_w = np.array(data.variables['ls_forcing_top_w'])
 
 data.close()
+
+### check mass conservation
+zstag_all = np.r_[0., zwSeq, (zwSeq[-1]-zwSeq[-2]) + zwSeq[-1]] # ztop = (zwSeq[-1]-zwSeq[-2])*1.08 + zwSeq[-1]
+zwidths = zstag_all[1:] - zstag_all[:-1]
+areas_xb = np.zeros((zSeq.size, 1))
+areas_xb[:,0] = zwidths * dy
+areas_yb = np.zeros((zSeq.size, 1))
+areas_yb[:,0] = zwidths * dx
+areas_zb = dx*dy
+
+for tInd in range(tSeq.size):  
+    flux_left = np.sum(ls_forcing_left_u[tInd,:,:] * areas_xb)
+    flux_right = - np.sum(ls_forcing_right_u[tInd,:,:] * areas_xb)
+    flux_south = np.sum(ls_forcing_south_v[tInd,:,:] * areas_yb)
+    flux_north = - np.sum(ls_forcing_north_v[tInd,:,:] * areas_yb)
+    flux_top = - np.sum(ls_forcing_top_w[tInd,:,:] * areas_zb)
+    mass_err = flux_left + flux_right + flux_south + flux_north + flux_top
+    print(mass_err)
+

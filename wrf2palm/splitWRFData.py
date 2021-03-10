@@ -1,26 +1,31 @@
-""" This script read the original WRFoutput file and write its data of different time steps into individual netcdf files """
+""" This script read the original WRFoutput file and split it into individual one-hour data files  """
+
 import os
 import sys
 from netCDF4 import Dataset
 from datetime import datetime, timedelta
 import numpy as np
 
-### original file
-readDir = '/scratch/palmdata/JOBS/WRFnesting_new/WRF/WRFoutput/org'
+""" input the directory and name of the original WRF output """
+readDir = '/scratch/wrfdata/20150701'
 readName = "wrfout_d01_2015-07-01_00:00:00"
+
+""" input the directory for splited WRF data """
+writeDir = '/scratch/palmdata/JOBS/WRFPALM_20150701/WRF/WRFoutput'
+
+
+""" input the start and end time (in hour) """
+t_start = 0
+t_end = 12
 
 org = Dataset(readDir + '/' + readName, "r", format="NETCDF4")
 
 dimlist = list(org.dimensions)
 varlist = list(org.variables)
-#varlist = ['Times'] + 'PH PHB HGT T W TSLB SMOIS MU MUB P PB PSFC'.split() + ['U', 'V'] + ['QVAPOR', 'QCLOUD', 'QRAIN', 'QICE', 'QSNOW', 'QGRAUP']
 
 times = org['Times']
-tN = times.shape[0]
 
-writeDir = '/scratch/palmdata/JOBS/WRFnesting_new/WRF/WRFoutput'
-
-for tInd in range(5): # the number of time steps that will be copied, in total tN
+for tInd in range(t_start,t_end+1): # the number of time steps that will be copied, in total tN
     t_wrf = org['Times'][tInd]
     t_str = t_wrf.tobytes().decode("utf-8")
     writeName = 'wrfout_d01_'+t_str    

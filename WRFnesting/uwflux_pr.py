@@ -113,36 +113,37 @@ def ITP(varSeq, zSeq, z):
     return f(z)
 
 """ PALM """
-jobName  = 'wwinta_gs20_mode1_mdf'
-dir = '/scratch/palmdata/JOBS/'
-tSeq, zSeq, rsvSeq, sgsSeq, totSeq = uwflux_palm(dir, jobName, ['.000'])
-rsvSeq, sgsSeq, totSeq = rsvSeq[-1], sgsSeq[-1], totSeq[-1]
+jobName  = 'WRFPALM_20150701'
+dir = '/scratch/palmdata/JOBS'
+tSeq, zSeq, rsvSeq, sgsSeq, totSeq = uwflux_palm(dir, jobName, ['.000','.001','.002','.003','.004','.005','.006','.007'])
+
 
 
 ### plot
-cflInd_palm = 40
-fig, ax = plt.subplots(figsize=(3,4.5))
-plt.plot(totSeq[:cflInd_palm], zSeq[:cflInd_palm], label="no wave" + r"$\overline{u'w'}$", linestyle='-', linewidth=1.0, color='k')
+fig, ax = plt.subplots(figsize=(6,4.5))
+colors = plt.cm.jet(np.linspace(0,1,tSeq.size))
+for i in range(1,tSeq.size):
+    plt.plot(totSeq[i], zSeq, label='t = ' + str(int(tSeq[i])) + 's', linewidth=1.0, color=colors[i])
 
 plt.xlabel("u-component vertical momentum flux" + ' (' + r'$\mathrm{m^2/s^2}$' + ')')
 plt.ylabel('z (m)')
-xaxis_min = -0.04
-xaxis_max = 0.0
-xaxis_d = 0.01
+xaxis_min = -0.02
+xaxis_max = 0.12
+xaxis_d = 0.02
 yaxis_min = 0
-yaxis_max = 180.0
-yaxis_d = 20.0
-plt.ylim(yaxis_min - 0.25*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.25*xaxis_d,xaxis_max)
-plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
+yaxis_max = 400.0
+yaxis_d = 50.0
+plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
+#plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)))
 plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)))
-#plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
 plt.title(jobName)
 fig.tight_layout() # adjust the layout
-saveDir = '/scratch/projects/wwinta/photo/pr'
+saveName = 'uwflux_pr.png'
+saveDir = '/scratch/projects/WRFnesting/photo'
 if not os.path.exists(saveDir):
     os.makedirs(saveDir)
-saveName = 'uwflux_pr.png'
 plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
 plt.show()
