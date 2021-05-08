@@ -7,8 +7,8 @@ from vtk.util.numpy_support import numpy_to_vtk
 from vtk.util.numpy_support import vtk_to_numpy
 import matplotlib.pyplot as plt
 
-readDir = '/scratch/palmdata/JOBS/WRFnesting_new/INPUT/'
-readName = "WRFnesting_new_dynamic"
+readDir = '/scratch/palmdata/JOBS/EERASP3_1/INPUT'
+readName = "EERASP3_1_dynamic"
 
 data = Dataset(readDir + '/' + readName, "r", format="NETCDF4")
 
@@ -24,6 +24,7 @@ xuSeq = data.variables['xu'][:]
 init_u = data.variables['init_atmosphere_u'][:]
 
 # pointArray
+I, J, K = xuSeq.size, ySeq.size, zSeq.size
 yy, zz, xx = np.meshgrid(ySeq,zSeq,xuSeq) # must be in this order
 pointArray = np.vstack((xx.ravel(),yy.ravel(),zz.ravel()))
 pointArray = np.transpose(pointArray)
@@ -41,7 +42,7 @@ pointArray = np.transpose(pointArray)
 # uArray
 uArray = init_u.reshape(init_u.size,1)
 
-writeDir = "/scratch/projects/WRFnesting/VTK"
+writeDir = "/scratch/projects/EERA-SP3/VTK/EERASP3_1/"
 writeName = "init_u.vts"
 sgData = vtk.vtkStructuredGrid()
 sgData.SetDimensions([I,J,K])

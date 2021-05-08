@@ -2,6 +2,52 @@ import numpy as np
 from numpy import fft
 import scipy.fft
 import scipy.signal
+from pyproj import Proj, transform
+
+def hms2std(h,m,s):
+    return h+m/60+s/3600
+
+def cts2lonlat(x,y):
+    # reference coordinate system of PALM simulation
+    proj_palm = "EPSG:32633"
+    # projection lon-lat
+    proj_wgs84 = 'EPSG:4326'
+    
+    inproj = Proj('+init='+proj_palm)
+    lonlatproj = Proj('+init='+proj_wgs84)
+    return transform(inproj, lonlatproj, x, y)
+
+def lonlat2cts(lon,lat):
+    # reference coordinate system of PALM simulation
+    proj_palm = "EPSG:32633"
+    # projection lon-lat
+    proj_wgs84 = 'EPSG:4326'
+    
+    inproj = Proj('+init='+proj_palm)
+    lonlatproj = Proj('+init='+proj_wgs84)
+    return transform(lonlatproj, inproj, lon, lat)
+
+
+def wd(u,v):
+    return (270 - np.arctan2(v, u + 1e-6) * 180/np.pi) % 360
+
+def fitLogLaw(z,uv):
+    """ 
+    given velocities at at least two heights,
+    fit to get friction velocity and z0 based on log-law, i.e.,
+    \overline{u}(z) = \frac{u_*}{\kappa}\ln\frac{z}{z_0} \phi
+    """
+    from scipy.optimize import curve_fit
+    def fitting_func(z, uStar, z0):
+        kappa = 0.4
+        return uStar/kappa*np.log(z/z0)
+    popt, pcov = curve_fit(fitting_func, z, uv, bounds=(0, [10,10]))
+    return popt[0], popt[1]
+
+def pt2vpt(pt, qv, ql=0):
+    Rv = 461.51
+    Rd = 287
+    return pt * (1 + (Rv/Rd-1)*qv - ql)
 
 def trs(M,O,alpha):
     """ horizontal coordinate transformation """

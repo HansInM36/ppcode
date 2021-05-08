@@ -1,10 +1,12 @@
 import os
 import sys
+sys.path.append('/scratch/ppcode')
 from netCDF4 import Dataset
 import numpy as np
 from scipy.interpolate import interp1d
 import scipy.signal
 from pyproj import Proj, transform
+import funcs
 import matplotlib.pyplot as plt
 
 
@@ -15,10 +17,9 @@ inproj = Proj('+init='+proj_palm)
 lonlatproj = Proj('+init='+proj_wgs84)
 
 
-
 ### test file
-readDir = '/scratch/palmdata/JOBS/WRFPALM_20150701/WRF/WRFoutput'
-readName = "wrfout_d01_2015-07-01_00:00:00"
+readDir = '/scratch/palmdata/JOBS/20150812/WRF/WRFoutput'
+readName = "wrfout_d01_2015-08-12_19:40:00"
 
 data = Dataset(readDir + '/' + readName, "r", format="NETCDF4")
 
@@ -32,8 +33,9 @@ varlist = list(data.variables)
 time = data.variables['Times'][:]
 time.tobytes().decode("utf-8")
 
-XLONG = data.variables['XLONG'][:]
+XLONG = data.variables['XLONG'][:] 
 XLAT = data.variables['XLAT'][:]
+x, y = funcs.lonlat2cts(XLONG, XLAT)
 
 
 # lon and lat of center point
@@ -48,6 +50,8 @@ HGT = data.variables['HGT'][:]
 U = data.variables['U'][:]
 V = data.variables['V'][:]
 T = data.variables['T'][:]
+
+U10 = data.variables['U10'][:]
 
 
 PH = data.variables['PH'][:]

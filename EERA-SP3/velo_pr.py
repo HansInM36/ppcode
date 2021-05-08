@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 
 
-def velo_pr_palm(dir, jobName, run_no_list, var):
+def pr_palm(dir, jobName, run_no_list, var):
     """ extract horizontal average of velocity at various times and heights """
     run_num = len(run_no_list)
 
@@ -46,7 +46,7 @@ def velo_pr_palm(dir, jobName, run_no_list, var):
 
     return tSeq, zSeq, varSeq
 
-def velo_pr_sowfa(dir, trs_para, varD):
+def pr_sowfa(dir, trs_para, varD):
     """ extract horizontal average of velocity at various times and heights """
     # coordinate transmation
     O = trs_para[0]
@@ -76,7 +76,7 @@ def velo_pr_sowfa(dir, trs_para, varD):
 
     return tSeq, zSeq, varSeq
 
-def velo_pr_ave(tplot_para, tSeq, tDelta, zNum, varSeq):
+def pr_ave(tplot_para, tSeq, tDelta, zNum, varSeq):
     """ calculate temporally averaged horizontal average of velocity at various times and heights """
     ave_itv = tplot_para[0]
     tplot_start = tplot_para[1]
@@ -99,7 +99,7 @@ def velo_pr_ave(tplot_para, tSeq, tDelta, zNum, varSeq):
     return t_seq, varSeq
 
 def single_plot(varSeq, zSeq):
-    """ single velo_pr plot """
+    """ single pr plot """
     fig, ax = plt.subplots(figsize=(6,6))
     plt.plot(varSeq, zSeq, linewidth=1.0, color='k')
     plt.ylabel('z (m)')
@@ -125,21 +125,118 @@ def ITP(varSeq, zSeq, z):
 
 
 
-jobName = 'WRFPALM_20150701'
+jobName = 'EERASP3_1'
 dir = '/scratch/palmdata/JOBS/' + jobName
-tSeq, zSeq, uSeq = velo_pr_palm(dir, jobName, ['.000','.001','.002','.003','.004','.005','.006','.007'], 'u')
-tSeq, zSeq, vSeq = velo_pr_palm(dir, jobName, ['.000','.001','.002','.003','.004','.005','.006','.007'], 'v')
+u_1 = pr_palm(dir, jobName, ['.000','.001','.002'], 'u')
+v_1 = pr_palm(dir, jobName, ['.000','.001','.002'], 'v')
 
-uvSeq = np.sqrt(np.power(uSeq,2) + np.power(vSeq,2))
-wdSeq = 270 - np.arctan(vSeq / (uSeq + 1e-6)) * 180/np.pi
+jobName = 'EERASP3_1_dz5'
+dir = '/scratch/palmdata/JOBS/' + jobName
+u_1_ = pr_palm(dir, jobName, ['.000','.001','.002'], 'u')
+v_1_ = pr_palm(dir, jobName, ['.000','.001','.002'], 'v')
+
+jobName = 'EERASP3_2'
+dir = '/scratch/palmdata/JOBS/' + jobName
+u_2 = pr_palm(dir, jobName, ['.000','.001','.002'], 'u')
+v_2 = pr_palm(dir, jobName, ['.000','.001','.002'], 'v')
+
+jobName = 'EERASP3_2_dz5'
+dir = '/scratch/palmdata/JOBS/' + jobName
+u_2_ = pr_palm(dir, jobName, ['.000','.001','.002'], 'u')
+v_2_ = pr_palm(dir, jobName, ['.000','.001','.002'], 'v')
+
+
+uv_1 = np.sqrt(np.power(u_1[2],2) + np.power(v_1[2],2))
+uv_1_ = np.sqrt(np.power(u_1_[2],2) + np.power(v_1_[2],2))
+uv_2 = np.sqrt(np.power(u_2[2],2) + np.power(v_2[2],2))
+uv_2_ = np.sqrt(np.power(u_2_[2],2) + np.power(v_2_[2],2))
+
+
+wd_1 = funcs.wd(u_1[2], v_1[2])
+wd_1_ = funcs.wd(u_1_[2], v_1_[2])
+wd_2 = funcs.wd(u_2[2], v_2[2])
+wd_2_ = funcs.wd(u_2_[2], v_2_[2])
+
 
 #### checking
 #single_plot(uSeq_0[-1], zSeq_0)
 #u_90 = ITP(uSeq_0[-1], zSeq_0, 90)
 #v_90 = ITP(vSeq_0[-1], zSeq_0, 90)
 
+""" profile of horizontal velocity - certain time - cmp """
+for tInd in range(u_1[0].size):
+    fig, ax = plt.subplots(figsize=(4.5,4.5))
+    plt.plot(uv_2[tInd], u_2[1], label='dz10', linestyle='-', linewidth=1.0, color='k')
+    plt.plot(uv_2_[tInd], u_2_[1], label='dz5', linestyle='--', linewidth=1.0, color='k')
+    plt.xlabel(r"$\mathrm{\overline{u}_h}$ (m/s)", fontsize=12)
+    plt.ylabel('z (m)', fontsize=12)
+    xaxis_min = 0.0
+    xaxis_max = 16.0
+    xaxis_d = 2.0
+    yaxis_min = 0.0
+    yaxis_max = 1200.0
+    yaxis_d = 100.0
+    plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+    plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
+    plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
+    plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
+    plt.legend(bbox_to_anchor=(0.6,0.76), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+    plt.grid()
+    plt.title('')
+    fig.tight_layout() # adjust the layout
+    saveName = 'velo_pr_sensitivity_t' + str(np.round(u_1[0][tInd]/3600,1)) + '.png'
+    saveDir = '/scratch/projects/EERA-SP3/photo/velo_pr/sensitivity/2nd'
+    if not os.path.exists(saveDir):
+        os.makedirs(saveDir)
+    plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
+    plt.show()
+    plt.close()
 
-""" profile of horizontal velocity """
+
+""" wind direction profile of stationary flow - certain time - cmp """
+for tInd in range(u_1[0].size):
+    fig, ax = plt.subplots(figsize=(4.5,4.5))
+    plt.plot(wd_2[tInd][1:], u_2[1][1:], label='dz10', linestyle='-', linewidth=1.0, color='k')
+    plt.plot(wd_2_[tInd][1:], u_2_[1][1:], label='dz5', linestyle='--', linewidth=1.0, color='k')
+    plt.xlabel(r"wind direction ($\degree$)", fontsize=12)
+    plt.ylabel('z (m)', fontsize=12)
+    xaxis_min = 220.0
+    xaxis_max = 280.0
+    xaxis_d = 20
+    yaxis_min = 0
+    yaxis_max = 1000.0
+    yaxis_d = 100.0
+    plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+    plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
+    plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
+    plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
+    plt.legend(bbox_to_anchor=(0.12,0.76), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
+    plt.grid()
+    plt.title('')
+    fig.tight_layout() # adjust the layout
+    saveName = 'wd_pr_sensitivity_t' + str(np.round(u_1[0][tInd]/3600,1)) + '.png'
+    saveDir = '/scratch/projects/EERA-SP3/photo/wd_pr/sensitivity/2nd'
+    if not os.path.exists(saveDir):
+        os.makedirs(saveDir)
+    plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
+    plt.show()
+    plt.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+""" profile of horizontal velocity - evolution - single case """
 fig, ax = plt.subplots(figsize=(6,4.5))
 colors = plt.cm.jet(np.linspace(0,1,tSeq.size))
 for i in range(tSeq.size):
@@ -160,8 +257,8 @@ plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0, fontsize=12) # (1.
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
-saveName = 'velo_pr.png'
-saveDir = '/scratch/projects/WRFnesting/photo'
+saveName = 'pr.png'
+saveDir = '/scratch/projects/EERA-SP3/photo/pr'
 if not os.path.exists(saveDir):
     os.makedirs(saveDir)
 plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
@@ -169,7 +266,7 @@ plt.show()
 plt.close()
 
 
-""" wind direction profile of stationary flow (sowfa vs palm) """
+""" wind direction profile of stationary flow - evolution - single case """
 fig, ax = plt.subplots(figsize=(6,4.5))
 colors = plt.cm.jet(np.linspace(0,1,tSeq.size))
 
@@ -178,9 +275,9 @@ for i in range(tSeq.size):
 
 plt.xlabel(r"wind direction ($\degree$)", fontsize=12)
 plt.ylabel('z (m)', fontsize=12)
-xaxis_min = 260.0
-xaxis_max = 340.0
-xaxis_d = 10
+xaxis_min = 80.0
+xaxis_max = 160.0
+xaxis_d = 20
 yaxis_min = 0
 yaxis_max = 1000.0
 yaxis_d = 100.0
@@ -193,7 +290,7 @@ plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
 saveName = 'wd_pr.png'
-saveDir = '/scratch/projects/WRFnesting/photo'
+saveDir = '/scratch/projects/EERA-SP3/photo/pr'
 if not os.path.exists(saveDir):
     os.makedirs(saveDir)
 plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
@@ -201,50 +298,3 @@ plt.show()
 plt.close()
 
 
-
-#""" dimensionless u gradient profile of stationary flow """
-#startH = 5.000
-#topH = 205.0
-#zNum_ = 21
-#kappa = 0.4
-#uStar_0 = kappa / np.log(zSeq_0[0]/0.001) * np.power(uSeq_0[-1][0]**2 + vSeq_0[-1][0]**2,0.5)
-#
-#fig, ax = plt.subplots(figsize=(3,4.5))
-#z_ = np.linspace(startH,topH,zNum_)
-#dz = (topH - startH) / (zNum_-1)
-## sowfa
-#zero = np.zeros(1)
-#v_0 = np.concatenate((zero, uSeq_0[-1]))
-#z_0 = np.concatenate((zero, zSeq_0))
-#f_0 = interp1d(z_0, v_0, kind='linear', fill_value='extrapolate')
-#v_0 = funcs.calc_deriv_1st_FD(dz, f_0(z_))
-#v_0 = v_0 * kappa * z_ / uStar_0
-## palm
-#v_3 = uSeq_3[-1]
-#z_3 = zSeq_3
-#f_3 = interp1d(z_3, v_3, kind='linear', fill_value='extrapolate')
-#v_3 = funcs.calc_deriv_1st_FD(dz, f_3(z_))
-#v_3 = v_3 * kappa * z_ / uStar_3
-#
-#plt.plot(v_0, z_, label='sowfa', linewidth=1.0, linestyle='-', color='k')
-#plt.plot(v_3, z_, label='palm', linewidth=1.0, linestyle='--', color='k')
-#plt.xlabel(r"$\mathrm{\phi_m}$", fontsize=12)
-#plt.ylabel('z (m)', fontsize=12)
-#xaxis_min = -3
-#xaxis_max = 5
-#xaxis_d = 2
-#yaxis_min = 0
-#yaxis_max = 200.0
-#yaxis_d = 20.0
-#plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
-#plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-#plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
-#plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
-#plt.legend(bbox_to_anchor=(0.05,0.9), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
-#plt.grid()
-#plt.title('')
-#fig.tight_layout() # adjust the layout
-## saveName = 'phi_m' + '_pr.png'
-## plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
-#plt.show()
-#plt.close()

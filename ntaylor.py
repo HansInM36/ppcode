@@ -218,4 +218,3 @@ def diagn(ax, statn, prop, sigma_lim = 1.5, sigma_color = 'k', \
                           markerfacecolor = prop[i, 1], \
                           markeredgecolor = prop[i, 2])
 
-  return ax

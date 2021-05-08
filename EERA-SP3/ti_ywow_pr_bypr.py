@@ -46,9 +46,60 @@ def pr_palm(dir, jobName, run_no_list, var):
 
     return tSeq, zSeq, varSeq
 
+def pr_sowfa(dir, trs_para, varD):
+    """ extract horizontal average of velocity at various times and heights """
+    # coordinate transmation
+    O = trs_para[0]
+    alpha = trs_para[1]
+
+    fr = open(dir + '/data/' + 'aveData', 'rb')
+    aveData = pickle.load(fr)
+    fr.close()
+
+    zSeq = aveData['H']
+    zNum = zSeq.size
+
+    tSeq = aveData['time']
+    tNum = tSeq.size
+    tDelta = tSeq[1] - tSeq[0]
+
+    uSeq = aveData['U_mean']
+    vSeq = aveData['V_mean']
+    wSeq = aveData['W_mean']
+
+    varSeq = np.zeros((tNum,zNum))
+    for zInd in range(zNum):
+        tmp = np.concatenate((uSeq[:,zInd].reshape(tNum,1), vSeq[:,zInd].reshape(tNum,1)), axis=1)
+        tmp = np.concatenate((tmp, wSeq[:,zInd].reshape(tNum,1)), axis=1)
+        tmp_ = funcs.trs(tmp,O,alpha)
+        varSeq[:,zInd] = tmp_[:,varD]
+
+    return tSeq, zSeq, varSeq
+
+def pr_ave(tplot_para, tSeq, tDelta, zNum, varSeq):
+    """ calculate temporally averaged horizontal average of velocity at various times and heights """
+    ave_itv = tplot_para[0]
+    tplot_start = tplot_para[1]
+    tplot_end = tplot_para[2]
+    tplot_delta = tplot_para[3]
+    tplotNum = int((tplot_end - tplot_start)/tplot_delta+1)
+    tplotList = list(np.linspace(tplot_start, tplot_end, tplotNum))
+
+    # compute the averaged velocity at a certain time and height
+    varplotList = []
+    for tplot in tplotList:
+        varplot = np.zeros(zNum)
+        for zInd in range(zNum):
+            f = interp1d(tSeq, varSeq[:,zInd], kind='linear', fill_value='extrapolate')
+            tplot_tmp = np.linspace(tplot - ave_itv, tplot, int(ave_itv/tDelta))
+            varplot[zInd] = f(tplot_tmp).mean()
+        varplotList.append(varplot)
+    t_seq = np.array(tplotList)
+    varSeq = np.array(varplotList)
+    return t_seq, varSeq
 
 def single_plot(varSeq, zSeq):
-    """ single velo_pr plot """
+    """ single pr plot """
     fig, ax = plt.subplots(figsize=(6,6))
     plt.plot(varSeq, zSeq, linewidth=1.0, color='k')
     plt.ylabel('z (m)')
@@ -72,37 +123,19 @@ def ITP(varSeq, zSeq, z):
     f = interp1d(zSeq, varSeq, kind='linear')
     return f(z)
 
-
-
-jobName = 'WRFPALM_20150701'
+jobName = 'EERASP3_1'
 dir = '/scratch/palmdata/JOBS/' + jobName
-tSeq, zSeq, thetaSeq = pr_palm(dir, jobName, ['.000','.001','.002','.003','.004','.005','.006','.007'], 'theta')
+u2_0 = pr_palm(dir, jobName, ['.000','.001','.002'], 'u*2')
+v2_0 = pr_palm(dir, jobName, ['.000','.001','.002'], 'v*2')
+w2_0 = pr_palm(dir, jobName, ['.000','.001','.002'], 'w*2')
 
-""" profile of potential temperature """
-fig, ax = plt.subplots(figsize=(6,4.5))
-colors = plt.cm.jet(np.linspace(0,1,tSeq.size))
-for i in range(1,tSeq.size):
-    plt.plot(thetaSeq[i], zSeq, label='t = ' + str(int(tSeq[i])) + 's', linewidth=1.0, color=colors[i])
-plt.xlabel(r"$\mathrm{\theta}$ (K)", fontsize=12)
-plt.ylabel('z (m)', fontsize=12)
-xaxis_min = 285.0
-xaxis_max = 305.0
-xaxis_d = 5.0
-yaxis_min = 0.0
-yaxis_max = 1200.0
-yaxis_d = 100.0
-plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
-plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
-plt.legend(bbox_to_anchor=(1.05,0.5), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
-plt.grid()
-plt.title('')
-fig.tight_layout() # adjust the layout
-saveName = 'theta_pr.png'
-saveDir = '/scratch/projects/EERA-SP3/photo/pr'
-if not os.path.exists(saveDir):
-    os.makedirs(saveDir)
-plt.savefig(saveDir + '/' + saveName, bbox_inches='tight')
-plt.show()
-plt.close()
+
+jobName = 'EERASP3_2_yw'
+dir = '/scratch/palmdata/JOBS/' + jobName
+u_1 = pr_palm(dir, jobName, ['.000','.001','.002'], 'u')
+v_1 = pr_palm(dir, jobName, ['.000','.001','.002'], 'v')
+
+jobName = 'EERASP3_2_ow'
+dir = '/scratch/palmdata/JOBS/' + jobName
+u_1_ = pr_palm(dir, jobName, ['.000','.001','.002'], 'u')
+v_1_ = pr_palm(dir, jobName, ['.000','.001','.002'], 'v')

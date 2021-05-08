@@ -534,7 +534,8 @@ def calcgw_wrf(f, lat, lon, levels, tidx=0):
 
     aglpt = hgtu[:,iby,ibx] - terrain[iby,ibx]
     pres0 = pres[np.searchsorted(aglpt, levels[-1]), iby, ibx]
-    plevels = np.arange(pres1, min(pres0, pres1)-1, -1000.)
+    # plevels = np.arange(pres1, min(pres0, pres1)-1, -1000.)
+    plevels = np.arange(pres1, min(pres0, pres1)-1000, -1000.) # !!!!
 
     # interpolate wrf into pressure levels
     phgt = log_interpolate_1d(plevels, pres, hgtu, axis=0)

@@ -6,11 +6,11 @@ from scipy.interpolate import interp1d
 import scipy.signal
 import matplotlib.pyplot as plt
 
-readDir = '/scratch/palmdata/JOBS/WRFPALM_20150701/INPUT'
-readName = "WRFPALM_20150701_dynamic"
+readDir = '/scratch/palmdata/JOBS/EERASP3_1_yw/INPUT'
+readName = "EERASP3_1_yw_dynamic"
 
-nx, ny, nz = 256, 256, 96
-dx, dy, dz = 10, 10, 10
+nx, ny, nz = 384, 384, 66
+dx, dy, dz = 40, 40, 10
 
 data = Dataset(readDir + '/' + readName, "r", format="NETCDF4")
 
