@@ -40,6 +40,7 @@ def TI_pr_sowfa(dir, trs_para):
     TIvSeq = 100 * np.power(vvarianceSeq,0.5) / umeanSeq
     TIwSeq = 100 * np.power(wvarianceSeq,0.5) / umeanSeq
     return tSeq, zSeq, TIuSeq, TIvSeq, TIwSeq
+
 def TI_pr_palm(dir, jobName, run_no_list):
     """ extract horizontal average of velocity at various times and heights """
     run_num = len(run_no_list)
@@ -130,6 +131,7 @@ def TI_pr_av_seq(tplot_para, tSeq, tDelta, zNum, TIuSeq, TIvSeq, TIwSeq):
     TIvSeq = np.array(TIvplotList)
     TIwSeq = np.array(TIwplotList)
     return t_seq, TIuSeq, TIvSeq, TIwSeq
+
 def TI_pr_av(tplot_para, tSeq, zNum, TIuSeq, TIvSeq, TIwSeq):
     ave_itv = tplot_para[0]
     tplot = tplot_para[1]

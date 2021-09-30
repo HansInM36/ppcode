@@ -95,7 +95,6 @@ def window_weight(seq, method_='bell'):
         print('error: wrong method')
 
 def flt_seq(x,tao):
-    """ 以tao来过滤一个序列 """
     '''
     filter x with tao
     x must be a 1D array
@@ -399,6 +398,15 @@ def Busch_Panofsky_w(f, uz, z, uStar, phi=1.0):
     down = f * (1 + 10 * np.power(f_/phi, 5/3))
     return up/down
 
+def coh_kaimal(freq, delta, U):
+    a = 12
+    b = 0.12
+    L = 73.5
+    coh = np.exp(-a * np.power((freq*delta/U)**2 + (b*delta/L)**2,0.5))
+    return coh
+
+def coh_IEC(f, d, U, L, a, b):
+    return np.exp(-a * np.power(np.power(f*d/U,2) + np.power(b*d/L,2),0.5))
 
 def IEC_coh(f, d, uz, L):
     a, b = 12, 0.12

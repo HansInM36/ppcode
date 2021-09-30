@@ -11,7 +11,6 @@ import funcs
 import matplotlib.pyplot as plt
 from matplotlib import colors, ticker, cm
 
-
 def velo_pr_palm(dir, jobName, run_no_list, var):
     """ extract horizontal average of velocity at various times and heights """
     run_num = len(run_no_list)
@@ -46,35 +45,13 @@ def velo_pr_palm(dir, jobName, run_no_list, var):
 
     return tSeq, zSeq, varSeq
 
-def velo_pr_sowfa(dir, trs_para, varD):
-    """ extract horizontal average of velocity at various times and heights """
-    # coordinate transmation
-    O = trs_para[0]
-    alpha = trs_para[1]
 
-    fr = open(dir + '/data/' + 'aveData', 'rb')
-    aveData = pickle.load(fr)
-    fr.close()
 
-    zSeq = aveData['H']
-    zNum = zSeq.size
 
-    tSeq = aveData['time']
-    tNum = tSeq.size
-    tDelta = tSeq[1] - tSeq[0]
 
-    uSeq = aveData['U_mean']
-    vSeq = aveData['V_mean']
-    wSeq = aveData['W_mean']
 
-    varSeq = np.zeros((tNum,zNum))
-    for zInd in range(zNum):
-        tmp = np.concatenate((uSeq[:,zInd].reshape(tNum,1), vSeq[:,zInd].reshape(tNum,1)), axis=1)
-        tmp = np.concatenate((tmp, wSeq[:,zInd].reshape(tNum,1)), axis=1)
-        tmp_ = funcs.trs(tmp,O,alpha)
-        varSeq[:,zInd] = tmp_[:,varD]
 
-    return tSeq, zSeq, varSeq
+
 
 def velo_pr_ave(tplot_para, tSeq, tDelta, zNum, varSeq):
     """ calculate temporally averaged horizontal average of velocity at various times and heights """
@@ -125,139 +102,43 @@ def ITP(varSeq, zSeq, z):
 
 
 
-prjName = 'deepwind'
-jobName_0 = 'gs10_0.0001_refined'
-dir_0 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_0
-tSeq_0, zSeq_0, uSeq_0 =  velo_pr_sowfa(dir_0, ((0,0,0),30.0), 0)
-tSeq_0, zSeq_0, vSeq_0 =  velo_pr_sowfa(dir_0, ((0,0,0),30.0), 1)
-t_seq_0, uSeq_0 = velo_pr_ave((3600,151200,151200,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, uSeq_0)
-t_seq_0, vSeq_0 = velo_pr_ave((3600,151200,151200,1e6), tSeq_0, tSeq_0[-1]-tSeq_0[-2], zSeq_0.size, vSeq_0)
 
-
-prjName = 'deepwind'
-jobName_1 = 'gs10_refined'
-dir_1 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_1
-tSeq_1, zSeq_1, uSeq_1 =  velo_pr_sowfa(dir_1, ((0,0,0),30.0), 0)
-tSeq_1, zSeq_1, vSeq_1 =  velo_pr_sowfa(dir_1, ((0,0,0),30.0), 1)
-t_seq_1, uSeq_1 = velo_pr_ave((3600,151200,151200,1e6), tSeq_1, tSeq_1[-1]-tSeq_1[-2], zSeq_1.size, uSeq_1)
-t_seq_1, vSeq_1 = velo_pr_ave((3600,151200,151200,1e6), tSeq_1, tSeq_1[-1]-tSeq_1[-2], zSeq_1.size, vSeq_1)
-
-
-prjName = 'deepwind'
-jobName_2 = 'gs10_0.01_refined'
-dir_2 = '/scratch/sowfadata/pp/' + prjName + '/' + jobName_2
-tSeq_2, zSeq_2, uSeq_2 =  velo_pr_sowfa(dir_2, ((0,0,0),30.0), 0)
-tSeq_2, zSeq_2, vSeq_2 =  velo_pr_sowfa(dir_2, ((0,0,0),30.0), 1)
-t_seq_2, uSeq_2 = velo_pr_ave((3600,79200,79200,1e6), tSeq_2, tSeq_2[-1]-tSeq_2[-2], zSeq_2.size, uSeq_2)
-t_seq_2, vSeq_2 = velo_pr_ave((3600,79200,79200,1e6), tSeq_2, tSeq_2[-1]-tSeq_2[-2], zSeq_2.size, vSeq_2)
 
 
 prjDir = '/scratch/palmdata/JOBS'
-jobName_3  = 'deepwind_gs5_0.0001_main'
-dir_3 = prjDir + '/' + jobName_3
-tSeq_3, zSeq_3, uSeq_3 = velo_pr_palm(dir_3, jobName_3, ['.000','.001'], 'u')
-tSeq_3, zSeq_3, vSeq_3 = velo_pr_palm(dir_3, jobName_3, ['.000','.001'], 'v')
-
-prjDir = '/scratch/palmdata/JOBS'
-jobName_4  = 'deepwind_gs5_main'
-dir_4 = prjDir + '/' + jobName_4
-tSeq_4, zSeq_4, uSeq_4 = velo_pr_palm(dir_4, jobName_4, ['.000','.001'], 'u')
-tSeq_4, zSeq_4, vSeq_4 = velo_pr_palm(dir_4, jobName_4, ['.000','.001'], 'v')
-
-prjDir = '/scratch/palmdata/JOBS'
-jobName_5  = 'deepwind_gs5_0.01_main'
-dir_5 = prjDir + '/' + jobName_5
-tSeq_5, zSeq_5, uSeq_5 = velo_pr_palm(dir_5, jobName_5, ['.000','.001'], 'u')
-tSeq_5, zSeq_5, vSeq_5 = velo_pr_palm(dir_5, jobName_5, ['.000','.001'], 'v')
-
-prjDir = '/scratch/palmdata/JOBS'
-jobName_6  = 'deepwind_gs5_0.01'
-dir_6 = prjDir + '/' + jobName_6
-tSeq_6, zSeq_6, uSeq_6 = velo_pr_palm(dir_6, jobName_6, ['.003','.004'], 'u')
-tSeq_6, zSeq_6, vSeq_6 = velo_pr_palm(dir_6, jobName_6, ['.003','.004'], 'v')
+jobName  = 'example_nbl'
+jobDir = prjDir + '/' + jobName
+tSeq, zSeq, uSeq = velo_pr_palm(jobDir, jobName, ['.000'], 'u')
+tSeq, zSeq, vSeq = velo_pr_palm(jobDir, jobName, ['.000'], 'v')
+tSeq, zwSeq, wSeq = velo_pr_palm(jobDir, jobName, ['.000'], 'w')
 
 
-### checking
-single_plot(uSeq_0[-1], zSeq_0)
-u_90 = ITP(uSeq_0[-1], zSeq_0, 90)
-v_90 = ITP(vSeq_0[-1], zSeq_0, 90)
-
-
-""" u profile of stationary flow (sowfa vs palm) """
+""" u profile of stationary flow (last time step) """
 fig, ax = plt.subplots(figsize=(3,4.5))
 
-plt.plot(uSeq_2[-1], zSeq_2, label='sowfa', linewidth=1.0, linestyle='-', color='k')
-plt.plot(uSeq_3[-1], zSeq_3, label='palm', linewidth=1.0, linestyle='--', color='k')
+plt.plot(uSeq[-1], zSeq, label='palm', linewidth=1.0, linestyle='-', color='k')
 plt.xlabel(r"$\overline{\mathrm{u}}$ (m/s)", fontsize=12)
 plt.ylabel('z (m)', fontsize=12)
-xaxis_min = 0
-xaxis_max = 12.0
-xaxis_d = 2.0
-yaxis_min = 0.0
-yaxis_max = 1000.0
-yaxis_d = 100.0
-plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
-plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
+#xaxis_min = 0
+#xaxis_max = 12.0
+#xaxis_d = 2.0
+#yaxis_min = 0.0
+#yaxis_max = 1.0
+#yaxis_d = 0.1
+#plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
+#plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
+#plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
+#plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
 plt.legend(bbox_to_anchor=(0.05,0.9), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
 plt.grid()
 plt.title('')
 fig.tight_layout() # adjust the layout
 # saveName = 'u' + '_pr.png'
-# plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
+# saveDir = '/scratch/projects/deepwind/photo/profiles'
+# plt.savefig(saveDir + '/' + saveName)
 plt.show()
 plt.close()
 
-
-
-""" dimensionless u gradient profile of stationary flow (sowfa vs palm) """
-startH = 5.000
-topH = 205.0
-zNum_ = 21
-kappa = 0.4
-uStar_0 = kappa / np.log(zSeq_0[0]/0.001) * np.power(uSeq_0[-1][0]**2 + vSeq_0[-1][0]**2,0.5)
-uStar_3 = kappa / np.log(zSeq_3[1]/0.001) * np.power(uSeq_3[-1][1]**2 + vSeq_3[-1][1]**2,0.5)
-
-fig, ax = plt.subplots(figsize=(3,4.5))
-z_ = np.linspace(startH,topH,zNum_)
-dz = (topH - startH) / (zNum_-1)
-# sowfa
-zero = np.zeros(1)
-v_0 = np.concatenate((zero, uSeq_0[-1]))
-z_0 = np.concatenate((zero, zSeq_0))
-f_0 = interp1d(z_0, v_0, kind='linear', fill_value='extrapolate')
-v_0 = funcs.calc_deriv_1st_FD(dz, f_0(z_))
-v_0 = v_0 * kappa * z_ / uStar_0
-# palm
-v_3 = uSeq_3[-1]
-z_3 = zSeq_3
-f_3 = interp1d(z_3, v_3, kind='linear', fill_value='extrapolate')
-v_3 = funcs.calc_deriv_1st_FD(dz, f_3(z_))
-v_3 = v_3 * kappa * z_ / uStar_3
-
-plt.plot(v_0, z_, label='sowfa', linewidth=1.0, linestyle='-', color='k')
-plt.plot(v_3, z_, label='palm', linewidth=1.0, linestyle='--', color='k')
-plt.xlabel(r"$\mathrm{\phi_m}$", fontsize=12)
-plt.ylabel('z (m)', fontsize=12)
-xaxis_min = -3
-xaxis_max = 5
-xaxis_d = 2
-yaxis_min = 0
-yaxis_max = 200.0
-yaxis_d = 20.0
-plt.ylim(yaxis_min - 0.0*yaxis_d,yaxis_max)
-plt.xlim(xaxis_min - 0.0*xaxis_d,xaxis_max)
-plt.xticks(list(np.linspace(xaxis_min, xaxis_max, int((xaxis_max-xaxis_min)/xaxis_d)+1)), fontsize=12)
-plt.yticks(list(np.linspace(yaxis_min, yaxis_max, int((yaxis_max-yaxis_min)/yaxis_d)+1)), fontsize=12)
-plt.legend(bbox_to_anchor=(0.05,0.9), loc=6, borderaxespad=0, fontsize=12) # (1.05,0.5) is the relative position of legend to the origin, loc is the reference point of the legend
-plt.grid()
-plt.title('')
-fig.tight_layout() # adjust the layout
-# saveName = 'phi_m' + '_pr.png'
-# plt.savefig('/scratch/projects/deepwind/photo/profiles' + '/' + saveName)
-plt.show()
-plt.close()
 
 
 """ wind direction profile of stationary flow (sowfa vs palm) """
