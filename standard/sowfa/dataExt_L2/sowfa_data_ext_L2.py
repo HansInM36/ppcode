@@ -1,7 +1,7 @@
 #!/usr/bin/python3.6
 import sys
 sys.path.append('/scratch/ppcode')
-sys.path.append('/scratch/ppcode/sowfa/src')
+sys.path.append('/scratch/ppcode/standard/sowfa/dataExt_L1')
 import sliceDataClass as sdc
 import pickle
 import numpy as np
@@ -12,11 +12,11 @@ import funcs
 
 ### ----------------------------------------------------------- velocity profile ---------------------------------------------------- ###
 
-def velo_pr_sowfa(dir, trs_para, varD):
+def velo_pr_sowfa(jobDir, trs_para, varD):
     """ 
     Extract horizontal average of velocity at various times and heights based on aveData from SOWFA
     INPUT
-        dir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
+        jobDir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
         trs_para: coordinate transform parameters, e.g. ((0,0,0),30.0), the origin and the conterclockwise rotation degree
         varD: the dimension of which the target vector variable will be outputted
     OUTPUT:
@@ -28,7 +28,7 @@ def velo_pr_sowfa(dir, trs_para, varD):
     O = trs_para[0]
     alpha = trs_para[1]
 
-    fr = open(dir + '/data/' + 'aveData', 'rb')
+    fr = open(jobDir + '/data/' + 'aveData', 'rb')
     aveData = pickle.load(fr)
     fr.close()
 
@@ -57,11 +57,11 @@ def velo_pr_sowfa(dir, trs_para, varD):
 
 ### ------------------------------------------------------- turbulence intensity ---------------------------------------------------- ###
 
-def TI_pr_sowfa(dir, trs_para):
+def TI_pr_sowfa(jobDir, trs_para):
     """
     Derive turbulence intensity in 3 directions based on aveData from SOWFA
     INPUT:
-        dir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
+        jobDir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
         trs_para: coordinate transform parameters, e.g. ((0,0,0),30.0), the origin and the conterclockwise rotation degree
     OUTPUT
         tSeq: 1D array of times
@@ -74,7 +74,7 @@ def TI_pr_sowfa(dir, trs_para):
     O = trs_para[0]
     alpha = trs_para[1]*np.pi/180
 
-    fr = open(dir + '/data/' + 'aveData', 'rb')
+    fr = open(jobDir + '/data/' + 'aveData', 'rb')
     aveData = pickle.load(fr)
     fr.close()
 
@@ -104,18 +104,18 @@ def TI_pr_sowfa(dir, trs_para):
 
 ### ------------------------------------------------------- contours ---------------------------------------------------- ###
 
-def getSliceData_Nz_sowfa(dir, slice, var, varD, trs_para, tInd, xcoor, ycoor):
+def getSliceData_Nz_sowfa(jobDir, slice, var, varD, trs_para, tInd, xcoor, ycoor):
     """
     Extract data from specified slice_Nz
     INPUT
-        dir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
+        jobDir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
         slice: the name of the slice, e.g. 'Nz2'
         var: name of the target variable, e.g. 'U'
         varD: the dimension of which the target vector variable will be outputted
         trs_para: coordinate transform parameters, e.g. ((0,0,0),30.0), the origin and the conterclockwise rotation degree
         tInd: a tuple containing the start time index and end time index of the output data (not including the end tInd)
-        xcoor: a tuple containing the start x, end x and delta x of the output data
-        ycoor: a tuple containing the start x, end x and delta x of the output data
+        xcoor: a tuple containing the start x, end x and x.size of the output data
+        ycoor: a tuple containing the start y, end y and y.size of the output data
     OUTPUT
         tSeq: 1D array of times
         ySeq: 1D array of y positions
@@ -123,7 +123,7 @@ def getSliceData_Nz_sowfa(dir, slice, var, varD, trs_para, tInd, xcoor, ycoor):
         H: the height of the slice
         varSeq: 3D array of the target variable, 1st dim time, 2nd dim y, 3rd x
     """
-    readDir = dir + '/data/'
+    readDir = jobDir + '/data/'
     readName = slice
     fr = open(readDir + readName, 'rb')
     data = pickle.load(fr)
@@ -148,11 +148,11 @@ def getSliceData_Nz_sowfa(dir, slice, var, varD, trs_para, tInd, xcoor, ycoor):
 
 ### ------------------------------------------------------- PSD ---------------------------------------------------- ###
 
-def PSD_data_sowfa(dir, prbg, trs_para, var, varD):
+def PSD_data_sowfa(jobDir, prbg, trs_para, var, varD):
     """
     Extract velocity data of specified probe groups
     INPUT
-        dir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
+        jobDir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
         prbg: name of the probe group, e.g. 'prbg0'
         trs_para: coordinate transform parameters, e.g. ((0,0,0),30.0), the origin and the conterclockwise rotation degree
         var: name of the target variable, e.g. 'U'
@@ -170,7 +170,7 @@ def PSD_data_sowfa(dir, prbg, trs_para, var, varD):
     alpha = trs_para[1]
 
     # read data
-    readDir = dir + '/data/'
+    readDir = jobDir + '/data/'
     readName = prbg
     fr = open(readDir + readName, 'rb')
     data_org = pickle.load(fr)
@@ -248,11 +248,11 @@ def PSD_sowfa(t_para, tSeq, zInd, xNum, yNum, varSeq, segNum):
 
 ### ------------------------------------------------------- TKE ---------------------------------------------------- ###
 
-def TKE_sowfa(dir, trs_para, varD):
+def TKE_sowfa(jobDir, trs_para, varD):
     """
     Extract TKE related data from aveData
     INPUT
-        dir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
+        jobDir: job directory, e.g. '/scratch/sowfadata/pp/tutorials/example_nbl'
         trs_para: coordinate transform parameters, e.g. ((0,0,0),30.0), the origin and the conterclockwise rotation degree
         varD: the dimension of which the target vector variable will be outputted
     OUTPUT
@@ -265,7 +265,7 @@ def TKE_sowfa(dir, trs_para, varD):
     O = trs_para[0]
     alpha = trs_para[1]
 
-    fr = open(dir + '/data/' + 'aveData', 'rb')
+    fr = open(jobDir + '/data/' + 'aveData', 'rb')
     aveData = pickle.load(fr)
     fr.close()
 
